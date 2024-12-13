@@ -4,7 +4,7 @@ The StyleSync App revolutionizes wardrobe management by leveraging AI and mobile
 ## Features
 - AI-powered outfit recommendations.
 - Comprehensive wardrobe digitization.
-- Time-saving tools for busy mornings.
+- Time and money saving tool.
 
 ## Documentation
 [View the detailed documentation](https://docs.google.com/document/d/1oY4Mvhg1LZxFtYDb6mWoCit0vU75DwELgqxr08zLjDg/edit?usp=sharing)
