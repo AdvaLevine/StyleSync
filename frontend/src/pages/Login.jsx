@@ -1,5 +1,5 @@
 import React from "react";
-import "../assets/styles/login.css";  // Import styles
+import "../assets/styles/Login.css";
 import logo from "../assets/images/Style_Sync_Logo.png";  // Update with your actual logo path
 
 const Login = () => {
@@ -14,7 +14,7 @@ const Login = () => {
       <div className="login-box">
         {/* Login Title */}
         <h2>Login</h2>
-        <p className="subtitle">Sign in to continue.</p>
+        <p className="subtitle">Sign in to continue</p>
 
         {/* Login Form */}
         <form>
