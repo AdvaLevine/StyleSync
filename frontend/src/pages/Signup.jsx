@@ -1,17 +1,17 @@
 import React from "react";
-//import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "../assets/styles/Signup.css";  
 
 const Signup = () => {
   return (
     <div className="signup-container">
       {/* Back Button */}
-      <a to="/login" className="back-button">←</a>
+      <Link to="/" className="back-button">←</Link>
 
       {/* Signup Box */}
       <div className="signup-box">
         <h2>Create Account</h2>
-        <p className="subtitle">Already Registered? <a to="/login"><br></br>Login Here</a></p>
+        <p className="subtitle">Already Registered? <Link to="/login"><br></br>Login Here</Link></p>
 
         <form>
           <label>Name</label>

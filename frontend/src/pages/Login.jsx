@@ -1,6 +1,7 @@
 import React from "react";
 import "../assets/styles/Login.css";
-import logo from "../assets/images/Style_Sync_Logo.png";  // Update with your actual logo path
+import logo from "../assets/images/Style_Sync_Logo.png";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   return (
@@ -31,7 +32,7 @@ const Login = () => {
         <div className="links">
           <a href="https://www.google.com/">Forgot Password?</a>
           <div></div>
-          <a href="https://www.google.com/">Signup!</a>
+          <Link to="/signup">Signup!</Link>
         </div>
       </div>
     </div>

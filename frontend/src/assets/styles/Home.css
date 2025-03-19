@@ -1,0 +1,103 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* Ensure full height */
+    background-color: #E7E7E7; /* Set background at body level */
+}
+
+.header-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #D0CFCF;
+    padding: 20px 20px;
+    gap: 10px;
+}
+
+.header-container button {
+    background-color: #1a1a1a; /* Dark background */
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    width: auto;
+    position: absolute;
+    top: 1%;
+    left: 1%;
+}
+
+.header-container button:hover {
+    background-color: #000; /* Darker on hover */
+}
+
+.header-container h1 {
+    font-size: 40px;
+    font-weight: bold;
+    color: black;
+    margin: 0;
+}
+
+/*Body-Container*/
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+/* Header inside body-container */
+.main-container h1 {
+    font-size: 42px;
+    font-weight: bold;
+    color: #121212; /* Dark text */
+    margin-bottom: 20px;
+}
+
+/* Button styling */
+.main-container button {
+    background-color: #121212; /* Black background */
+    color: #ffffff; /* White text */
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    padding: 15px 40px;
+    width: 250px; /* Fixed width */
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.main-container button:hover {
+    background-color: #333333; /* Slightly lighter black on hover */
+}
+
+/* Settings button (extra spacing) */
+.main-container button:last-of-type {
+    margin-top: 40px;
+}
+
+/* Logo styling */
+.home-container .logo {
+    display: flex;
+    bottom: 1%;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    margin-top: 30px;
+}
+
+/* Footer inside body-container */
+.home-container h5 {
+    position: fixed;
+    bottom: 10px;  /* Distance from the bottom */
+    left: 10px;    /* Distance from the left */
+    font-size: 12px;
+    color: #121212;
+    margin: 0;
+}
