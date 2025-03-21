@@ -1,5 +1,6 @@
 import React from "react";
 import "../assets/styles/Home.css";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   return (
@@ -11,11 +12,11 @@ const Home = () => {
 
       <div className="main-container">
         <h1>Hello &lt;username&gt;!</h1>
-        <button>Outfit Recommendation</button>
-        <button>View Wardrobe</button>
-        <button>Create Wardrobe</button>
-        <button>Add Item</button>
-        <button>Settings</button>
+        <Link to="/outfit-recommendation"><button>Outfit Recommendation</button></Link>
+        <Link to="/view-wardrobe"><button>View Wardrobe</button></Link>
+        <Link to="/create-wardrobe"><button>Create Wardrobe</button></Link>
+        <Link to="/add-item"><button>Add Item</button></Link>
+        <Link to="/settings"><button>Settings</button></Link>
       </div>
 
       {/*Copyright */}
