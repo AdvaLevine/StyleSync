@@ -1,17 +1,26 @@
 html, body {
     margin: 0;
     padding: 0;
-    height: 100%; /* Ensure full height */
-    background-color: #E7E7E7; /* Set background at body level */
+    height: 100%; 
+    width: 100%;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    display: flex;
+    flex-direction: column;
+    background-color: #E7E7E7; 
+    font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
 .header-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #D0CFCF;
-    padding: 20px 20px;
+    background-color: #a3c0c4;
+    padding: 15px 15px;
     gap: 10px;
+    position: fixed; /* Fix the header at the top */
+    top: 0;
+    width: 100%;
+    z-index: 10; /* Ensure it stays above other content */
 }
 
 .header-container button {
@@ -27,26 +36,33 @@ html, body {
     position: absolute;
     top: 1%;
     left: 1%;
+    font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
 .header-container button:hover {
-    background-color: #000; /* Darker on hover */
+    background-color: #333333; /* Darker on hover */
 }
 
+
 .header-container h1 {
-    font-size: 40px;
+    font-size: 30px;
     font-weight: bold;
-    color: black;
+    color: #809699;
     margin: 0;
 }
 
 /*Body-Container*/
 .main-container {
+    flex-grow: 1; 
+    min-height: 81vh; /* Ensures it's at least 70% of the viewport */
+    background-color: #cde6e9; /* Light gray background */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 15px;
+    gap: 10px;
+    padding-top: 20px; /* Adds space from the fixed header */
+    padding-bottom: 50px; /* Adds space for the footer */
 }
 
 /* Header inside body-container */
@@ -54,7 +70,8 @@ html, body {
     font-size: 42px;
     font-weight: bold;
     color: #121212; /* Dark text */
-    margin-bottom: 20px;
+    margin-bottom: 50px;
+    padding-top: 50px; /* Adjust space to account for fixed header */
 }
 
 /* Button styling */
@@ -69,7 +86,9 @@ html, body {
     width: 250px; /* Fixed width */
     text-align: center;
     cursor: pointer;
+    margin-bottom: 10px;
     transition: background 0.3s ease;
+    font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
 .main-container button:hover {
@@ -78,7 +97,7 @@ html, body {
 
 /* Settings button (extra spacing) */
 .main-container button:last-of-type {
-    margin-top: 40px;
+    margin-top: 5px;
 }
 
 /* Logo styling */
@@ -92,12 +111,13 @@ html, body {
     margin-top: 30px;
 }
 
-/* Footer inside body-container */
-.home-container h5 {
-    position: fixed;
-    bottom: 10px;  /* Distance from the bottom */
-    left: 10px;    /* Distance from the left */
-    font-size: 12px;
-    color: #121212;
-    margin: 0;
+.footer {
+    width: 100%;  
+    text-align: center;
+    padding: 10px;
+    background-color: #a3c0c4;
+    color: #809699;
+    font-size: 14px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    
 }
