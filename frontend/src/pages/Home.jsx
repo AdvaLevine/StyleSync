@@ -19,8 +19,10 @@ const Home = () => {
         <Link to="/settings"><button>Settings</button></Link>
       </div>
 
-      {/*Copyright */}
-      <h5>© Made By Adva Levine and Tal Dor</h5>
+      {/* Footer */}
+      <footer className="footer">
+        <h5>© Made By Adva Levine and Tal Dor</h5>
+      </footer>
     </div>
   );
 };
