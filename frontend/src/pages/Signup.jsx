@@ -1,8 +1,51 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "../assets/styles/Signup.css";  
+import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import UserPool from "../aws/UserPool";
+import { CognitoUserAttribute } from 'amazon-cognito-identity-js';
 
 const Signup = () => {
+  const [name, setName] = useState();
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
+  const [dob, setDob] = useState();
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState();
+  const navigate = useNavigate();
+
+  /* Sign-up Logic */
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setError(null);
+    setIsPending(true);
+  
+    // Cognito user attributes
+    const attributeList = [
+      new CognitoUserAttribute({ Name: "name", Value: name }),
+      new CognitoUserAttribute({ Name: "birthdate", Value: dob }),
+      new CognitoUserAttribute({ Name: "email", Value: email }),
+    ];
+  
+    // Sign up user using Cognito User Pool
+    UserPool.signUp(email, password, attributeList, null, (err, result) => {
+      setIsPending(false);
+      if (err) {
+        const message = err.message.includes(":")
+        ? err.message.split(":").slice(1).join(":").trim()
+        : err.message;
+
+        setError(message);
+        return;
+      }
+  
+      // Navigate to confirmation or home page with user details
+      const cognitoUser = result.user;
+      navigate("/", { state: { userId: cognitoUser.getUsername() }});
+    });
+  };
+
   return (
     <div className="signup-container">
       {/* Back Button */}
@@ -13,20 +56,22 @@ const Signup = () => {
         <h2>Create Account</h2>
         <p className="subtitle">Already Registered? <Link to="/login"><br></br>Login Here</Link></p>
 
-        <form>
+        <form onSubmit={handleSubmit}>
           <label>Name</label>
-          <input type="text" placeholder="Enter your name" required />
+          <input type="text" placeholder="Enter your name" required onChange={(e) => setName(e.target.value)}/>
 
           <label>Email</label>
-          <input type="email" placeholder="Enter your email" required />
+          <input type="email" placeholder="Enter your email" required onChange={(e) => setEmail(e.target.value)}/>
 
           <label>Password</label>
-          <input type="password" placeholder="********" required />
+          <input type="password" placeholder="********" required onChange={(e) => setPassword(e.target.value)}/>
 
           <label>Date of Birth</label>
-          <input type="date" required />
+          <input type="date" required value={dob} onChange={(e) => setDob(e.target.value)}/>
 
           <button type="submit">Sign up</button>
+          {isPending && <h1>Loading...</h1>} 
+          {error && <p className="error-message">{error}</p>}
         </form>
       </div>
     </div>

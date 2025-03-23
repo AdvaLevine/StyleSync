@@ -103,3 +103,7 @@ html, body {
     background: #333;
   }
   
+  .error-message {
+    color: rgb(25, 179, 179);
+    margin-top: 10px;
+  }
