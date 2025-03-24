@@ -55,7 +55,7 @@ const Login = () => {
       <div className="logo-container">
           <img src={logo} alt="StyleSync Logo" className="logo" />
         </div>
-      
+       
       {/* Login Box */}
       <div className="login-box">
         {/* Login Title */}
@@ -79,6 +79,7 @@ const Login = () => {
           <a href="https://www.google.com/">Forgot Password?</a>
           <Link to="/signup">Sign up!</Link>
         </div>
+        
       </div>
     </div>
   );
