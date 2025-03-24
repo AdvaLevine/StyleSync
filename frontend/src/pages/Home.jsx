@@ -1,8 +1,12 @@
 import React from "react";
 import "../assets/styles/Home.css";
 import { Link } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
 
 const Home = () => {
+  const location = useLocation();
+  const name = location.state?.name;
+
   return (
     <div className="home-container">
       <div className="header-container">
@@ -11,7 +15,8 @@ const Home = () => {
       </div>
 
       <div className="main-container">
-        <h1>Hello &lt;username&gt;!</h1>
+        <h1>{"Hello " + name}</h1>
+
         <Link to="/outfit-recommendation"><button>Outfit Recommendation</button></Link>
         <Link to="/view-wardrobe"><button>View Wardrobe</button></Link>
         <Link to="/create-wardrobe"><button>Create Wardrobe</button></Link>

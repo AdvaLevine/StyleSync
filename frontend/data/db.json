@@ -1,0 +1,123 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Alice Johnson",
+      "email": "alice.johnson@example.com",
+      "password": "alice123",
+      "date_of_birth": "1990-05-14"
+    },
+    {
+      "id": "2",
+      "name": "Bob Smith",
+      "email": "bob.smith@example.com",
+      "password": "bobSecure!",
+      "date_of_birth": "1985-09-22"
+    },
+    {
+      "id": "3",
+      "name": "Charlie Nguyen",
+      "email": "charlie.nguyen@example.com",
+      "password": "charliePass99",
+      "date_of_birth": "1993-12-08"
+    },
+    {
+      "id": "4",
+      "name": "Diana Lee",
+      "email": "diana.lee@example.com",
+      "password": "dianaLee2020",
+      "date_of_birth": "2000-03-30"
+    },
+    {
+      "id": "d5dd",
+      "name": "taldor",
+      "email": "tal@gmail.com",
+      "password": "052595359353",
+      "dob": "2025-03-14"
+    },
+    {
+      "id": "2453",
+      "name": "taldor",
+      "email": "tal@gmail.com",
+      "password": "052595359353",
+      "dob": "2025-03-14"
+    },
+    {
+      "id": "5c67",
+      "name": "taldor",
+      "email": "tal@gmail.com",
+      "password": "052595359353",
+      "dob": "2025-03-14"
+    },
+    {
+      "id": "69bd",
+      "name": "taldor",
+      "email": "tal@gmail.com",
+      "password": "052595359353",
+      "dob": "2025-03-14"
+    },
+    {
+      "id": "ff61",
+      "name": "taldor",
+      "email": "tal@gmail.com",
+      "password": "052595359353",
+      "dob": "2025-03-14"
+    },
+    {
+      "id": "1ef0",
+      "name": "taldor",
+      "email": "tal@gmail.com",
+      "password": "052595359353",
+      "dob": "2025-03-14"
+    },
+    {
+      "id": "d2dd",
+      "name": "ererer",
+      "email": "tal@gmail.com",
+      "password": "345352353",
+      "dob": "2025-03-13"
+    },
+    {
+      "id": "b6b0",
+      "name": "test",
+      "email": "test@gmail.com",
+      "password": "4532423",
+      "dob": "2025-03-21"
+    },
+    {
+      "id": "edad",
+      "name": "trterter",
+      "email": "reterter@gmail",
+      "password": "4253534534",
+      "dob": "2025-03-07"
+    },
+    {
+      "id": "3bfa",
+      "name": "TALTOOL",
+      "email": "tal@gmail.com",
+      "password": "43423432423",
+      "dob": "2025-03-20"
+    },
+    {
+      "id": "fcf7",
+      "name": "tete",
+      "email": "tal@gmail.com",
+      "password": "t4t4",
+      "dob": "2025-03-20"
+    },
+    {
+      "id": "bbf1",
+      "name": "t4t4t3",
+      "email": "grger@gmail.com",
+      "password": "34523523",
+      "dob": "2025-03-22"
+    },
+    {
+      "id": "39e0",
+      "name": "trtert",
+      "email": "tal@gmail.com",
+      "password": "3452345235",
+      "dob": "2025-03-19"
+    }
+  ]
+}
