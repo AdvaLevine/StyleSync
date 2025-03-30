@@ -1,16 +1,22 @@
 import React from "react";
 import "../assets/styles/Home.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLocation } from 'react-router-dom';
 
 const Home = () => {
   const location = useLocation();
-  const name = location.state?.name;
+  const navigate = useNavigate();
+  const name = location.state?.name || localStorage.getItem("name") || "Guest";
+
+  const handleLogout = () => {
+    localStorage.removeItem("name");
+    navigate("/");
+  };
 
   return (
     <div className="home-container">
       <div className="header-container">
-        <button>Log Out</button>
+        <button onClick={handleLogout}>Log Out</button>
         <h1>Main Menu</h1>
       </div>
 

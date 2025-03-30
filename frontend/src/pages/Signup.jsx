@@ -41,8 +41,8 @@ const Signup = () => {
       }
   
       // Navigate to confirmation or home page with user details
-      const cognitoUser = result.user;
-      navigate("/", { state: { userId: cognitoUser.getUsername() }});
+      localStorage.setItem("name", name);
+    navigate("/home", { state: { name: name } });
     });
   };
 
@@ -54,7 +54,7 @@ const Signup = () => {
       {/* Signup Box */}
       <div className="signup-box">
         <h2>Create Account</h2>
-        <p className="subtitle">Already Registered? <Link to="/login"><br></br>Login Here</Link></p>
+        <p className="subtitle">Already Registered? <Link to="/"><br></br>Login Here</Link></p>
 
         <form onSubmit={handleSubmit}>
           <label>Name</label>
@@ -67,7 +67,7 @@ const Signup = () => {
           <input type="password" placeholder="********" required onChange={(e) => setPassword(e.target.value)}/>
 
           <label>Date of Birth</label>
-          <input type="date" required value={dob} onChange={(e) => setDob(e.target.value)}/>
+          <input type="date" min="1910-01-01" max="2009-12-31" required value={dob} onChange={(e) => setDob(e.target.value)}/>
 
           <button type="submit">Sign up</button>
           {isPending && <h1>Loading...</h1>} 

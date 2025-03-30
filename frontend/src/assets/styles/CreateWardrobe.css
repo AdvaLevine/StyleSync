@@ -1,0 +1,91 @@
+/* Remove default body & html margin/padding */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* Ensure full height */
+    background-color: #E7E7E7; /* Set background at body level */
+  }
+
+/* Full-page background */
+.create-wardrobe-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #E7E7E7; /* Light gray background */
+    position: relative;
+  }
+  
+  /* Back Button */
+  .back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 24px;
+    text-decoration: none;
+    color: black;
+  }
+  
+  /* Signup Box */
+  .create-wardrobe-box {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 350px;
+  }
+  
+  /* Signup Title */
+  .create-wardrobe-box h2 {
+    font-size: 24px;
+    color: #111;
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+  
+  /* Form Fields */
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+  }
+  
+  label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #444;
+  }
+  
+  input {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background-color: #d9d9d9;
+    font-size: 14px;
+  }
+  
+  button {
+    width: 100%;
+    padding: 17px;
+    background: black;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  button:hover {
+    background: #333;
+  }
+  
+  .error-message {
+    color: rgb(25, 179, 179);
+    margin-top: 10px;
+  }
