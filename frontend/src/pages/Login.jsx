@@ -6,8 +6,8 @@ import { CognitoUser, AuthenticationDetails } from 'amazon-cognito-identity-js';
 import userPool from "../aws/UserPool";
 
 const Login = () => {
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -65,11 +65,19 @@ const Login = () => {
         {/* Login Form */}
         <form onSubmit={handleLogin}>
           <label >Email</label>
-          <input type="text" placeholder="Enter your email" required onChange={(e) => setEmail(e.target.value)}/>
-
+          <input type="text" 
+          placeholder={email? "" : "Enter your email"}
+          required 
+          onFocus={() => setEmail(" ")}  
+          onBlur={(e) => !e.target.value.trim() && setEmail("")} 
+          onChange={(e) => setEmail(e.target.value)}/>
           <label >Password</label>
-          <input type="password" placeholder="********" required onChange={(e) => setPassword(e.target.value)}/>
-
+          <input type="password" 
+          placeholder={password ? "" : "********"} 
+          required 
+          onFocus={() => setPassword(" ")}
+          onBlur={(e) => !e.target.value.trim() && setPassword("")}
+          onChange={(e) => setPassword(e.target.value)}/>
           <button type="submit">Sign in</button>
           {error && <p className="error-message">{error}</p>}
         </form>
