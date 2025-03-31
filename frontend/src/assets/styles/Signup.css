@@ -4,6 +4,7 @@ html, body {
     padding: 0;
     height: 100%; /* Ensure full height */
     background-color: #E7E7E7; /* Set background at body level */
+    font-family: Georgia, 'Times New Roman', Times, serif;
   }
 
 /* Full-page background */
@@ -13,7 +14,7 @@ html, body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #E7E7E7; /* Light gray background */
+    background-color: #cde6e9; /* Light gray background */
     position: relative;
   }
   
@@ -22,11 +23,18 @@ html, body {
     position: absolute;
     top: 20px;
     left: 20px;
-    font-size: 24px;
+    font-size: 28px;
     text-decoration: none;
     color: black;
+    border-radius: 5px;
+    transition: transform 0.2s ease, color 0.2s ease;
   }
   
+  .back-button:hover {
+    color: #007bff; /* Change color on hover */
+    transform: scale(1.1); /* Slightly enlarge on hover */
+  }
+
   /* Signup Box */
   .signup-box {
     background: white;
@@ -35,6 +43,10 @@ html, body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     text-align: center;
     width: 350px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
   }
   
   /* Signup Title */
@@ -43,6 +55,8 @@ html, body {
     color: #111;
     margin-bottom: 5px;
     font-weight: bold;
+    text-align: center ;
+    margin-top: 0;
   }
   
   /* Subtitle */
