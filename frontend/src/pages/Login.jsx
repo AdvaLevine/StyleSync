@@ -60,7 +60,7 @@ const Login = () => {
       <div className="login-box">
         {/* Login Title */}
         <h2>Login</h2>
-        <p className="login-subtitle">Sign in to continue</p>
+        <p className="login-subtitle">Hello, welcome back!</p>
 
         {/* Login Form */}
         <form onSubmit={handleLogin}>
@@ -84,8 +84,8 @@ const Login = () => {
 
         {/* Forgot Password & Signup Links */}
         <div className="links">
-          <a href="https://www.google.com/">Forgot Password?</a>
-          <Link to="/signup">Sign up!</Link>
+          <a href="https://www.google.com/">Forgot Password?</a> 
+          <Link to="/signup" className="link-signup">Sign up!</Link>
         </div>
         
       </div>
