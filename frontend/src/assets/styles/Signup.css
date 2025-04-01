@@ -51,12 +51,11 @@ html, body {
   
   /* Signup Title */
   .signup-box h2 {
-    font-size: 24px;
+    font-size: 25px;
     color: #111;
-    margin-bottom: 5px;
     font-weight: bold;
     text-align: center ;
-    margin-top: 0;
+    margin-top: 5px;
   }
   
   /* Subtitle */
@@ -100,8 +99,8 @@ html, body {
   }
   
   /* Signup Button */
-  button {
-    width: 107%;
+  .signup-box button {
+    width: 100%;
     padding: 12px;
     background: black;
     color: white;
@@ -110,14 +109,24 @@ html, body {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 20px;
+    padding: 12px;
   }
   
-  button:hover {
+  .signup-box button:hover {
     background: #333;
   }
   
   .error-message {
     color: rgb(25, 179, 179);
     margin-top: 10px;
+  }
+
+  p.subtitle{
+    margin-top: 10px;
+    margin-bottom: 5px;
+  }
+  p.subtitle-top{
+    margin-top: 0;
+    margin-bottom: 10px;
   }

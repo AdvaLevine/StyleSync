@@ -54,7 +54,7 @@ const Signup = () => {
       {/* Signup Box */}
       <div className="signup-box">
         <h2>Create Account</h2>
-
+        <p className="subtitle subtitle-top">Sign up to get started!</p>
         <form onSubmit={handleSubmit}>
           <label>Name</label>
           <input type="text" 
@@ -93,7 +93,7 @@ const Signup = () => {
           {isPending && <h1>Loading...</h1>} 
           {error && <p className="error-message">{error}</p>}
         </form>
-        <p className="subtitle">Already have an account? <Link to="/">Log in</Link></p>
+        <p className="subtitle">Already have an account? <Link to="/"> Log in</Link></p>
       </div>
     </div>
   );
