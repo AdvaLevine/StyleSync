@@ -109,7 +109,7 @@
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    margin-top: 20px;
+    margin-top: 10px;
     font-family: Georgia, 'Times New Roman', Times, serif;
   }
   
@@ -119,11 +119,17 @@
   
   /* Links */
   .links {
-    margin-top: 15px;
-    text-align: center;
+    margin-top: 2px;
+    text-align: right;
     color: #666;
   }
   
+  .forgot-password {
+    color: #666;
+    font-weight: bold;
+    font-size: 10px;
+  }
+
   .links a {
     display: block;
     font-size: 12px;

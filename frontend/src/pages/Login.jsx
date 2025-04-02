@@ -78,13 +78,13 @@ const Login = () => {
           onFocus={() => setPassword(" ")}
           onBlur={(e) => !e.target.value.trim() && setPassword("")}
           onChange={(e) => setPassword(e.target.value)}/>
+          <a className="forgot-password" href="https://www.google.com/">Forgot Password?</a> 
           <button type="submit">Sign in</button>
           {error && <p className="error-message">{error}</p>}
         </form>
 
         {/* Forgot Password & Signup Links */}
         <div className="links">
-          <a href="https://www.google.com/">Forgot Password?</a> 
           <Link to="/signup" className="link-signup">Sign up!</Link>
         </div>
         
