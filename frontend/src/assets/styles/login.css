@@ -110,6 +110,7 @@
     border-radius: 8px;
     cursor: pointer;
     margin-top: 10px;
+    margin-bottom: 5px;
     font-family: Georgia, 'Times New Roman', Times, serif;
   }
   
@@ -216,6 +217,9 @@
   .links a {
     font-size: 11px;
   }
+  .forgot-password {
+    font-size: 9px;
+  }
 }
 
 /* 🔹 very small screens*/
@@ -255,6 +259,9 @@
 
   .links a {
     font-size: 10px;
+  }
+  .forgot-password {
+    font-size: 8px;
   }
 }
 

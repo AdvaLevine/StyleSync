@@ -126,8 +126,104 @@ html, body {
     margin-top: 10px;
     margin-bottom: 5px;
   }
-  
+
   p.subtitle-top{
     margin-top: 0;
     margin-bottom: 10px;
   }
+
+/* ---------------------------------------------- */
+/* 🔹 Responsive Adjustments for Signup Screen */
+/* ---------------------------------------------- */
+
+/* Medium screens (e.g., tablets & small laptops) */
+@media screen and (max-width: 1599px) {
+  .signup-box {
+    width: 330px;
+    padding: 1.5rem;
+  }
+
+  .signup-box h2 {
+    font-size: 22px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+  }
+
+  input {
+    font-size: 12px;
+  }
+  
+  .signup-box button {
+    font-size: 14px;
+  }
+
+  p.subtitle{
+    font-size: 12px;
+  }
+}
+
+/* 🔹 Phone (small screens: 480px and below) */
+@media screen and (max-width: 480px) {
+  .signup-box {
+    width: 300px;
+    padding: 1.2rem;
+  }
+
+  .signup-box h2 {
+    font-size: 18px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+  }
+
+  .signup-form label{
+    font-size: 12px;
+  }
+
+  input.signup-input {
+    font-size: 10px;
+    padding: 10px;
+  }
+
+  .signup-box button {
+    font-size: 12px;
+  }
+
+  p.subtitle{
+    font-size: 10px;
+  }
+}
+
+/* 🔹 Very small screens (e.g., 375px and below) */
+@media screen and (max-width: 375px) {
+  .signup-box {
+    width: 280px;
+    padding: 1rem;
+  }
+  .signup-box h2 {
+    font-size: 16px;
+  }
+  .subtitle {
+    font-size: 10px;
+  }
+
+  .signup-form label{
+    font-size: 10px;
+  }
+
+  input.signup-input {
+    font-size: 10px;
+    padding: 10px;
+  }
+  .signup-box button {
+    font-size: 12px;
+    padding: 10px;
+  }
+
+  p.subtitle{
+    font-size: 10px;
+  }
+}

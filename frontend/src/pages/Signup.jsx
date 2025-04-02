@@ -55,9 +55,9 @@ const Signup = () => {
       <div className="signup-box">
         <h2>Create Account</h2>
         <p className="subtitle subtitle-top">Sign up to get started!</p>
-        <form onSubmit={handleSubmit}>
+        <form  className="signup-form" onSubmit={handleSubmit}>
           <label>Name</label>
-          <input type="text" 
+          <input className="signup-input" type="text" 
            placeholder={name ? "" : "Enter your name"} 
           required 
           onFocus={() => setName(" ")} 
@@ -67,7 +67,7 @@ const Signup = () => {
           />
 
           <label>Email</label>
-          <input type="email" 
+          <input className="signup-input" type="email" 
           placeholder={email ? "" : "Enter your email"}
           required
           onFocus={() => setEmail(" ")} 
@@ -77,7 +77,7 @@ const Signup = () => {
           />
 
           <label>Password</label>
-          <input type="password" 
+          <input className="signup-input" type="password" 
           placeholder={password ? "" : "********"}
           required
           onFocus={() => setPassword(" ")} // Temporarily set a space to hide placeholder
@@ -87,7 +87,7 @@ const Signup = () => {
           />
 
           <label>Date of Birth</label>
-          <input type="date" min="1910-01-01" max="2009-12-31" required value={dob} onChange={(e) => setDob(e.target.value)}/>
+          <input className="signup-input" type="date" min="1910-01-01" max="2009-12-31" required value={dob} onChange={(e) => setDob(e.target.value)}/>
 
           <button type="submit">Sign up</button>
           {isPending && <h1>Loading...</h1>} 
