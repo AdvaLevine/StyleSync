@@ -7,9 +7,9 @@ import UserPool from "../aws/UserPool";
 import { CognitoUserAttribute } from 'amazon-cognito-identity-js';
 
 const Signup = () => {
-  const [name, setName] = useState();
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [dob, setDob] = useState();
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState();
@@ -49,30 +49,51 @@ const Signup = () => {
   return (
     <div className="signup-container">
       {/* Back Button */}
-      <Link to="/" className="back-button">←</Link>
+      <Link to="/" className="back-button">⟵</Link>
 
       {/* Signup Box */}
       <div className="signup-box">
         <h2>Create Account</h2>
-        <p className="subtitle">Already Registered? <Link to="/"><br></br>Login Here</Link></p>
-
-        <form onSubmit={handleSubmit}>
+        <p className="subtitle subtitle-top">Sign up to get started!</p>
+        <form  className="signup-form" onSubmit={handleSubmit}>
           <label>Name</label>
-          <input type="text" placeholder="Enter your name" required onChange={(e) => setName(e.target.value)}/>
+          <input className="signup-input" type="text" 
+           placeholder={name ? "" : "Enter your name"} 
+          required 
+          onFocus={() => setName(" ")} 
+          onBlur={(e) => !e.target.value.trim() && setName("")}
+          onChange={(e) => setName(e.target.value)}
+          value={name}
+          />
 
           <label>Email</label>
-          <input type="email" placeholder="Enter your email" required onChange={(e) => setEmail(e.target.value)}/>
+          <input className="signup-input" type="email" 
+          placeholder={email ? "" : "Enter your email"}
+          required
+          onFocus={() => setEmail(" ")} 
+          onBlur={(e) => !e.target.value.trim() && setEmail("")} 
+          onChange={(e) => setEmail(e.target.value)}
+          value={email}
+          />
 
           <label>Password</label>
-          <input type="password" placeholder="********" required onChange={(e) => setPassword(e.target.value)}/>
+          <input className="signup-input" type="password" 
+          placeholder={password ? "" : "********"}
+          required
+          onFocus={() => setPassword(" ")} // Temporarily set a space to hide placeholder
+          onBlur={(e) => !e.target.value.trim() && setPassword("")} // Restore if empty
+          onChange={(e) => setPassword(e.target.value)}
+          value={password}
+          />
 
           <label>Date of Birth</label>
-          <input type="date" min="1910-01-01" max="2009-12-31" required value={dob} onChange={(e) => setDob(e.target.value)}/>
+          <input className="signup-input" type="date" min="1910-01-01" max="2009-12-31" required value={dob} onChange={(e) => setDob(e.target.value)}/>
 
           <button type="submit">Sign up</button>
           {isPending && <h1>Loading...</h1>} 
           {error && <p className="error-message">{error}</p>}
         </form>
+        <p className="subtitle">Already have an account? <Link to="/"> Log in</Link></p>
       </div>
     </div>
   );

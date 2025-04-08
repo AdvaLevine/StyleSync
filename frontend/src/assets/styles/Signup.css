@@ -4,6 +4,7 @@ html, body {
     padding: 0;
     height: 100%; /* Ensure full height */
     background-color: #E7E7E7; /* Set background at body level */
+    font-family: Georgia, 'Times New Roman', Times, serif;
   }
 
 /* Full-page background */
@@ -13,7 +14,7 @@ html, body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #E7E7E7; /* Light gray background */
+    background-color: #cde6e9; /* Light gray background */
     position: relative;
   }
   
@@ -22,11 +23,18 @@ html, body {
     position: absolute;
     top: 20px;
     left: 20px;
-    font-size: 24px;
+    font-size: 28px;
     text-decoration: none;
     color: black;
+    border-radius: 5px;
+    transition: transform 0.2s ease, color 0.2s ease;
   }
   
+  .back-button:hover {
+    color: #007bff; /* Change color on hover */
+    transform: scale(1.1); /* Slightly enlarge on hover */
+  }
+
   /* Signup Box */
   .signup-box {
     background: white;
@@ -35,14 +43,19 @@ html, body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     text-align: center;
     width: 350px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
   }
   
   /* Signup Title */
   .signup-box h2 {
-    font-size: 24px;
+    font-size: 25px;
     color: #111;
-    margin-bottom: 5px;
     font-weight: bold;
+    text-align: center ;
+    margin-top: 5px;
   }
   
   /* Subtitle */
@@ -86,8 +99,8 @@ html, body {
   }
   
   /* Signup Button */
-  button {
-    width: 107%;
+  .signup-box button {
+    width: 100%;
     padding: 12px;
     background: black;
     color: white;
@@ -96,10 +109,11 @@ html, body {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 20px;
+    padding: 12px;
   }
   
-  button:hover {
+  .signup-box button:hover {
     background: #333;
   }
   
@@ -107,3 +121,109 @@ html, body {
     color: rgb(25, 179, 179);
     margin-top: 10px;
   }
+
+  p.subtitle{
+    margin-top: 10px;
+    margin-bottom: 5px;
+  }
+
+  p.subtitle-top{
+    margin-top: 0;
+    margin-bottom: 10px;
+  }
+
+/* ---------------------------------------------- */
+/* 🔹 Responsive Adjustments for Signup Screen */
+/* ---------------------------------------------- */
+
+/* Medium screens (e.g., tablets & small laptops) */
+@media screen and (max-width: 1599px) {
+  .signup-box {
+    width: 330px;
+    padding: 1.5rem;
+  }
+
+  .signup-box h2 {
+    font-size: 22px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+  }
+
+  input {
+    font-size: 12px;
+  }
+  
+  .signup-box button {
+    font-size: 14px;
+  }
+
+  p.subtitle{
+    font-size: 12px;
+  }
+}
+
+/* 🔹 Phone (small screens: 480px and below) */
+@media screen and (max-width: 480px) {
+  .signup-box {
+    width: 300px;
+    padding: 1.2rem;
+  }
+
+  .signup-box h2 {
+    font-size: 18px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+  }
+
+  .signup-form label{
+    font-size: 12px;
+  }
+
+  input.signup-input {
+    font-size: 10px;
+    padding: 10px;
+  }
+
+  .signup-box button {
+    font-size: 12px;
+  }
+
+  p.subtitle{
+    font-size: 10px;
+  }
+}
+
+/* 🔹 Very small screens (e.g., 375px and below) */
+@media screen and (max-width: 375px) {
+  .signup-box {
+    width: 280px;
+    padding: 1rem;
+  }
+  .signup-box h2 {
+    font-size: 16px;
+  }
+  .subtitle {
+    font-size: 10px;
+  }
+
+  .signup-form label{
+    font-size: 10px;
+  }
+
+  input.signup-input {
+    font-size: 10px;
+    padding: 10px;
+  }
+  .signup-box button {
+    font-size: 12px;
+    padding: 10px;
+  }
+
+  p.subtitle{
+    font-size: 10px;
+  }
+}
