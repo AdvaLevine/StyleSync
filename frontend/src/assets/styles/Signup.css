@@ -16,8 +16,18 @@ html, body {
     height: 100vh;
     background-color: #cde6e9; /* Light gray background */
     position: relative;
+    z-index: 1;
   }
-  
+
+  .background-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    min-width: 100vw;
+    min-height: 100vh;
+    object-fit: cover;
+    z-index: -1; /* Ensure the video stays behind everything else */
+  }
   /* Back Button */
   .back-button {
     position: absolute;
@@ -61,7 +71,7 @@ html, body {
   /* Subtitle */
   .subtitle {
     font-size: 14px;
-    color: #666;
+    color: #000000;
     margin-bottom: 20px;
   }
   
@@ -89,21 +99,25 @@ html, body {
     color: #444;
   }
   
-  input {
+  input.signup-input {
     width: 100%;
     padding: 12px;
     border: none;
     border-radius: 8px;
-    background-color: #d9d9d9;
+    background-color: #cde6e9;
     font-size: 14px;
   }
+  
+  input:focus::placeholder {
+    opacity: 0;  /* Make the placeholder invisible */
+  }  
   
   /* Signup Button */
   .signup-box button {
     width: 100%;
     padding: 12px;
-    background: black;
-    color: white;
+    background: #98d3db;
+    color: black;
     font-size: 16px;
     font-weight: bold;
     border: none;
@@ -114,7 +128,7 @@ html, body {
   }
   
   .signup-box button:hover {
-    background: #333;
+    background: #badde7;
   }
   
   .error-message {
