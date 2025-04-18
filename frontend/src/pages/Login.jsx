@@ -61,6 +61,7 @@ const Login = () => {
         {/* Login Title */}
         <h2>Login</h2>
         <p className="login-subtitle">Hello, welcome back!</p>
+        {error && <p className="error-message">{error}</p>}
 
         {/* Login Form */}
         <form onSubmit={handleLogin}>
@@ -80,7 +81,6 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}/>
           <a className="forgot-password" href="https://www.google.com/">Forgot Password?</a> 
           <button type="submit">Sign in</button>
-          {error && <p className="error-message">{error}</p>}
         </form>
 
         {/* Forgot Password & Signup Links */}

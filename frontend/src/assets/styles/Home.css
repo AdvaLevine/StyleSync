@@ -6,7 +6,7 @@ html, body {
     overflow-x: hidden; /* Prevent horizontal scrolling */
     display: flex;
     flex-direction: column;
-    background-color: #E7E7E7; 
+    background-color: #cde6e9; 
     font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
