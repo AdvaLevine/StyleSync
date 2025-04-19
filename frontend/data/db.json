@@ -5,14 +5,70 @@
       "name": "Alice",
       "email": "alice@example.com",
       "password_hash": "hashed_password",
-      "created_at": "2024-01-01T10:00:00Z"
+      "created_at": "2024-01-01T10:00:00Z",
+      "id": "c11b"
     }
   ],
   "wardrobe": [
     {
       "wardrobe_id": 1,
       "user_id": 1,
-      "num_of_doors": 5
+      "num_of_doors": 5,
+      "id": "d107"
+    },
+    {
+      "id": "531b",
+      "user_id": "74a84478-d031-7027-7a43-39a39ea9b74a",
+      "num_of_doors": 7,
+      "name": "Tal's Kingdom"
+    },
+    {
+      "id": "e3b2",
+      "user_id": "74a84478-d031-7027-7a43-39a39ea9b74a",
+      "num_of_doors": 7,
+      "name": "Tal's Kingdom"
+    },
+    {
+      "id": "3b60",
+      "user_id": "74a84478-d031-7027-7a43-39a39ea9b74a",
+      "num_of_doors": 5,
+      "name": "Tal's Kingdom"
+    },
+    {
+      "id": "51ba",
+      "user_id": "74a84478-d031-7027-7a43-39a39ea9b74a",
+      "num_of_doors": 5,
+      "name": "Tal's Kingdom"
+    },
+    {
+      "id": "0a76",
+      "user_id": "74a84478-d031-7027-7a43-39a39ea9b74a",
+      "num_of_doors": 5,
+      "name": "Tal's Kingdom"
+    },
+    {
+      "id": "feb0",
+      "user_id": "74a84478-d031-7027-7a43-39a39ea9b74a",
+      "num_of_doors": 5,
+      "name": "Tal's Kingdom"
+    },
+    {
+      "id": "c2b9",
+      "user_id": "74a84478-d031-7027-7a43-39a39ea9b74a",
+      "num_of_doors": 5,
+      "name": "Tal's Kingdom"
+    },
+    {
+      "id": "e517",
+      "user_id": "74a84478-d031-7027-7a43-39a39ea9b74a",
+      "num_of_doors": 5,
+      "name": "Tal's Kingdom"
+    },
+    {
+      "id": "507b",
+      "user_id": "74a84478-d031-7027-7a43-39a39ea9b74a",
+      "num_of_doors": 2,
+      "name": "telador"
     }
   ],
   "item": [
@@ -20,6 +76,7 @@
       "wardrobe_id": 1,
       "item_id": 101,
       "user_id": 1,
+      "shelf_num": 1,
       "name": "Blue Jacket",
       "type": "Jacket",
       "color": "Blue",
@@ -28,7 +85,8 @@
       "image_url": "https://example.com/blue-jacket.jpg",
       "last_used": "2024-03-01",
       "usage_count": 5,
-      "status": "Available"
+      "status": "Available",
+      "id": "f9b6"
     }
   ],
   "calendar_events": [
@@ -39,7 +97,8 @@
       "date": "2024-04-15",
       "time": "14:00:00",
       "location": "Downtown Office",
-      "outfit_suggestion": "Blue Jacket, Black Pants"
+      "outfit_suggestion": "Blue Jacket, Black Pants",
+      "id": "69f2"
     }
   ],
   "weather_data": [
@@ -49,7 +108,8 @@
       "date": "2024-04-15",
       "temperature": 18.5,
       "precipitation": "None",
-      "condition": "Sunny"
+      "condition": "Sunny",
+      "id": "393b"
     }
   ],
   "ai_recommendations": [
@@ -58,7 +118,8 @@
       "user_id": 1,
       "items": "Blue Jacket, Black Pants",
       "generated_at": "2024-04-14T20:00:00Z",
-      "context": "Business Meeting"
+      "context": "Business Meeting",
+      "id": "2cd9"
     }
   ]
 }

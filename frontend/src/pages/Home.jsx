@@ -9,6 +9,7 @@ const Home = () => {
   const name = location.state?.name || localStorage.getItem("name") || "Guest";
 
   const handleLogout = () => {
+    localStorage.removeItem("user_id");
     localStorage.removeItem("name");
     navigate("/");
   };
