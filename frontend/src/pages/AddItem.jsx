@@ -7,6 +7,7 @@ import "../assets/styles/AddItem.css";
 const AddItem = () => {
     const navigate = useNavigate();
     const [wardrobes, setWardrobes] = useState([]);
+    const [photoFile, setPhotoFile] = useState(null);
     const [fromDate, setFromDate] = useState({
         wardrobe: "",
         itemType: "",
@@ -20,8 +21,8 @@ const AddItem = () => {
     useEffect(() => {
         // Fetch the user's wardrobes from the server when the component mounts
         const fetchWardrobes = async () => {
-            const userId = localStorage.getItem("user_Id");
-            const response = await fetch(`http://localhost:5000/wardrobes/${userId}`);
+            const userId = localStorage.getItem("user_id");
+            const response = await fetch(`http://localhost:8000/wardrobe?userId=${userId}`);
             const data = await response.json();
             setWardrobes(data);
         };
@@ -49,34 +50,44 @@ const AddItem = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const userId = localStorage.getItem("user_Id");
+        const userId = localStorage.getItem("user_id");
         if (!userId) {
             alert("Please log in again – user id missing.");
             return;
         }
-        const payload = new FormData();
-        Object.entries(fromDate).forEach(([key, value]) => {
-            payload.append(key, value);
-        });
-        
-        try{
-            const res = await fetch("http://localhost:5000/add-item", {
+    
+        // Prepare data as JSON
+        const payload = {
+            user_id: userId,
+            wardrobe: fromDate.wardrobe,
+            itemType: fromDate.itemType,
+            color: fromDate.color,
+            weather: fromDate.weather,
+            door: fromDate.door,
+            shelf: fromDate.shelf,
+            photo: fromDate.photo,
+        };
+    
+        try {
+            const res = await fetch("http://localhost:8000/item", {
                 method: "POST",
-                body: payload,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
             });
-
+    
             const result = await res.json();
-            if(res.status === 200){
+    
+            if (res.ok) {  
                 alert("Item added successfully!");
                 navigate("/home");
-            }else{
+            } else {
                 alert(result.message || "Failed to add item. Please try again.");
-            }  
-        }catch(err){
-            console.error("Failed to add item:", err);
+            }
+        } catch (err) {
             alert("Could not add item – please try again.");
         }
-    };
+    };     
+    
 
     const commonOptions = ["Shirt", "Pants", "Dress", "Jacket", "Shoes", "Hat", "Scarf", "Belt", "Socks", "Gloves"];
     const colorOptions = ["Black", "White", "Red", "Blue", "Green", "Yellow", "Purple", "Pink", "Orange", "Brown"];
@@ -86,7 +97,7 @@ const AddItem = () => {
     return (
         <div className="add-item-container">
              {/* Back Button */}
-                  <Link to="/" className="back-button">⟵</Link>
+                  <Link to="/home" className="back-button">⟵</Link>
           <div className="add-item-box">
             <h2>Add Item</h2>
             <form onSubmit={handleSubmit}>
