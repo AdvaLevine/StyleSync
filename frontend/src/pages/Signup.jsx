@@ -41,8 +41,9 @@ const Signup = () => {
       }
   
       // Navigate to confirmation or home page with user details
+      localStorage.setItem("user_id", result.userSub);
       localStorage.setItem("name", name);
-    navigate("/home", { state: { name: name } });
+      navigate("/home", { state: { name: name } });
     });
   };
 

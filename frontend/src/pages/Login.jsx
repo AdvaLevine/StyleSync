@@ -35,7 +35,7 @@ const Login = () => {
           attributes.forEach(attr => {
             attrs[attr.getName()] = attr.getValue();
           });
-          
+          localStorage.setItem("user_id", attrs.sub);
           localStorage.setItem("name", attrs.name);
           navigate("/home", { state: { name: attrs.name } });
         });
