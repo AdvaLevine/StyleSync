@@ -23,14 +23,12 @@ const Home = () => {
 
       <div className="main-container">
         <h1>{"Hello " + name}</h1>
-
-        <Link to="/outfit-recommendation"><button>Outfit Recommendation</button></Link>
-        <Link to="/view-wardrobe"><button>View Wardrobe</button></Link>
         <Link to="/create-wardrobe"><button>Create Wardrobe</button></Link>
         <Link to="/add-item"><button>Add Item</button></Link>
+        <Link to="/view-wardrobe"><button>View Wardrobe</button></Link>
+        <Link to="/outfit-recommendation"><button>Outfit Recommendation</button></Link>        
         <Link to="/settings"><button>Settings</button></Link>
       </div>
-
       {/* Footer */}
       <footer className="footer">
         <h5>© Made By Adva Levine and Tal Dor</h5>
