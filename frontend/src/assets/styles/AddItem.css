@@ -151,67 +151,7 @@ html body {
     text-align: left;
   }
   
-  /* Dropdown container */
-  .dropdown {
-    position: relative;
-    width: 100%;
-  }
-  
-  /* Dropdown list */
-  .dropdown-list {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    max-height: 150px; /* Limit the height of the dropdown */
-    overflow-y: auto; /* Enable vertical scrolling */
-    background: white; /* Set a white background for the dropdown */
-    border: 1px solid #ccc; /* Add a border for clarity */
-    z-index: 1000; /* Ensure it appears above other elements */
-    margin-top: 2px; /* Add a small gap between the input and the dropdown */
-    list-style: none; /* Remove default list styling */
-    padding: 0;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for better visibility */
-  }
-  
-  /* Dropdown list item */
-  .dropdown-list li {
-    padding: 8px 12px;
-    cursor: pointer;
-  }
-  
-  /* Highlight the item on hover */
-  .dropdown-list li:hover {
-    background-color: #f0f0f0;
-  }
-  
-  /* No matches message */
-  .no-match {
-    padding: 8px 12px;
-    color: #999;
-    text-align: center;
-  }
-  
-  /* Input field inside the dropdown */
-  .dropdown input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f3f3f3;
-    font-size: 14px;
-    box-sizing: border-box;
-  }
-  
-  /* Label for the dropdown */
-  .dropdown label {
-    font-size: 14px;
-    font-weight: bold;
-    color: #444;
-    margin-bottom: 5px;
-    display: block;
-  }
-  
+ 
   @media screen and (max-width: 480px) {
     .logo-container img {
       width: 230px;

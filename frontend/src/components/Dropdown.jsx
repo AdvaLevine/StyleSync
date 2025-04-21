@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
+import './Dropdown.css'; // Import the CSS file
 
 export default function Dropdown({ options, label, placeholder, onSelect }) {
   const [inputValue, setInputValue] = useState('');
   const [showList, setShowList] = useState(false);
 
-  // Ensure options are valid strings
   const validOptions = options.filter((option) => typeof option === 'string');
 
   const filteredOptions = validOptions.filter((option) =>
@@ -13,7 +13,7 @@ export default function Dropdown({ options, label, placeholder, onSelect }) {
 
   const handleSelect = (option) => {
     setInputValue(option);
-    setShowList(false); // Hide the dropdown after selection
+    setShowList(false);
     onSelect(option);
   };
 
@@ -25,10 +25,10 @@ export default function Dropdown({ options, label, placeholder, onSelect }) {
         value={inputValue}
         onChange={(e) => {
           setInputValue(e.target.value);
-          setShowList(true); // Show the dropdown when typing
+          setShowList(true);
         }}
-        onFocus={() => setShowList(true)} // Show the dropdown when the input is focused
-        onBlur={() => setTimeout(() => setShowList(false), 200)} // Hide the dropdown when the input loses focus
+        onFocus={() => setShowList(true)}
+        onBlur={() => setTimeout(() => setShowList(false), 200)}
         placeholder={placeholder}
         required
       />

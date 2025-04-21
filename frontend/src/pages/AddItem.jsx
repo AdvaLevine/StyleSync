@@ -100,9 +100,9 @@ const AddItem = () => {
                 {step === 1 && (
                     <form>
                         <Dropdown
-                            options={wardrobes.map((w) => w.name)} // Pass wardrobe names
+                            options={wardrobes.map((w) => w.name)}
                             label="Choose Wardrobe"
-                            placeholder="Start typing wardrobe..."
+                            placeholder="Start typing wardrobe name..."
                             onSelect={(selected) => handleInputChange({ target: { name: 'wardrobe', value: selected } })}
                         />
 
@@ -124,7 +124,7 @@ const AddItem = () => {
                         />
 
                         <Dropdown
-                            options={commonOptions} // Pass item types
+                            options={commonOptions} 
                             label="Choose Item Type"
                             placeholder="Start typing item type..."
                             onSelect={(selected) => handleInputChange({ target: { name: 'itemType', value: selected } })}
