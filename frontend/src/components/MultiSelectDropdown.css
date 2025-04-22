@@ -1,0 +1,97 @@
+/* Multi-select dropdown container */
+.multi-select-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+/* Dropdown input container */
+.dropdown-input-container {
+  position: relative;
+}
+
+/* Input field */
+.multi-select-dropdown input {
+  width: 100%;
+  padding: 12px; /* Match the padding of other input boxes */
+  border: 1px solid #ccc;
+  border-radius: 8px; /* Match the border radius */
+  background-color: #f3f3f3; /* Match the background color */
+  font-size: 14px; /* Match the font size */
+  box-sizing: border-box;
+}
+
+/* Selected options container */
+.selected-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px; /* Reduce the gap between options */
+  margin-top: 5px;
+  padding: 0;
+  list-style: none;
+}
+
+/* Individual selected option */
+.selected-option {
+  background-color: #e0e0e0;
+  border: 1px solid #ccc;
+  border-radius: 3px; /* Slightly rounded corners */
+  padding: 2px 6px; 
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+}
+
+/* Remove button for selected option */
+.multi-select-dropdown .remove-option {
+    background: black; /* Black background for the button */
+    border: none; /* Remove border */
+    color: white; /* White "✕" */
+    cursor: pointer;
+    font-size: 12px; /* Adjust font size for the "✕" */
+    padding: 0; /* Remove extra padding */
+    margin: 0;
+    line-height: 1;
+    border-radius: 3px; /* Slightly rounded corners for a square look */
+    display: flex; /* Use flexbox for centering */
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+    width: 16px; /* Set a fixed width for consistency */
+    height: 16px; /* Set a fixed height for consistency */
+    box-sizing: border-box; /* Ensure padding and border are included in size */
+}
+
+/* Dropdown list */
+.dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 150px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ccc;
+  z-index: 1000;
+  margin-top: 2px;
+  list-style: none;
+  padding: 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Dropdown list item */
+.dropdown-list li {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+/* Highlight the item on hover */
+.dropdown-list li:hover {
+  background-color: #f0f0f0;
+}
+
+/* No matches message */
+.no-match {
+  padding: 8px 12px;
+  color: #999;
+  text-align: center;
+}

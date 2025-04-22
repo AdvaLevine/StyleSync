@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import "../assets/styles/AddItem.css";
 import Dropdown from '../components/Dropdown';
+import MultiSelectDropdown from '../components/MultiSelectDropdown';
 
 const AddItem = () => {
     const navigate = useNavigate();
@@ -33,20 +34,22 @@ const AddItem = () => {
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
 
+        // Validate the door field
         if (name === "door" && selectedWardrobe) {
             const maxDoors = selectedWardrobe.num_of_doors;
-            if (value > maxDoors) {
-                setErrorMessage(`The selected wardrobe only has ${maxDoors} doors.`);
+            if (value < 1 || value > maxDoors) {
+                setErrorMessage(`Please enter a door number between 1 and ${maxDoors}.`);
                 setFromDate((prev) => ({
                     ...prev,
-                    door: "", 
+                    door: "", // Clear the door field
                 }));
                 return;
             } else {
-                setErrorMessage(""); 
+                setErrorMessage(""); // Clear the error message if valid
             }
         }
 
+        // Update the state for other fields
         setFromDate((prev) => ({
             ...prev,
             [name]: files ? files[0] : value,
@@ -130,7 +133,7 @@ const AddItem = () => {
                             max={selectedWardrobe ? selectedWardrobe.num_of_doors : ""}
                             value={fromDate.door}
                             onChange={handleInputChange}
-                            disabled={!selectedWardrobe}
+                            disabled={!fromDate.wardrobe} /* Disable if no wardrobe is selected */
                             required
                         />
                         {errorMessage && <p className="error-message">{errorMessage}</p>}
@@ -143,10 +146,11 @@ const AddItem = () => {
                             min="1" 
                             value={fromDate.shelf}
                             onChange={handleInputChange}
+                            disabled={!fromDate.door} 
                             required
                         />
 
-                        <Dropdown
+                        <MultiSelectDropdown
                             options={commonOptions}
                             label="Choose Item Type"
                             placeholder="Start typing item type..."
