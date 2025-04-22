@@ -6,6 +6,8 @@ import Dropdown from '../components/Dropdown';
 const AddItem = () => {
     const navigate = useNavigate();
     const [wardrobes, setWardrobes] = useState([]);
+    const [selectedWardrobe, setSelectedWardrobe] = useState(null); // Track the selected wardrobe
+    const [errorMessage, setErrorMessage] = useState(""); // Track error messages
     const [fromDate, setFromDate] = useState({
         wardrobe: "",
         itemType: "",
@@ -13,9 +15,9 @@ const AddItem = () => {
         weather: "",
         door: "",
         shelf: "",
-        photo: null
+        photo: null,
     });
-    const [step, setStep] = useState(1); // State to track the current step
+    const [step, setStep] = useState(1);
 
     useEffect(() => {
         // Fetch the user's wardrobes from the server when the component mounts
@@ -31,20 +33,35 @@ const AddItem = () => {
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
 
-        // For color and weather, allow multiple values
-        if (name === "color" || name === "weather") {
-            setFromDate((prev) => ({
-                ...prev,
-                [name]: Array.isArray(prev[name])
-                    ? [...new Set([...prev[name], value])]
-                    : [value],
-            }));
-        } else {
-            setFromDate((prev) => ({
-                ...prev,
-                [name]: files ? files[0] : value,
-            }));
+        if (name === "door" && selectedWardrobe) {
+            const maxDoors = selectedWardrobe.num_of_doors;
+            if (value > maxDoors) {
+                setErrorMessage(`The selected wardrobe only has ${maxDoors} doors.`);
+                setFromDate((prev) => ({
+                    ...prev,
+                    door: "", 
+                }));
+                return;
+            } else {
+                setErrorMessage(""); 
+            }
         }
+
+        setFromDate((prev) => ({
+            ...prev,
+            [name]: files ? files[0] : value,
+        }));
+    };
+
+    const handleWardrobeSelect = (wardrobeName) => {
+        const wardrobe = wardrobes.find((w) => w.name === wardrobeName);
+        setSelectedWardrobe(wardrobe);
+        setFromDate((prev) => ({
+            ...prev,
+            wardrobe: wardrobeName,
+            door: "", 
+        }));
+        setErrorMessage(""); 
     };
 
     const handleSubmit = async (e) => {
@@ -55,7 +72,6 @@ const AddItem = () => {
             return;
         }
 
-        // Prepare data as JSON
         const payload = {
             user_id: userId,
             wardrobe: fromDate.wardrobe,
@@ -93,7 +109,6 @@ const AddItem = () => {
 
     return (
         <div className="add-item-container">
-            {/* Back Button */}
             <Link to="/home" className="back-button">⟵</Link>
             <div className="add-item-box">
                 <h2>Add Item</h2>
@@ -103,7 +118,7 @@ const AddItem = () => {
                             options={wardrobes.map((w) => w.name)}
                             label="Choose Wardrobe"
                             placeholder="Start typing wardrobe name..."
-                            onSelect={(selected) => handleInputChange({ target: { name: 'wardrobe', value: selected } })}
+                            onSelect={handleWardrobeSelect}
                         />
 
                         <label>Choose Door</label>
@@ -111,20 +126,28 @@ const AddItem = () => {
                             type="number"
                             name="door"
                             placeholder="Door Number"
+                            min="1"
+                            max={selectedWardrobe ? selectedWardrobe.num_of_doors : ""}
+                            value={fromDate.door}
                             onChange={handleInputChange}
+                            disabled={!selectedWardrobe}
                             required
                         />
+                        {errorMessage && <p className="error-message">{errorMessage}</p>}
 
                         <label>Choose Shelf</label>
                         <input
+                            type="number"
                             name="shelf"
-                            placeholder="Shelf Number / Description"
+                            placeholder="Shelf Number"
+                            min="1" 
+                            value={fromDate.shelf}
                             onChange={handleInputChange}
                             required
                         />
 
                         <Dropdown
-                            options={commonOptions} 
+                            options={commonOptions}
                             label="Choose Item Type"
                             placeholder="Start typing item type..."
                             onSelect={(selected) => handleInputChange({ target: { name: 'itemType', value: selected } })}
