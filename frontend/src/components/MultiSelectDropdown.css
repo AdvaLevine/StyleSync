@@ -12,6 +12,7 @@
 /* Input field */
 .multi-select-dropdown input {
   width: 100%;
+  margin-top: 8px;
   padding: 12px; /* Match the padding of other input boxes */
   border: 1px solid #ccc;
   border-radius: 8px; /* Match the border radius */
@@ -44,21 +45,21 @@
 
 /* Remove button for selected option */
 .multi-select-dropdown .remove-option {
-    background: black; /* Black background for the button */
-    border: none; /* Remove border */
-    color: white; /* White "✕" */
+    background: black; 
+    border: none; 
+    color: white; 
     cursor: pointer;
-    font-size: 12px; /* Adjust font size for the "✕" */
-    padding: 0; /* Remove extra padding */
+    font-size: 12px; 
+    padding: 0; 
     margin: 0;
     line-height: 1;
-    border-radius: 3px; /* Slightly rounded corners for a square look */
-    display: flex; /* Use flexbox for centering */
-    align-items: center; /* Center vertically */
-    justify-content: center; /* Center horizontally */
-    width: 16px; /* Set a fixed width for consistency */
-    height: 16px; /* Set a fixed height for consistency */
-    box-sizing: border-box; /* Ensure padding and border are included in size */
+    border-radius: 3px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    width: 16px; 
+    height: 16px; 
+    box-sizing: border-box;
 }
 
 /* Dropdown list */

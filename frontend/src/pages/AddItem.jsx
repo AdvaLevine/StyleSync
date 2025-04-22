@@ -58,13 +58,30 @@ const AddItem = () => {
 
     const handleWardrobeSelect = (wardrobeName) => {
         const wardrobe = wardrobes.find((w) => w.name === wardrobeName);
-        setSelectedWardrobe(wardrobe);
-        setFromDate((prev) => ({
-            ...prev,
-            wardrobe: wardrobeName,
-            door: "", 
-        }));
-        setErrorMessage(""); 
+
+        if (!wardrobeName) {
+            // If no wardrobe is selected, reset all dependent fields
+            setSelectedWardrobe(null);
+            setFromDate((prev) => ({
+                ...prev,
+                wardrobe: "",
+                door: "", // Clear the door field
+                shelf: "", // Clear the shelf field
+                itemType: "", // Clear the item type field
+            }));
+        } else {
+            // If a wardrobe is selected, update the state
+            setSelectedWardrobe(wardrobe);
+            setFromDate((prev) => ({
+                ...prev,
+                wardrobe: wardrobeName,
+                door: "", // Clear the door field
+                shelf: "", // Clear the shelf field
+                itemType: "", // Clear the item type field
+            }));
+        }
+
+        setErrorMessage(""); // Clear any existing error messages
     };
 
     const handleSubmit = async (e) => {
@@ -143,10 +160,10 @@ const AddItem = () => {
                             type="number"
                             name="shelf"
                             placeholder="Shelf Number"
-                            min="1" 
+                            min="1"
                             value={fromDate.shelf}
                             onChange={handleInputChange}
-                            disabled={!fromDate.door} 
+                            disabled={!fromDate.door} /* Disable if no door is selected */
                             required
                         />
 
@@ -155,6 +172,7 @@ const AddItem = () => {
                             label="Choose Item Type"
                             placeholder="Start typing item type..."
                             onSelect={(selected) => handleInputChange({ target: { name: 'itemType', value: selected } })}
+                            disabled={!fromDate.door} /* Disable if no door is selected */
                         />
 
                         <button type="button" onClick={() => setStep(2)}>Next</button>
