@@ -69,6 +69,12 @@
       "user_id": "74a84478-d031-7027-7a43-39a39ea9b74a",
       "num_of_doors": 2,
       "name": "telador"
+    },
+    {
+      "id": "a9f2",
+      "user_id": "74a84478-d031-7027-7a43-39a39ea9b74a",
+      "num_of_doors": 3,
+      "name": "summer wardrobe"
     }
   ],
   "item": [
@@ -87,6 +93,96 @@
       "usage_count": 5,
       "status": "Available",
       "id": "f9b6"
+    },
+    {
+      "id": "47ad",
+      "user_id": "74a84478-d031-7027-7a43-39a39ea9b74a",
+      "wardrobe": "Tal's Kingdom",
+      "itemType": "Shirt",
+      "color": [
+        "Black"
+      ],
+      "weather": [
+        "Hot"
+      ],
+      "door": "1",
+      "shelf": "2",
+      "photo": {}
+    },
+    {
+      "id": "2720",
+      "user_id": "74a84478-d031-7027-7a43-39a39ea9b74a",
+      "wardrobe": "Tal's Kingdom",
+      "itemType": "Shirt",
+      "color": [
+        "Black"
+      ],
+      "weather": [
+        "Hot"
+      ],
+      "door": "1",
+      "shelf": "2",
+      "photo": {}
+    },
+    {
+      "id": "f9dc",
+      "user_id": "74a84478-d031-7027-7a43-39a39ea9b74a",
+      "wardrobe": "Tal's Kingdom",
+      "itemType": "Shirt",
+      "color": [
+        "Black"
+      ],
+      "weather": [
+        "Hot"
+      ],
+      "door": "1",
+      "shelf": "2",
+      "photo": null
+    },
+    {
+      "id": "adec",
+      "user_id": "74a84478-d031-7027-7a43-39a39ea9b74a",
+      "wardrobe": "Tal's Kingdom",
+      "itemType": "Shirt",
+      "color": [
+        "Black"
+      ],
+      "weather": [
+        "Hot"
+      ],
+      "door": "1",
+      "shelf": "2",
+      "photo": null
+    },
+    {
+      "id": "0e8d",
+      "user_id": "74a84478-d031-7027-7a43-39a39ea9b74a",
+      "wardrobe": "Tal's Kingdom",
+      "itemType": "Shirt",
+      "color": [
+        "Black"
+      ],
+      "weather": [
+        "Hot"
+      ],
+      "door": "1",
+      "shelf": "2",
+      "photo": null
+    },
+    {
+      "id": "870f",
+      "user_id": "74a84478-d031-7027-7a43-39a39ea9b74a",
+      "wardrobe": "Tal's Kingdom",
+      "itemType": "Shirt",
+      "color": [
+        "Black"
+      ],
+      "weather": [
+        "Hot"
+      ],
+      "door": "1",
+      "shelf": "2",
+      "photo": null
     }
   ],
   "calendar_events": [
