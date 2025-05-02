@@ -21,15 +21,24 @@ const AddItem = () => {
     const [step, setStep] = useState(1);
 
     useEffect(() => {
-        // Fetch the user's wardrobes from the server when the component mounts
-        const fetchWardrobes = async () => {
-            const userId = localStorage.getItem("user_id");
-            const response = await fetch(`http://localhost:8000/wardrobe?userId=${userId}`);
-            const data = await response.json();
-            setWardrobes(data);
-        };
-        fetchWardrobes();
+    const fetchWardrobes = async () => {
+        const userId = localStorage.getItem("user_id");
+        const response = await fetch(`https://o5199uwx89.execute-api.us-east-1.amazonaws.com/dev/wardrobes?userId=${userId}`);
+        
+        if (!response.ok) {
+            console.error("Failed to fetch wardrobes");
+            return; // Prevent further processing if the fetch fails
+        }
+
+        const data = await response.json();
+        console.log("Wardrobes data:", data); // Check the data received
+
+        setWardrobes(data); // Update the state with the fetched data
+    };
+
+    fetchWardrobes();
     }, []);
+
 
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
@@ -135,7 +144,7 @@ const AddItem = () => {
                 {step === 1 && (
                     <form>
                         <Dropdown
-                            options={wardrobes.map((w) => w.name)}
+                            options={wardrobes.length > 0 ? wardrobes.map((w) => w.name) : []} // Fallback to an empty array
                             label="Choose Wardrobe"
                             placeholder="Start typing wardrobe name..."
                             onSelect={handleWardrobeSelect}
