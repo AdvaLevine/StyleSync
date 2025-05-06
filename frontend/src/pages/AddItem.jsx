@@ -7,8 +7,8 @@ import MultiSelectDropdown from '../components/MultiSelectDropdown';
 const AddItem = () => {
     const navigate = useNavigate();
     const [wardrobes, setWardrobes] = useState([]);
-    const [selectedWardrobe, setSelectedWardrobe] = useState(null); // Track the selected wardrobe
-    const [errorMessage, setErrorMessage] = useState(""); // Track error messages
+    const [selectedWardrobe, setSelectedWardrobe] = useState(null); 
+    const [errorMessage, setErrorMessage] = useState("");
     const [fromDate, setFromDate] = useState({
         wardrobe: "",
         itemType: "",
@@ -27,13 +27,13 @@ const AddItem = () => {
         
         if (!response.ok) {
             console.error("Failed to fetch wardrobes");
-            return; // Prevent further processing if the fetch fails
+            return; 
         }
 
         const data = await response.json();
-        console.log("Wardrobes data:", data); // Check the data received
+        console.log("Wardrobes data:", data); 
 
-        setWardrobes(data); // Update the state with the fetched data
+        setWardrobes(data);
     };
 
     fetchWardrobes();
@@ -43,22 +43,20 @@ const AddItem = () => {
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
 
-        // Validate the door field
         if (name === "door" && selectedWardrobe) {
             const maxDoors = selectedWardrobe.num_of_doors;
             if (value < 1 || value > maxDoors) {
                 setErrorMessage(`Please enter a door number between 1 and ${maxDoors}.`);
                 setFromDate((prev) => ({
                     ...prev,
-                    door: "", // Clear the door field
+                    door: "", 
                 }));
                 return;
             } else {
-                setErrorMessage(""); // Clear the error message if valid
+                setErrorMessage(""); 
             }
         }
 
-        // Update the state for other fields
         setFromDate((prev) => ({
             ...prev,
             [name]: files ? files[0] : value,
@@ -69,28 +67,27 @@ const AddItem = () => {
         const wardrobe = wardrobes.find((w) => w.name === wardrobeName);
 
         if (!wardrobeName) {
-            // If no wardrobe is selected, reset all dependent fields
             setSelectedWardrobe(null);
             setFromDate((prev) => ({
                 ...prev,
                 wardrobe: "",
-                door: "", // Clear the door field
-                shelf: "", // Clear the shelf field
-                itemType: "", // Clear the item type field
+                door: "", 
+                shelf: "", 
+                itemType: "", 
             }));
         } else {
-            // If a wardrobe is selected, update the state
+
             setSelectedWardrobe(wardrobe);
             setFromDate((prev) => ({
                 ...prev,
                 wardrobe: wardrobeName,
-                door: "", // Clear the door field
-                shelf: "", // Clear the shelf field
-                itemType: "", // Clear the item type field
+                door: "", 
+                shelf: "", 
+                itemType: "", 
             }));
         }
 
-        setErrorMessage(""); // Clear any existing error messages
+        setErrorMessage(""); 
     };
 
     const handleSubmit = async (e) => {
@@ -144,7 +141,7 @@ const AddItem = () => {
                 {step === 1 && (
                     <form>
                         <Dropdown
-                            options={wardrobes.length > 0 ? wardrobes.map((w) => w.name) : []} // Fallback to an empty array
+                            options={wardrobes.length > 0 ? wardrobes.map((w) => w.name) : []} 
                             label="Choose Wardrobe"
                             placeholder="Start typing wardrobe name..."
                             onSelect={handleWardrobeSelect}
@@ -159,7 +156,7 @@ const AddItem = () => {
                             max={selectedWardrobe ? selectedWardrobe.num_of_doors : ""}
                             value={fromDate.door}
                             onChange={handleInputChange}
-                            disabled={!fromDate.wardrobe} /* Disable if no wardrobe is selected */
+                            disabled={!fromDate.wardrobe}
                             required
                         />
                         {errorMessage && <p className="error-message">{errorMessage}</p>}
@@ -172,7 +169,7 @@ const AddItem = () => {
                             min="1"
                             value={fromDate.shelf}
                             onChange={handleInputChange}
-                            disabled={!fromDate.door} /* Disable if no door is selected */
+                            disabled={!fromDate.door} 
                             required
                         />
 
@@ -181,7 +178,7 @@ const AddItem = () => {
                             label="Choose Item Type"
                             placeholder="Start typing item type..."
                             onSelect={(selected) => handleInputChange({ target: { name: 'itemType', value: selected } })}
-                            disabled={!fromDate.door} /* Disable if no door is selected */
+                            disabled={!fromDate.door} 
                         />
 
                         <button type="button" onClick={() => setStep(2)}>Next</button>
