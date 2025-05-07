@@ -31,7 +31,6 @@ const AddItem = () => {
         }
 
         const data = await response.json();
-        console.log("Wardrobes data:", data); 
 
         setWardrobes(data);
     };
@@ -110,7 +109,7 @@ const AddItem = () => {
         };
 
         try {
-           const res = await fetch("https://<your-api-id>.execute-api.us-east-1.amazonaws.com/dev/item", {
+            const res = await fetch("https://ul2bdgg3g9.execute-api.us-east-1.amazonaws.com/dev/item", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
