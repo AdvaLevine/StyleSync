@@ -59,8 +59,8 @@ const Login = () => {
       {/* Login Box */}
       <div className="login-box">
         {/* Login Title */}
-        <h2>Login</h2>
-        <p className="login-subtitle">Hello, welcome back!</p>
+        <h2>StyleSync</h2>
+        <p className="login-subtitle">Your Smart Closet Companion</p>
         {error && <p className="error-message">{error}</p>}
 
         {/* Login Form */}
