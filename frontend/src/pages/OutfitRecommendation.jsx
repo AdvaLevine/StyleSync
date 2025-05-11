@@ -41,7 +41,7 @@ const GenerateCustomOutfit = () => {
       const returnedData = await response.json();
       console.log(returnedData)
       if (returnedData.statusCode === 200) {
-        alert("Recommendation: " + returnedData.body);
+        alert(returnedData.body);
       } else {
         setError(returnedData.body)
       }
