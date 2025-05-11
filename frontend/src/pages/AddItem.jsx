@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import "../assets/styles/AddItem.css";
 import Dropdown from '../components/Dropdown';
@@ -9,6 +9,7 @@ const AddItem = () => {
     const [wardrobes, setWardrobes] = useState([]);
     const [selectedWardrobe, setSelectedWardrobe] = useState(null); 
     const [errorMessage, setErrorMessage] = useState("");
+    const isFirstRender = useRef(true);
     const [fromDate, setFromDate] = useState({
         wardrobe: "",
         itemType: "",
@@ -20,7 +21,6 @@ const AddItem = () => {
     });
     const [step, setStep] = useState(1);
 
-    useEffect(() => {
     const fetchWardrobes = async () => {
         const userId = localStorage.getItem("user_id");
         const response = await fetch(`https://o5199uwx89.execute-api.us-east-1.amazonaws.com/dev/wardrobes?userId=${userId}`);
@@ -31,13 +31,13 @@ const AddItem = () => {
         }
 
         const data = await response.json();
-
         setWardrobes(data);
     };
 
-    fetchWardrobes();
-    }, []);
-
+    if (isFirstRender.current) {
+        isFirstRender.current = false;
+        fetchWardrobes();
+    }
 
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
