@@ -100,31 +100,41 @@ const AddItem = () => {
         const payload = {
             user_id: userId,
             wardrobe: fromDate.wardrobe,
-            itemType: fromDate.itemType,
+            itemType: Array.isArray(fromDate.itemType) ? fromDate.itemType[0] : fromDate.itemType,
             color: fromDate.color,
             weather: fromDate.weather,
             door: fromDate.door,
-            shelf: fromDate.shelf,
-            photo: fromDate.photo,
+            shelf: fromDate.shelf
         };
 
         try {
+            console.log('Sending payload:', payload);
             const res = await fetch("https://ul2bdgg3g9.execute-api.us-east-1.amazonaws.com/dev/item", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-        });
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": localStorage.getItem("idToken") // Add authorization header if needed
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                console.error('API Error:', {
+                    status: res.status,
+                    statusText: res.statusText,
+                    errorData
+                });
+                throw new Error(errorData.message || `HTTP error! status: ${res.status}`);
+            }
 
             const result = await res.json();
-
-            if (res.ok) {
-                alert("Item added successfully!");
-                navigate("/home");
-            } else {
-                alert(result.message || "Failed to add item. Please try again.");
-            }
+            console.log('Success response:', result);
+            alert("Item added successfully!");
+            navigate("/home");
         } catch (err) {
-            alert("Could not add item – please try again.");
+            console.error('Error details:', err);
+            alert(`Could not add item: ${err.message}`);
         }
     };
 
