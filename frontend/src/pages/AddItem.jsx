@@ -7,8 +7,8 @@ import MultiSelectDropdown from '../components/MultiSelectDropdown';
 const AddItem = () => {
     const navigate = useNavigate();
     const [wardrobes, setWardrobes] = useState([]);
-    const [selectedWardrobe, setSelectedWardrobe] = useState(null); // Track the selected wardrobe
-    const [errorMessage, setErrorMessage] = useState(""); // Track error messages
+    const [selectedWardrobe, setSelectedWardrobe] = useState(null); 
+    const [errorMessage, setErrorMessage] = useState("");
     const [fromDate, setFromDate] = useState({
         wardrobe: "",
         itemType: "",
@@ -21,35 +21,41 @@ const AddItem = () => {
     const [step, setStep] = useState(1);
 
     useEffect(() => {
-        // Fetch the user's wardrobes from the server when the component mounts
-        const fetchWardrobes = async () => {
-            const userId = localStorage.getItem("user_id");
-            const response = await fetch(`http://localhost:8000/wardrobe?userId=${userId}`);
-            const data = await response.json();
-            setWardrobes(data);
-        };
-        fetchWardrobes();
+    const fetchWardrobes = async () => {
+        const userId = localStorage.getItem("user_id");
+        const response = await fetch(`https://o5199uwx89.execute-api.us-east-1.amazonaws.com/dev/wardrobes?userId=${userId}`);
+        
+        if (!response.ok) {
+            console.error("Failed to fetch wardrobes");
+            return; 
+        }
+
+        const data = await response.json();
+
+        setWardrobes(data);
+    };
+
+    fetchWardrobes();
     }, []);
+
 
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
 
-        // Validate the door field
         if (name === "door" && selectedWardrobe) {
             const maxDoors = selectedWardrobe.num_of_doors;
             if (value < 1 || value > maxDoors) {
                 setErrorMessage(`Please enter a door number between 1 and ${maxDoors}.`);
                 setFromDate((prev) => ({
                     ...prev,
-                    door: "", // Clear the door field
+                    door: "", 
                 }));
                 return;
             } else {
-                setErrorMessage(""); // Clear the error message if valid
+                setErrorMessage(""); 
             }
         }
 
-        // Update the state for other fields
         setFromDate((prev) => ({
             ...prev,
             [name]: files ? files[0] : value,
@@ -60,28 +66,27 @@ const AddItem = () => {
         const wardrobe = wardrobes.find((w) => w.name === wardrobeName);
 
         if (!wardrobeName) {
-            // If no wardrobe is selected, reset all dependent fields
             setSelectedWardrobe(null);
             setFromDate((prev) => ({
                 ...prev,
                 wardrobe: "",
-                door: "", // Clear the door field
-                shelf: "", // Clear the shelf field
-                itemType: "", // Clear the item type field
+                door: "", 
+                shelf: "", 
+                itemType: "", 
             }));
         } else {
-            // If a wardrobe is selected, update the state
+
             setSelectedWardrobe(wardrobe);
             setFromDate((prev) => ({
                 ...prev,
                 wardrobe: wardrobeName,
-                door: "", // Clear the door field
-                shelf: "", // Clear the shelf field
-                itemType: "", // Clear the item type field
+                door: "", 
+                shelf: "", 
+                itemType: "", 
             }));
         }
 
-        setErrorMessage(""); // Clear any existing error messages
+        setErrorMessage(""); 
     };
 
     const handleSubmit = async (e) => {
@@ -95,31 +100,41 @@ const AddItem = () => {
         const payload = {
             user_id: userId,
             wardrobe: fromDate.wardrobe,
-            itemType: fromDate.itemType,
+            itemType: Array.isArray(fromDate.itemType) ? fromDate.itemType[0] : fromDate.itemType,
             color: fromDate.color,
             weather: fromDate.weather,
             door: fromDate.door,
-            shelf: fromDate.shelf,
-            photo: fromDate.photo,
+            shelf: fromDate.shelf
         };
 
         try {
-            const res = await fetch("http://localhost:8000/item", {
+            console.log('Sending payload:', payload);
+            const res = await fetch("https://ul2bdgg3g9.execute-api.us-east-1.amazonaws.com/dev/item", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": localStorage.getItem("idToken") // Add authorization header if needed
+                },
                 body: JSON.stringify(payload),
             });
 
-            const result = await res.json();
-
-            if (res.ok) {
-                alert("Item added successfully!");
-                navigate("/home");
-            } else {
-                alert(result.message || "Failed to add item. Please try again.");
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                console.error('API Error:', {
+                    status: res.status,
+                    statusText: res.statusText,
+                    errorData
+                });
+                throw new Error(errorData.message || `HTTP error! status: ${res.status}`);
             }
+
+            const result = await res.json();
+            console.log('Success response:', result);
+            alert("Item added successfully!");
+            navigate("/home");
         } catch (err) {
-            alert("Could not add item – please try again.");
+            console.error('Error details:', err);
+            alert(`Could not add item: ${err.message}`);
         }
     };
 
@@ -135,7 +150,7 @@ const AddItem = () => {
                 {step === 1 && (
                     <form>
                         <Dropdown
-                            options={wardrobes.map((w) => w.name)}
+                            options={wardrobes.length > 0 ? wardrobes.map((w) => w.name) : []} 
                             label="Choose Wardrobe"
                             placeholder="Start typing wardrobe name..."
                             onSelect={handleWardrobeSelect}
@@ -150,7 +165,7 @@ const AddItem = () => {
                             max={selectedWardrobe ? selectedWardrobe.num_of_doors : ""}
                             value={fromDate.door}
                             onChange={handleInputChange}
-                            disabled={!fromDate.wardrobe} /* Disable if no wardrobe is selected */
+                            disabled={!fromDate.wardrobe}
                             required
                         />
                         {errorMessage && <p className="error-message">{errorMessage}</p>}
@@ -163,7 +178,7 @@ const AddItem = () => {
                             min="1"
                             value={fromDate.shelf}
                             onChange={handleInputChange}
-                            disabled={!fromDate.door} /* Disable if no door is selected */
+                            disabled={!fromDate.door} 
                             required
                         />
 
@@ -172,7 +187,7 @@ const AddItem = () => {
                             label="Choose Item Type"
                             placeholder="Start typing item type..."
                             onSelect={(selected) => handleInputChange({ target: { name: 'itemType', value: selected } })}
-                            disabled={!fromDate.door} /* Disable if no door is selected */
+                            disabled={!fromDate.door} 
                         />
 
                         <button type="button" onClick={() => setStep(2)}>Next</button>
