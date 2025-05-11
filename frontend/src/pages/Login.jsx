@@ -3,17 +3,20 @@ import "../assets/styles/login.css";
 import logo from "../assets/images/Logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import { CognitoUser, AuthenticationDetails } from 'amazon-cognito-identity-js';
+import MoonLoader from "react-spinners/MoonLoader";
 import userPool from "../aws/UserPool";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [isPending, setIsPending] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = (e) => {
     e.preventDefault();
     setError(null);
+    setIsPending(true);
 
     const user = new CognitoUser({ Username: email, Pool: userPool});
     const authDetails = new AuthenticationDetails({
@@ -44,9 +47,11 @@ const Login = () => {
         const message = err.message.includes(":")
         ? err.message.split(":").slice(1).join(":").trim()
         : err.message;
+        setIsPending(false)
         setError(message);
       }
     })
+
   }
 
   return (
@@ -61,7 +66,6 @@ const Login = () => {
         {/* Login Title */}
         <h2>StyleSync</h2>
         <p className="login-subtitle">Your Smart Closet Companion</p>
-        {error && <p className="error-message">{error}</p>}
 
         {/* Login Form */}
         <form onSubmit={handleLogin}>
@@ -80,6 +84,17 @@ const Login = () => {
           onBlur={(e) => !e.target.value.trim() && setPassword("")}
           onChange={(e) => setPassword(e.target.value)}/>
           <a className="forgot-password" href="https://www.google.com/">Forgot Password?</a> 
+          {/* Loader Container */}
+          {isPending && (
+            <div className="loader-container">
+              <MoonLoader 
+                size={30} 
+                speedMultiplier={0.7} 
+                color="#36d7b7"
+              />
+            </div>
+          )}
+          {error && <p className="error-message">{error}</p>}
           <button type="submit">Sign in</button>
         </form>
 

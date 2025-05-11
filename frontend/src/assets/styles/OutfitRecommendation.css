@@ -109,14 +109,8 @@ html body {
   }
   
   .error-message {
-    color: #8b0000;
-    background-color: #f8d7da;
-    border-left: 4px solid #f44336;
-    padding: 10px 12px;
-    font-size: 13px;
-    border-radius: 4px;
-    margin: 0px;
-    text-align: left;
+    color: rgb(25, 179, 179);
+    margin-top: 10px;
   }
   
  

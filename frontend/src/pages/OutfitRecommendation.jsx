@@ -1,127 +1,124 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Button, Form } from 'react-bootstrap';
-import "../assets/styles/OutfitRecommendation.css";
+import React, { useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import MoonLoader from "react-spinners/MoonLoader";
+import { Link } from "react-router-dom";
 
-const OutfitRecommendation = () => {
-    const [step, setStep] = useState(1);
+const GenerateCustomOutfit = () => {
+  const [weather, setWeather] = useState("Any Weather");
+  const [timeOfDay, setTimeOfDay] = useState("Any Time");
+  const [formality, setFormality] = useState("Any Level");
+  const [colorPalette, setColorPalette] = useState("Any Colors");
+  const [error, setError] = useState();
+  const [isPending, setIsPending] = useState(false);
 
-    // Form States
-    const [weatherOption, setWeatherOption] = useState("");
-    const [eventOption, setEventOption] = useState("");
-    const [recommendationType, setRecommendationType] = useState("");
+  const handleGenerate = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setIsPending(true);
 
-    const handleNext = () => setStep(step + 1);
-    const handleRestart = () => {
-        setStep(1);
-        setWeatherOption("");
-        setEventOption("");
-        setRecommendationType("");
-    };
+    try {
+      const userId = localStorage.getItem("user_id");
 
-    return (
-        <div className='outfit-recommendation-container'>
-            <Link to="/home" className="back-button">⟵</Link>
-            {step === 1 && (
-                <Form className='outfit-recommendation-box'>
-                    <h1 className="mb-4">Outfit Recommendation</h1>
-                    <Form.Group className="mb-3">
-                        <Form.Label>How would you like to set the weather?</Form.Label>
-                        <Form.Check
-                            type="radio"
-                            label="Choose manually"
-                            name="weatherOption"
-                            value="manual"
-                            className='d-flex align-items-center gap-2'
-                            onChange={(e) => setWeatherOption(e.target.value)}
-                            checked={weatherOption === "manual"}
-                        />
-                        <Form.Check
-                            type="radio"
-                            label="Set by time & Date (Using Real-Time weather API)"
-                            name="weatherOption"
-                            value="api"
-                            className='d-flex align-items-center gap-2'
-                            onChange={(e) => setWeatherOption(e.target.value)}
-                            checked={weatherOption === "api"}
-                        />
-                    </Form.Group>
-                    <Button variant="primary" onClick={handleNext} disabled={!weatherOption}>
-                        Next
-                    </Button>
-                </Form>
-            )}
+      if (!userId) {
+        alert("Please log in to generate")
+        return
+      }
+  
+      const response = await fetch("https://qma6omedi4.execute-api.us-east-1.amazonaws.com/dev", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          weather,
+          time_of_day: timeOfDay,
+          formality,
+          color_palette: colorPalette,
+        }),
+      });
+  
+      const returnedData = await response.json();
+      console.log(returnedData)
+      if (returnedData.statusCode === 200) {
+        alert("Recommendation: " + returnedData.body);
+      } else {
+        setError(returnedData.body)
+      }
+      } catch (err) {
+        setError("Failed to generate :(")
+      } finally {
+        setIsPending(false);
+      }
+  };
 
-            {step === 2 && (
-                <Form className='outfit-recommendation-box'>
-                    <h1 className="mb-4">Outfit Recommendation</h1>
-                    <Form.Group className="mb-3">
-                        <Form.Label>How would you like to set your event?</Form.Label>
-                        <Form.Check
-                            type="radio"
-                            label="Set manually"
-                            name="eventOption"
-                            value="manual"
-                            className='d-flex align-items-center gap-2'
-                            onChange={(e) => setEventOption(e.target.value)}
-                            checked={eventOption === "manual"}
-                        />
-                        <Form.Check
-                            type="radio"
-                            label="Set by time & date (Google Calendar API)"
-                            name="eventOption"
-                            value="calendar"
-                            className='d-flex align-items-center gap-2'
-                            onChange={(e) => setEventOption(e.target.value)}
-                            checked={eventOption === "calendar"}
-                        />
-                        <Form.Text className="text-muted">
-                            * Requires connecting your Google Calendar in Settings
-                        </Form.Text>
-                    </Form.Group>
-                    <Button variant="primary" onClick={handleNext} disabled={!eventOption}>
-                        Next
-                    </Button>
-                </Form>
-            )}
+  return (
+    <div className="d-flex justify-content-center align-items-center vh-100">
+     <Link to="/home" className="back-button">⟵</Link>
+      <div className="container" style={{ maxWidth: '600px' }}>
+        <div className="card p-4 shadow-sm">
+          <h1 className="card-title text-center">Generate Outfit Recommendation</h1>
+          <div className="row g-3">
+            <div className="col-md-6">
+              <label>Weather Conditions</label>
+              <select className="form-select" value={weather} onChange={(e) => setWeather(e.target.value)}>
+                <option>Any Weather</option>
+                <option>Sunny</option>
+                <option>Rainy</option>
+                <option>Cold</option>
+              </select>
+            </div>
 
-            {step === 3 && (
-                <Form className='outfit-recommendation-box'>
-                    <h1 className="mb-4">Outfit Recommendation</h1>
+            <div className="col-md-6">
+              <label>Time of Day</label>
+              <select className="form-select" value={timeOfDay} onChange={(e) => setTimeOfDay(e.target.value)}>
+                <option>Any Time</option>
+                <option>Morning</option>
+                <option>Afternoon</option>
+                <option>Evening</option>
+              </select>
+            </div>
 
-                    <Form.Group className="mb-3">
-                        <Form.Label>How would you like to receive your recommendation?</Form.Label>
-                        <Form.Check
-                            type="radio"
-                            label="By Text"
-                            name="recommendationType"
-                            value="text"
-                            className='d-flex align-items-center gap-2'
-                            onChange={(e) => setRecommendationType(e.target.value)}
-                            checked={recommendationType === "text"}
-                        />
-                        <Form.Check
-                            type="radio"
-                            label="By Photo"
-                            name="recommendationType"
-                            value="photo"
-                            className='d-flex align-items-center gap-2'
-                            onChange={(e) => setRecommendationType(e.target.value)}
-                            checked={recommendationType === "photo"}
-                        />
-                    </Form.Group>
-                    <div className="d-flex gap-2 ">
-                        <Button variant="success" >
-                            Get Recommendation
-                        </Button>
-                        <Button variant="secondary" onClick={handleRestart}>
-                            Restart
-                        </Button>
-                    </div>
-                </Form>
+            <div className="col-md-6">
+              <label>Formality Level</label>
+              <select className="form-select" value={formality} onChange={(e) => setFormality(e.target.value)}>
+                <option>Any Level</option>
+                <option>Casual</option>
+                <option>Business Casual</option>
+                <option>Formal</option>
+              </select>
+            </div>
+
+            <div className="col-md-6">
+              <label>Preferred Color Palette</label>
+              <select className="form-select" value={colorPalette} onChange={(e) => setColorPalette(e.target.value)}>
+                <option>Any Colors</option>
+                <option>Warm</option>
+                <option>Cool</option>
+                <option>Neutral</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="mt-4 text-center">
+            <button className="btn btn-primary" onClick={handleGenerate}>Generate Custom Outfit</button>
+          </div>
+
+          {error && <p className="error-message">{"error"}</p>}
+            {/* Loader Container */}
+            {isPending && (
+                <div className="loader-container mt-2">
+                    <MoonLoader 
+                        size={30} 
+                        speedMultiplier={0.7} 
+                        color="#36d7b7"
+                    />
+                </div>
             )}
         </div>
-    )
-}
- 
-export default OutfitRecommendation;
+      </div>
+    </div>
+  );
+};
+
+export default GenerateCustomOutfit;
