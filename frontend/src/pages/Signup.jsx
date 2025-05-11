@@ -4,6 +4,7 @@ import "../assets/styles/Signup.css";
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import UserPool from "../aws/UserPool";
+import MoonLoader from "react-spinners/MoonLoader";
 import { CognitoUserAttribute } from 'amazon-cognito-identity-js';
 
 const Signup = () => {
@@ -96,7 +97,16 @@ const Signup = () => {
           <input className="signup-input" type="date" min="1910-01-01" max="2009-12-31" required value={dob} onChange={(e) => setDob(e.target.value)}/>
 
           <button type="submit">Sign up</button>
-          {isPending && <h1>Loading...</h1>} 
+          {/* Loader Container */}
+          {isPending && (
+            <div className="loader-container">
+              <MoonLoader 
+                size={30} 
+                speedMultiplier={0.7} 
+                color="#36d7b7"
+              />
+            </div>
+          )}
           {error && <p className="error-message">{error}</p>}
         </form>
         <p className="subtitle">Already have an account? <Link to="/"> Log in</Link></p>

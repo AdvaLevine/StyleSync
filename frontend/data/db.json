@@ -1,7 +1,7 @@
 {
   "users": [
     {
-      "user_id": 1,
+      "user_id": "1",
       "name": "Alice",
       "email": "alice@example.com",
       "password_hash": "hashed_password",
@@ -11,7 +11,7 @@
   ],
   "wardrobe": [
     {
-      "wardrobe_id": 1,
+      "wardrobe_id": "1",
       "user_id": 1,
       "num_of_doors": 5,
       "id": "d107"
@@ -78,22 +78,6 @@
     }
   ],
   "item": [
-    {
-      "wardrobe_id": 1,
-      "item_id": 101,
-      "user_id": 1,
-      "shelf_num": 1,
-      "name": "Blue Jacket",
-      "type": "Jacket",
-      "color": "Blue",
-      "size": "M",
-      "season": "Winter",
-      "image_url": "https://example.com/blue-jacket.jpg",
-      "last_used": "2024-03-01",
-      "usage_count": 5,
-      "status": "Available",
-      "id": "f9b6"
-    },
     {
       "id": "47ad",
       "user_id": "74a84478-d031-7027-7a43-39a39ea9b74a",
@@ -183,29 +167,6 @@
       "door": "1",
       "shelf": "2",
       "photo": null
-    }
-  ],
-  "calendar_events": [
-    {
-      "event_id": 201,
-      "user_id": 1,
-      "title": "Meeting with Bob",
-      "date": "2024-04-15",
-      "time": "14:00:00",
-      "location": "Downtown Office",
-      "outfit_suggestion": "Blue Jacket, Black Pants",
-      "id": "69f2"
-    }
-  ],
-  "weather_data": [
-    {
-      "weather_id": 301,
-      "user_id": 1,
-      "date": "2024-04-15",
-      "temperature": 18.5,
-      "precipitation": "None",
-      "condition": "Sunny",
-      "id": "393b"
     }
   ],
   "ai_recommendations": [
