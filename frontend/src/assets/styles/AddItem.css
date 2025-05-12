@@ -95,7 +95,6 @@ html body {
   
   /* Submit Button */
   .add-item-box button {
-    width: 100%;
     padding: 12px;
     background: black;
     color: white;
@@ -111,6 +110,22 @@ html body {
   
   .add-item-box button:hover {
     background: #333;
+  }
+  
+  /* Buttons container */
+  .buttons-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 10px;
+  }
+  
+  .back-btn {
+    width: 45%;
+  }
+  
+  .add-btn {
+    width: 45%;
   }
   
   /* Links */

@@ -9,12 +9,14 @@ const AddItem = () => {
     const [wardrobes, setWardrobes] = useState([]);
     const [selectedWardrobe, setSelectedWardrobe] = useState(null); 
     const [errorMessage, setErrorMessage] = useState("");
+    const [formError, setFormError] = useState("");
+    const [formErrorStep2, setFormErrorStep2] = useState("");
     const isFirstRender = useRef(true);
     const [fromDate, setFromDate] = useState({
         wardrobe: "",
         itemType: "",
-        color: "",
-        weather: "",
+        color: [],
+        weather: [],
         door: "",
         shelf: "",
         photo: null,
@@ -75,15 +77,27 @@ const AddItem = () => {
                 itemType: "", 
             }));
         } else {
+            // Check if this is the same wardrobe that was already selected
+            const isSameWardrobe = fromDate.wardrobe === wardrobeName;
 
             setSelectedWardrobe(wardrobe);
-            setFromDate((prev) => ({
-                ...prev,
-                wardrobe: wardrobeName,
-                door: "", 
-                shelf: "", 
-                itemType: "", 
-            }));
+            
+            if (isSameWardrobe) {
+                // If it's the same wardrobe, just update the wardrobe name but keep other values
+                setFromDate((prev) => ({
+                    ...prev,
+                    wardrobe: wardrobeName,
+                }));
+            } else {
+                // If it's a different wardrobe, reset the dependent fields
+                setFromDate((prev) => ({
+                    ...prev,
+                    wardrobe: wardrobeName,
+                    door: "", 
+                    shelf: "", 
+                    itemType: "", 
+                }));
+            }
         }
 
         setErrorMessage(""); 
@@ -91,6 +105,25 @@ const AddItem = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        // Validate step 2 fields
+        if (!fromDate.color || !Array.isArray(fromDate.color) || fromDate.color.length === 0) {
+            setFormErrorStep2("Please choose at least one color");
+            return;
+        }
+        
+        if (!fromDate.weather || !Array.isArray(fromDate.weather) || fromDate.weather.length === 0) {
+            setFormErrorStep2("Please choose at least one weather type");
+            return;
+        }
+        
+        if (!fromDate.photo) {
+            setFormErrorStep2("Please upload a photo");
+            return;
+        }
+        
+        setFormErrorStep2("");
+        
         const userId = localStorage.getItem("user_id");
         if (!userId) {
             alert("Please log in again – user id missing.");
@@ -142,6 +175,34 @@ const AddItem = () => {
     const colorOptions = ["Black", "White", "Red", "Blue", "Green", "Yellow", "Purple", "Pink", "Orange", "Brown"];
     const weatherOptions = ["Hot", "Cold", "Rainy", "Snow", "Windy", "Sunny", "Cloudy", "Stormy", "Foggy", "Humid"];
 
+    const validateStep1 = () => {
+        if (!fromDate.wardrobe) {
+            setFormError("Please choose a wardrobe");
+            return false;
+        }
+        if (!fromDate.door) {
+            setFormError("Please enter a door number");
+            return false;
+        }
+        if (!fromDate.shelf) {
+            setFormError("Please enter a shelf number");
+            return false;
+        }
+        if (!fromDate.itemType) {
+            setFormError("Please choose an item type");
+            return false;
+        }
+        
+        setFormError("");
+        return true;
+    };
+
+    const handleNextStep = () => {
+        if (validateStep1()) {
+            setStep(2);
+        }
+    };
+
     return (
         <div className="add-item-container">
             <Link to="/home" className="back-button">⟵</Link>
@@ -154,6 +215,7 @@ const AddItem = () => {
                             label="Choose Wardrobe"
                             placeholder="Start typing wardrobe name..."
                             onSelect={handleWardrobeSelect}
+                            initialValue={fromDate.wardrobe}
                         />
 
                         <label>Choose Door</label>
@@ -182,57 +244,64 @@ const AddItem = () => {
                             required
                         />
 
-                        <MultiSelectDropdown
+                        <Dropdown
                             options={commonOptions}
                             label="Choose Item Type"
                             placeholder="Start typing item type..."
                             onSelect={(selected) => handleInputChange({ target: { name: 'itemType', value: selected } })}
                             disabled={!fromDate.door} 
+                            initialValue={fromDate.itemType}
                         />
 
-                        <button type="button" onClick={() => setStep(2)}>Next</button>
+                        {formError && <p className="error-message">{formError}</p>}
+                        <button type="button" onClick={handleNextStep}>Next</button>
                     </form>
                 )}
 
                 {step === 2 && (
                     <form onSubmit={handleSubmit}>
-                        <label>Choose Color (You can type multiple)</label>
-                        <input
-                            name="color"
-                            list="colorList"
-                            placeholder="Color"
-                            onChange={handleInputChange}
-                        />
-                        <datalist id="colorList">
-                            {colorOptions.map((color, i) => (
-                                <option key={i} value={color} />
-                            ))}
-                        </datalist>
+                        {fromDate.itemType && (
+                            <>
+                                <MultiSelectDropdown
+                                    options={colorOptions}
+                                    label="Choose Color"
+                                    placeholder="Start typing color..."
+                                    onSelect={(selected) => handleInputChange({ target: { name: 'color', value: selected } })}
+                                    initialSelectedOptions={fromDate.color}
+                                />
 
-                        <label>Weather Type (You can type multiple)</label>
-                        <input
-                            name="weather"
-                            list="weatherList"
-                            placeholder="Weather"
-                            onChange={handleInputChange}
-                        />
-                        <datalist id="weatherList">
-                            {weatherOptions.map((weather, i) => (
-                                <option key={i} value={weather} />
-                            ))}
-                        </datalist>
+                                <MultiSelectDropdown
+                                    options={weatherOptions}
+                                    label="Choose Weather Type"
+                                    placeholder="Start typing weather..."
+                                    onSelect={(selected) => handleInputChange({ target: { name: 'weather', value: selected } })}
+                                    initialSelectedOptions={fromDate.weather}
+                                />
 
-                        <label>Upload Photo</label>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            name="photo"
-                            onChange={handleInputChange}
-                            required
-                        />
+                                <label>Upload Photo</label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    name="photo"
+                                    onChange={handleInputChange}
+                                />
+                            </>
+                        )}
+                        
+                        {formErrorStep2 && <p className="error-message">{formErrorStep2}</p>}
 
-                        <button type="button" onClick={() => setStep(1)}>Back</button>
-                        <button type="submit">Add</button>
+                        <div className="buttons-container">
+                            <button 
+                                type="button" 
+                                className="back-btn" 
+                                onClick={() => {
+                                    setStep(1);
+                                }}
+                            >
+                                Back
+                            </button>
+                            <button type="submit" className="add-btn">Add</button>
+                        </div>
                     </form>
                 )}
             </div>
