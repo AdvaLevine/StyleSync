@@ -2,14 +2,12 @@ import React, { useState, useEffect } from 'react';
 import './Dropdown.css'; // Import the CSS file
 
 export default function Dropdown({ options, label, placeholder, onSelect, disabled, initialValue }) {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState(initialValue || '');
   const [showList, setShowList] = useState(false);
 
-  // Update input value when initialValue changes
+  // חשוב מאוד: עדכון ערך הקלט כאשר initialValue משתנה
   useEffect(() => {
-    if (initialValue) {
-      setInputValue(initialValue);
-    }
+    setInputValue(initialValue || '');
   }, [initialValue]);
 
   const validOptions = options.filter((option) => typeof option === 'string');
@@ -24,16 +22,24 @@ export default function Dropdown({ options, label, placeholder, onSelect, disabl
     onSelect(option);
   };
 
+  const handleInputChange = (e) => {
+    const newValue = e.target.value;
+    setInputValue(newValue);
+    setShowList(true);
+    
+    // אם המשתמש מוחק את כל הטקסט, מודיעים למרכיב ההורה
+    if (newValue === '') {
+      onSelect(''); // שליחת מחרוזת ריקה מאותתת שהשדה נמחק
+    }
+  };
+
   return (
     <div className="dropdown">
       <label>{label}</label>
       <input
         type="text"
         value={inputValue}
-        onChange={(e) => {
-          setInputValue(e.target.value);
-          setShowList(true);
-        }}
+        onChange={handleInputChange}
         onFocus={() => setShowList(true)}
         onBlur={() => setTimeout(() => setShowList(false), 200)}
         placeholder={placeholder}

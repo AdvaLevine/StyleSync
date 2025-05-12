@@ -65,8 +65,7 @@ const AddItem = () => {
     };
 
     const handleWardrobeSelect = (wardrobeName) => {
-        const wardrobe = wardrobes.find((w) => w.name === wardrobeName);
-
+        // אם נשלח ערך ריק (למשל כשהמשתמש מחק את הטקסט בדרופדאון)
         if (!wardrobeName) {
             setSelectedWardrobe(null);
             setFromDate((prev) => ({
@@ -75,27 +74,52 @@ const AddItem = () => {
                 door: "", 
                 shelf: "", 
                 itemType: "", 
+                color: [],
+                weather: [],
+                photo: null
+            }));
+            setErrorMessage("");
+            return;
+        }
+
+        // אם נבחר ארון תקין
+        const wardrobe = wardrobes.find((w) => w.name === wardrobeName);
+        if (!wardrobe) {
+            // אם לא נמצא ארון תואם, מאפסים הכל
+            setSelectedWardrobe(null);
+            setFromDate((prev) => ({
+                ...prev,
+                wardrobe: "",
+                door: "", 
+                shelf: "", 
+                itemType: "", 
+                color: [],
+                weather: [],
+                photo: null
             }));
         } else {
-            // Check if this is the same wardrobe that was already selected
+            // בדיקה אם זה אותו ארון
             const isSameWardrobe = fromDate.wardrobe === wardrobeName;
 
             setSelectedWardrobe(wardrobe);
             
             if (isSameWardrobe) {
-                // If it's the same wardrobe, just update the wardrobe name but keep other values
+                // אם זה אותו ארון, רק מעדכנים את שם הארון אבל שומרים על ערכים אחרים
                 setFromDate((prev) => ({
                     ...prev,
                     wardrobe: wardrobeName,
                 }));
             } else {
-                // If it's a different wardrobe, reset the dependent fields
+                // אם זה ארון אחר, מאפסים את השדות התלויים
                 setFromDate((prev) => ({
                     ...prev,
                     wardrobe: wardrobeName,
                     door: "", 
                     shelf: "", 
                     itemType: "", 
+                    color: [],
+                    weather: [],
+                    photo: null
                 }));
             }
         }
