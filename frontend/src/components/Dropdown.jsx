@@ -5,7 +5,6 @@ export default function Dropdown({ options, label, placeholder, onSelect, disabl
   const [inputValue, setInputValue] = useState(initialValue || '');
   const [showList, setShowList] = useState(false);
 
-  // חשוב מאוד: עדכון ערך הקלט כאשר initialValue משתנה
   useEffect(() => {
     setInputValue(initialValue || '');
   }, [initialValue]);
@@ -27,9 +26,8 @@ export default function Dropdown({ options, label, placeholder, onSelect, disabl
     setInputValue(newValue);
     setShowList(true);
     
-    // אם המשתמש מוחק את כל הטקסט, מודיעים למרכיב ההורה
     if (newValue === '') {
-      onSelect(''); // שליחת מחרוזת ריקה מאותתת שהשדה נמחק
+      onSelect(''); 
     }
   };
 

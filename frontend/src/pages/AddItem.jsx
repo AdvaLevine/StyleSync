@@ -65,7 +65,6 @@ const AddItem = () => {
     };
 
     const handleWardrobeSelect = (wardrobeName) => {
-        // אם נשלח ערך ריק (למשל כשהמשתמש מחק את הטקסט בדרופדאון)
         if (!wardrobeName) {
             setSelectedWardrobe(null);
             setFromDate((prev) => ({
@@ -82,10 +81,8 @@ const AddItem = () => {
             return;
         }
 
-        // אם נבחר ארון תקין
         const wardrobe = wardrobes.find((w) => w.name === wardrobeName);
         if (!wardrobe) {
-            // אם לא נמצא ארון תואם, מאפסים הכל
             setSelectedWardrobe(null);
             setFromDate((prev) => ({
                 ...prev,
@@ -104,13 +101,11 @@ const AddItem = () => {
             setSelectedWardrobe(wardrobe);
             
             if (isSameWardrobe) {
-                // אם זה אותו ארון, רק מעדכנים את שם הארון אבל שומרים על ערכים אחרים
                 setFromDate((prev) => ({
                     ...prev,
                     wardrobe: wardrobeName,
                 }));
             } else {
-                // אם זה ארון אחר, מאפסים את השדות התלויים
                 setFromDate((prev) => ({
                     ...prev,
                     wardrobe: wardrobeName,
@@ -170,7 +165,7 @@ const AddItem = () => {
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",
-                    "Authorization": localStorage.getItem("idToken") // Add authorization header if needed
+                    "Authorization": localStorage.getItem("idToken") 
                 },
                 body: JSON.stringify(payload),
             });
