@@ -82,22 +82,26 @@ const ViewWardrobe = () => {
                 <h2>View Wardrobe</h2>
                 
                 <div className="view-options">
-                    <Dropdown
-                        options={wardrobes.length > 0 ? wardrobes.map(w => w.name) : []}
-                        label="Choose Wardrobe"
-                        placeholder="Select a wardrobe..."
-                        onSelect={handleWardrobeSelect}
-                    />
-                    
-                    <div className="view-mode-toggle">
-                        <label>
-                            <input
-                                type="checkbox"
-                                checked={viewMode === 'list'}
-                                onChange={toggleViewMode}
+                    <div className="view-options-row">
+                        <div className="dropdown-wrapper">
+                            <Dropdown
+                                options={wardrobes.length > 0 ? wardrobes.map(w => w.name) : []}
+                                label="Wardrobe Name"
+                                placeholder="Select a wardrobe..."
+                                onSelect={handleWardrobeSelect}
                             />
-                            By Text
-                        </label>
+                        </div>
+                        
+                        <div className="view-mode-toggle">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    checked={viewMode === 'list'}
+                                    onChange={toggleViewMode}
+                                />
+                                By Text
+                            </label>
+                        </div>
                     </div>
                 </div>
                 
