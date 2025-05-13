@@ -17,6 +17,7 @@ const AddItem = () => {
         itemType: "",
         color: [],
         weather: [],
+        style: [],
         door: "",
         shelf: "",
         photo: null,
@@ -75,6 +76,7 @@ const AddItem = () => {
                 itemType: "", 
                 color: [],
                 weather: [],
+                style: [],
                 photo: null
             }));
             setErrorMessage("");
@@ -92,10 +94,10 @@ const AddItem = () => {
                 itemType: "", 
                 color: [],
                 weather: [],
+                style: [],
                 photo: null
             }));
         } else {
-            // בדיקה אם זה אותו ארון
             const isSameWardrobe = fromDate.wardrobe === wardrobeName;
 
             setSelectedWardrobe(wardrobe);
@@ -114,6 +116,7 @@ const AddItem = () => {
                     itemType: "", 
                     color: [],
                     weather: [],
+                    style: [],
                     photo: null
                 }));
             }
@@ -125,7 +128,6 @@ const AddItem = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        // Validate step 2 fields
         if (!fromDate.color || !Array.isArray(fromDate.color) || fromDate.color.length === 0) {
             setFormErrorStep2("Please choose at least one color");
             return;
@@ -133,6 +135,11 @@ const AddItem = () => {
         
         if (!fromDate.weather || !Array.isArray(fromDate.weather) || fromDate.weather.length === 0) {
             setFormErrorStep2("Please choose at least one weather type");
+            return;
+        }
+        
+        if (!fromDate.style || !Array.isArray(fromDate.style) || fromDate.style.length === 0) {
+            setFormErrorStep2("Please choose at least one style");
             return;
         }
         
@@ -155,6 +162,7 @@ const AddItem = () => {
             itemType: Array.isArray(fromDate.itemType) ? fromDate.itemType[0] : fromDate.itemType,
             color: fromDate.color,
             weather: fromDate.weather,
+            style: fromDate.style,
             door: fromDate.door,
             shelf: fromDate.shelf
         };
@@ -193,6 +201,7 @@ const AddItem = () => {
     const commonOptions = ["Shirt", "Pants", "Dress", "Jacket", "Shoes", "Hat", "Scarf", "Belt", "Socks", "Gloves"];
     const colorOptions = ["Black", "White", "Red", "Blue", "Green", "Yellow", "Purple", "Pink", "Orange", "Brown"];
     const weatherOptions = ["Hot", "Cold", "Rainy", "Snow", "Windy", "Sunny", "Cloudy", "Stormy", "Foggy", "Humid"];
+    const styleOptions = ["Casual", "Formal", "Fancy", "Business", "Sports", "Party", "Beach", "Outdoor", "Elegant", "Vintage"];
 
     const validateStep1 = () => {
         if (!fromDate.wardrobe) {
@@ -295,6 +304,14 @@ const AddItem = () => {
                                     placeholder="Start typing weather..."
                                     onSelect={(selected) => handleInputChange({ target: { name: 'weather', value: selected } })}
                                     initialSelectedOptions={fromDate.weather}
+                                />
+
+                                <MultiSelectDropdown
+                                    options={styleOptions}
+                                    label="Choose Style"
+                                    placeholder="Start typing style..."
+                                    onSelect={(selected) => handleInputChange({ target: { name: 'style', value: selected } })}
+                                    initialSelectedOptions={fromDate.style}
                                 />
 
                                 <label>Upload Photo</label>
