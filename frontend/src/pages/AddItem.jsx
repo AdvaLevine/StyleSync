@@ -11,6 +11,8 @@ const AddItem = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [formError, setFormError] = useState("");
     const [formErrorStep2, setFormErrorStep2] = useState("");
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [isUploading, setIsUploading] = useState(false);
     const isFirstRender = useRef(true);
     const [fromDate, setFromDate] = useState({
         wardrobe: "",
@@ -21,8 +23,12 @@ const AddItem = () => {
         door: "",
         shelf: "",
         photo: null,
+        photoUrl: "", // Will store the S3 URL of the uploaded photo
     });
     const [step, setStep] = useState(1);
+    
+    // S3 bucket name - should match the one in your Lambda
+    const BUCKET_NAME = 'wardrobe-item-images';
 
     const fetchWardrobes = async () => {
         const userId = localStorage.getItem("user_id");
@@ -77,7 +83,8 @@ const AddItem = () => {
                 color: [],
                 weather: [],
                 style: [],
-                photo: null
+                photo: null,
+                photoUrl: "",
             }));
             setErrorMessage("");
             return;
@@ -95,7 +102,8 @@ const AddItem = () => {
                 color: [],
                 weather: [],
                 style: [],
-                photo: null
+                photo: null,
+                photoUrl: "",
             }));
         } else {
             const isSameWardrobe = fromDate.wardrobe === wardrobeName;
@@ -117,12 +125,158 @@ const AddItem = () => {
                     color: [],
                     weather: [],
                     style: [],
-                    photo: null
+                    photo: null,
+                    photoUrl: "",
                 }));
             }
         }
 
         setErrorMessage(""); 
+    };
+
+    // Get a presigned URL from Lambda
+    const getPresignedUrl = async (file) => {
+        try {
+            // יצירת שם קובץ ייחודי
+            const timestamp = new Date().getTime();
+            const fileName = `${timestamp}-${file.name}`;
+            
+            console.log("Requesting presigned URL for file:", fileName);
+            
+            // ננסה שיטת GET עם פרמטרים ב-URL
+            const url = `https://j9z90t8zqh.execute-api.us-east-1.amazonaws.com/dev/presigned-url?fileName=${encodeURIComponent(fileName)}&fileType=${encodeURIComponent(file.type)}`;
+            
+            console.log("Requesting from URL:", url);
+            
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json"
+                }
+            });
+            
+            console.log("Response status:", response.status);
+            
+            if (!response.ok) {
+                throw new Error(`Failed to get presigned URL: ${response.statusText}`);
+            }
+            
+            // הדפסה של התגובה המלאה
+            const responseText = await response.text();
+            console.log("Raw response from Lambda:", responseText);
+            
+            let data;
+            try {
+                data = JSON.parse(responseText);
+            } catch (e) {
+                console.error("Failed to parse response as JSON:", e);
+                throw new Error("Invalid response format from server");
+            }
+            
+            console.log("Parsed data:", data);
+            
+            // בדוק אם התגובה היא מבנה עם body פנימי
+            if (typeof data.body === 'string') {
+                try {
+                    const parsedBody = JSON.parse(data.body);
+                    console.log("Parsed body:", parsedBody);
+                    
+                    if (parsedBody.uploadURL) {
+                        return {
+                            uploadURL: parsedBody.uploadURL,
+                            fileName: fileName
+                        };
+                    }
+                } catch (e) {
+                    console.error("Failed to parse body:", e);
+                }
+            }
+            
+            // נסה למצוא את ה-URL בכל מיני מקומות אפשריים
+            if (data.uploadURL) {
+                return {
+                    uploadURL: data.uploadURL,
+                    fileName: fileName
+                };
+            }
+            
+            console.error("No uploadURL found in response:", data);
+            throw new Error("No upload URL returned from server");
+        } catch (error) {
+            console.error("Error getting presigned URL:", error);
+            throw error;
+        }
+    };
+    
+    // אם שיטת GET אינה עובדת, נסה להשתמש בנתיב /upload עם שיטת POST
+    // https://j9z90t8zqh.execute-api.us-east-1.amazonaws.com/dev/upload
+    
+    // Upload image to S3 using presigned URL
+    const uploadImageToS3 = async (file) => {
+        try {
+            setIsUploading(true);
+            setUploadProgress(0);
+            
+            // Get presigned URL from Lambda
+            console.log("Getting presigned URL...");
+            const presignedData = await getPresignedUrl(file);
+            
+            console.log("Presigned data received:", presignedData);
+            
+            if (!presignedData || !presignedData.uploadURL) {
+                console.error("Invalid presigned data:", presignedData);
+                throw new Error("No valid upload URL received");
+            }
+            
+            // Create a new XMLHttpRequest for tracking upload progress
+            const xhr = new XMLHttpRequest();
+            
+            // Track upload progress
+            xhr.upload.onprogress = (event) => {
+                if (event.lengthComputable) {
+                    const percentComplete = Math.round((event.loaded / event.total) * 100);
+                    setUploadProgress(percentComplete);
+                    console.log(`Upload progress: ${percentComplete}%`);
+                }
+            };
+            
+            // Setup promise to track completion
+            return new Promise((resolve, reject) => {
+                xhr.onload = () => {
+                    console.log("Upload response status:", xhr.status);
+                    
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        // Since we're using PUT, construct the S3 URL
+                        const s3Url = `https://${BUCKET_NAME}.s3.amazonaws.com/${presignedData.fileName}`;
+                        console.log("Successfully constructed S3 URL:", s3Url);
+                        
+                        resolve({
+                            url: s3Url,
+                            fileName: presignedData.fileName
+                        });
+                    } else {
+                        console.error("Upload failed with status:", xhr.status, xhr.responseText);
+                        reject(new Error(`Upload failed with status: ${xhr.status}`));
+                    }
+                };
+                
+                xhr.onerror = (e) => {
+                    console.error("XHR error during upload:", e);
+                    reject(new Error('Network error during upload'));
+                };
+                
+                // PUT request for the presigned URL
+                console.log("Opening PUT request to:", presignedData.uploadURL);
+                xhr.open('PUT', presignedData.uploadURL);
+                xhr.setRequestHeader('Content-Type', file.type);
+                xhr.send(file);
+            });
+        } catch (error) {
+            console.error("Error uploading to S3:", error);
+            throw error;
+        } finally {
+            setIsUploading(false);
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -156,18 +310,30 @@ const AddItem = () => {
             return;
         }
 
-        const payload = {
-            user_id: userId,
-            wardrobe: fromDate.wardrobe,
-            itemType: Array.isArray(fromDate.itemType) ? fromDate.itemType[0] : fromDate.itemType,
-            color: fromDate.color,
-            weather: fromDate.weather,
-            style: fromDate.style,
-            door: fromDate.door,
-            shelf: fromDate.shelf
-        };
-
         try {
+            // First upload the image to S3
+            const uploadResult = await uploadImageToS3(fromDate.photo);
+            
+            // Update form data with photoUrl
+            const updatedFromDate = {
+                ...fromDate,
+                photoUrl: uploadResult.url
+            };
+            setFromDate(updatedFromDate);
+            
+            // Create payload with the image URL
+            const payload = {
+                user_id: userId,
+                wardrobe: fromDate.wardrobe,
+                itemType: Array.isArray(fromDate.itemType) ? fromDate.itemType[0] : fromDate.itemType,
+                color: fromDate.color,
+                weather: fromDate.weather,
+                style: fromDate.style,
+                door: fromDate.door,
+                shelf: fromDate.shelf,
+                photoUrl: uploadResult.url
+            };
+
             console.log('Sending payload:', payload);
             const res = await fetch("https://ul2bdgg3g9.execute-api.us-east-1.amazonaws.com/dev/item", {
                 method: "POST",
@@ -321,6 +487,18 @@ const AddItem = () => {
                                     name="photo"
                                     onChange={handleInputChange}
                                 />
+                                
+                                {isUploading && (
+                                    <div className="upload-progress">
+                                        <div className="progress-bar">
+                                            <div 
+                                                className="progress-fill" 
+                                                style={{ width: `${uploadProgress}%` }}
+                                            ></div>
+                                        </div>
+                                        <div className="progress-text">{uploadProgress}% Uploaded</div>
+                                    </div>
+                                )}
                             </>
                         )}
                         
@@ -336,7 +514,13 @@ const AddItem = () => {
                             >
                                 Back
                             </button>
-                            <button type="submit" className="add-btn">Add</button>
+                            <button 
+                                type="submit" 
+                                className="add-btn"
+                                disabled={isUploading}
+                            >
+                                {isUploading ? "Uploading..." : "Add"}
+                            </button>
                         </div>
                     </form>
                 )}
