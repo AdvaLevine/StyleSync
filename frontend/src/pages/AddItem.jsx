@@ -35,7 +35,6 @@ const AddItem = () => {
         const response = await fetch(`https://o5199uwx89.execute-api.us-east-1.amazonaws.com/dev/wardrobes?userId=${userId}`);
         
         if (!response.ok) {
-            console.error("Failed to fetch wardrobes");
             return; 
         }
 
@@ -141,12 +140,8 @@ const AddItem = () => {
             const timestamp = new Date().getTime();
             const fileName = `${timestamp}-${file.name}`;
             
-            console.log("Requesting presigned URL for file:", fileName);
-            
             // ננסה שיטת GET עם פרמטרים ב-URL
             const url = `https://j9z90t8zqh.execute-api.us-east-1.amazonaws.com/dev/presigned-url?fileName=${encodeURIComponent(fileName)}&fileType=${encodeURIComponent(file.type)}`;
-            
-            console.log("Requesting from URL:", url);
             
             const response = await fetch(url, {
                 method: "GET",
@@ -155,31 +150,24 @@ const AddItem = () => {
                 }
             });
             
-            console.log("Response status:", response.status);
-            
             if (!response.ok) {
                 throw new Error(`Failed to get presigned URL: ${response.statusText}`);
             }
             
             // הדפסה של התגובה המלאה
             const responseText = await response.text();
-            console.log("Raw response from Lambda:", responseText);
             
             let data;
             try {
                 data = JSON.parse(responseText);
             } catch (e) {
-                console.error("Failed to parse response as JSON:", e);
                 throw new Error("Invalid response format from server");
             }
-            
-            console.log("Parsed data:", data);
             
             // בדוק אם התגובה היא מבנה עם body פנימי
             if (typeof data.body === 'string') {
                 try {
                     const parsedBody = JSON.parse(data.body);
-                    console.log("Parsed body:", parsedBody);
                     
                     if (parsedBody.uploadURL) {
                         return {
@@ -188,7 +176,7 @@ const AddItem = () => {
                         };
                     }
                 } catch (e) {
-                    console.error("Failed to parse body:", e);
+                    // Silent catch
                 }
             }
             
@@ -200,16 +188,11 @@ const AddItem = () => {
                 };
             }
             
-            console.error("No uploadURL found in response:", data);
             throw new Error("No upload URL returned from server");
         } catch (error) {
-            console.error("Error getting presigned URL:", error);
             throw error;
         }
     };
-    
-    // אם שיטת GET אינה עובדת, נסה להשתמש בנתיב /upload עם שיטת POST
-    // https://j9z90t8zqh.execute-api.us-east-1.amazonaws.com/dev/upload
     
     // Upload image to S3 using presigned URL
     const uploadImageToS3 = async (file) => {
@@ -218,64 +201,60 @@ const AddItem = () => {
             setUploadProgress(0);
             
             // Get presigned URL from Lambda
-            console.log("Getting presigned URL...");
             const presignedData = await getPresignedUrl(file);
             
-            console.log("Presigned data received:", presignedData);
-            
             if (!presignedData || !presignedData.uploadURL) {
-                console.error("Invalid presigned data:", presignedData);
                 throw new Error("No valid upload URL received");
             }
             
             // Create a new XMLHttpRequest for tracking upload progress
             const xhr = new XMLHttpRequest();
             
-            // Track upload progress
+            // Improved progress event handling with explicit React state updates
             xhr.upload.onprogress = (event) => {
                 if (event.lengthComputable) {
                     const percentComplete = Math.round((event.loaded / event.total) * 100);
-                    setUploadProgress(percentComplete);
-                    console.log(`Upload progress: ${percentComplete}%`);
+                    // Force React state update with setTimeout to ensure UI updates
+                    setTimeout(() => {
+                        setUploadProgress(percentComplete);
+                    }, 0);
                 }
             };
             
             // Setup promise to track completion
             return new Promise((resolve, reject) => {
                 xhr.onload = () => {
-                    console.log("Upload response status:", xhr.status);
-                    
                     if (xhr.status >= 200 && xhr.status < 300) {
                         // Since we're using PUT, construct the S3 URL
                         const s3Url = `https://${BUCKET_NAME}.s3.amazonaws.com/${presignedData.fileName}`;
-                        console.log("Successfully constructed S3 URL:", s3Url);
                         
                         resolve({
                             url: s3Url,
                             fileName: presignedData.fileName
                         });
                     } else {
-                        console.error("Upload failed with status:", xhr.status, xhr.responseText);
                         reject(new Error(`Upload failed with status: ${xhr.status}`));
                     }
                 };
                 
                 xhr.onerror = (e) => {
-                    console.error("XHR error during upload:", e);
                     reject(new Error('Network error during upload'));
                 };
                 
                 // PUT request for the presigned URL
-                console.log("Opening PUT request to:", presignedData.uploadURL);
                 xhr.open('PUT', presignedData.uploadURL);
                 xhr.setRequestHeader('Content-Type', file.type);
                 xhr.send(file);
             });
         } catch (error) {
-            console.error("Error uploading to S3:", error);
             throw error;
         } finally {
-            setIsUploading(false);
+            // Don't immediately hide the upload status when complete
+            if (uploadProgress >= 100) {
+                setTimeout(() => {
+                    setIsUploading(false);
+                }, 2000); // Show the success message for 2 seconds
+            }
         }
     };
 
@@ -334,7 +313,6 @@ const AddItem = () => {
                 photoUrl: uploadResult.url
             };
 
-            console.log('Sending payload:', payload);
             const res = await fetch("https://ul2bdgg3g9.execute-api.us-east-1.amazonaws.com/dev/item", {
                 method: "POST",
                 headers: { 
@@ -346,20 +324,13 @@ const AddItem = () => {
 
             if (!res.ok) {
                 const errorData = await res.json().catch(() => ({}));
-                console.error('API Error:', {
-                    status: res.status,
-                    statusText: res.statusText,
-                    errorData
-                });
                 throw new Error(errorData.message || `HTTP error! status: ${res.status}`);
             }
 
-            const result = await res.json();
-            console.log('Success response:', result);
-            alert("Item added successfully!");
+            await res.json();
+            // Removed alert - navigate directly to home
             navigate("/home");
         } catch (err) {
-            console.error('Error details:', err);
             alert(`Could not add item: ${err.message}`);
         }
     };
@@ -496,7 +467,11 @@ const AddItem = () => {
                                                 style={{ width: `${uploadProgress}%` }}
                                             ></div>
                                         </div>
-                                        <div className="progress-text">{uploadProgress}% Uploaded</div>
+                                        <div className="progress-text">
+                                            {uploadProgress < 100 
+                                                ? "Uploading..." 
+                                                : "✓ Upload Complete!"}
+                                        </div>
                                     </div>
                                 )}
                             </>
