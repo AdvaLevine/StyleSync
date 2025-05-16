@@ -77,10 +77,24 @@ html body {
     justify-content: space-between;
 }
 
+/* Prevent dropdown input from stretching too wide */
 .dropdown-wrapper {
     flex: 1;
     margin-right: 15px;
     text-align: left;
+    max-width: 300px; /* Limit maximum width */
+}
+
+.dropdown-wrapper input {
+    width: 100%;
+    max-width: 300px; /* Ensure input doesn't stretch beyond this */
+    box-sizing: border-box;
+}
+
+/* When in image view mode with wider container */
+.view-wardrobe-box:has(.items-container.images) .dropdown-wrapper,
+.view-wardrobe-box.list-view .dropdown-wrapper {
+    max-width: 300px; /* Keep consistent even in wider containers */
 }
 
 .dropdown-wrapper .dropdown label {
@@ -128,8 +142,9 @@ html body {
 /* Image view styles */
 .items-container.images {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(3, 1fr); /* Fixed 3 columns minimum */
+    gap: 20px;
+    width: 100%;
 }
 
 .item-card {
@@ -351,5 +366,31 @@ html body {
     .error-message {
         font-size: 12px;
         padding: 8px;
+    }
+}
+
+/* Wider container for image view */
+.view-wardrobe-box:has(.items-container.images) {
+    width: 850px; /* Much wider for images view */
+    max-width: 95vw; /* Responsive, but allows expansion */
+}
+
+/* Keep list view container width */
+.view-wardrobe-box.list-view {
+    width: 850px;
+    max-width: 95vw;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 900px) {
+    .items-container.images {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}
+
+/* For very small screens, ensure at least 2 columns */
+@media screen and (max-width: 600px) {
+    .items-container.images {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
