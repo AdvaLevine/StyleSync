@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './MultiSelectDropdown.css'; // Add styles for the multi-select dropdown
 
-export default function MultiSelectDropdown({ options, label, placeholder, onSelect }) {
+export default function MultiSelectDropdown({ options, label, placeholder, onSelect, initialSelectedOptions }) {
   const [inputValue, setInputValue] = useState('');
+  const [selectedOptions, setSelectedOptions] = useState(initialSelectedOptions || []);
   const [showList, setShowList] = useState(false);
-  const [selectedOptions, setSelectedOptions] = useState([]); // Track selected options
+
+  // Update selected options when initialSelectedOptions changes
+  useEffect(() => {
+    if (initialSelectedOptions && Array.isArray(initialSelectedOptions)) {
+      setSelectedOptions(initialSelectedOptions);
+    }
+  }, [initialSelectedOptions]);
 
   // Filter options based on input and exclude already selected options
   const filteredOptions = options
@@ -16,17 +23,17 @@ export default function MultiSelectDropdown({ options, label, placeholder, onSel
     );
 
   const handleSelect = (option) => {
-    const updatedSelections = [...selectedOptions, option];
-    setSelectedOptions(updatedSelections);
+    const newSelectedOptions = [...selectedOptions, option];
+    setSelectedOptions(newSelectedOptions);
     setInputValue(''); // Clear the input field
     setShowList(false); // Hide the dropdown
-    onSelect(updatedSelections); // Pass the updated selections to the parent
+    onSelect(newSelectedOptions); // Pass the updated selections to the parent
   };
 
   const handleRemove = (option) => {
-    const updatedSelections = selectedOptions.filter((item) => item !== option);
-    setSelectedOptions(updatedSelections);
-    onSelect(updatedSelections); // Pass the updated selections to the parent
+    const newSelectedOptions = selectedOptions.filter((item) => item !== option);
+    setSelectedOptions(newSelectedOptions);
+    onSelect(newSelectedOptions); // Pass the updated selections to the parent
   };
 
   return (
@@ -42,34 +49,37 @@ export default function MultiSelectDropdown({ options, label, placeholder, onSel
           }}
           onFocus={() => setShowList(true)}
           onBlur={() => setTimeout(() => setShowList(false), 200)}
-          placeholder={placeholder}
+          placeholder={selectedOptions.length === 0 ? placeholder : ''}
         />
+        {showList && (
+          <ul className="dropdown-list">
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((option, i) => (
+                <li key={i} onClick={() => handleSelect(option)}>
+                  {option}
+                </li>
+              ))
+            ) : (
+              <li className="no-match">No matches</li>
+            )}
+          </ul>
+        )}
+      </div>
+      
+      {selectedOptions.length > 0 && (
         <ul className="selected-options">
           {selectedOptions.map((option, i) => (
             <li key={i} className="selected-option">
               {option}
-              <button
-                type="button"
-                className="remove-option"
+              <button 
+                className="remove-option" 
                 onClick={() => handleRemove(option)}
+                type="button"
               >
-                ✕
+                ×
               </button>
             </li>
           ))}
-        </ul>
-      </div>
-      {showList && (
-        <ul className="dropdown-list">
-          {filteredOptions.length > 0 ? (
-            filteredOptions.map((option, i) => (
-              <li key={i} onClick={() => handleSelect(option)}>
-                {option}
-              </li>
-            ))
-          ) : (
-            <li className="no-match">No matches</li>
-          )}
         </ul>
       )}
     </div>
