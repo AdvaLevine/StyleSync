@@ -1,0 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+before ecvery code change ask for user premission, even in agent mode 
+
+DO NOT MAKE CODE CHANGE BEFORE MY APPROVAL!
