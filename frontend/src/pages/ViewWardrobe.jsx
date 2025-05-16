@@ -10,6 +10,7 @@ const ViewWardrobe = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [viewMode, setViewMode] = useState('images'); // 'images' or 'list'
+    const [displayItems, setDisplayItems] = useState(false); // New state to control when to display items
     const isFirstRender = useRef(true);
 
     // Fetch wardrobes on component mount
@@ -29,7 +30,7 @@ const ViewWardrobe = () => {
         }
     };
 
-    // Fetch items for the selected wardrobe
+    // Updated to use a single Lambda endpoint with viewMode parameter
     const fetchWardrobeItems = async (wardrobeName) => {
         if (!wardrobeName) return;
         
@@ -38,8 +39,8 @@ const ViewWardrobe = () => {
         
         try {
             const userId = localStorage.getItem("user_id");
-            //fetch items by wardrobe name todo
-            const response = await fetch(`https://ul2bdgg3g9.execute-api.us-east-1.amazonaws.com/dev/items?userId=${userId}&wardrobe=${wardrobeName}`);
+            // Use a single Lambda endpoint and pass the viewMode parameter
+            const response = await fetch(`https://fml6ajrze5.execute-api.us-east-1.amazonaws.com/dev/items?userId=${userId}&wardrobe=${wardrobeName}&viewMode=${viewMode}`);
             
             if (!response.ok) {
                 throw new Error("Failed to fetch wardrobe items");
@@ -47,6 +48,7 @@ const ViewWardrobe = () => {
 
             const data = await response.json();
             setItems(data);
+            setDisplayItems(true); // Show items after successful fetch
         } catch (error) {
             setError("Error fetching items: " + error.message);
             setItems([]);
@@ -67,18 +69,29 @@ const ViewWardrobe = () => {
     const handleWardrobeSelect = (wardrobeName) => {
         const wardrobe = wardrobes.find(w => w.name === wardrobeName);
         setSelectedWardrobe(wardrobe);
-        fetchWardrobeItems(wardrobeName);
+        setDisplayItems(false); // מסתיר פריטים קודמים בעת בחירת ארון חדש
     };
 
     // Toggle between image and list view
     const toggleViewMode = () => {
         setViewMode(viewMode === 'images' ? 'list' : 'images');
+        setDisplayItems(false); // Hide items when changing view mode
+    };
+
+    // Handle View button click
+    const handleViewClick = () => {
+        if (selectedWardrobe) {
+            fetchWardrobeItems(selectedWardrobe.name);
+        } else {
+            setError("Please select a wardrobe before viewing items");
+            setDisplayItems(false);
+        }
     };
 
     return (
         <div className="view-wardrobe-container">
             <Link to="/home" className="back-button">⟵</Link>
-            <div className="view-wardrobe-box">
+            <div className={`view-wardrobe-box ${viewMode === 'list' ? 'list-view' : ''}`}>
                 <h2>View Wardrobe</h2>
                 
                 <div className="view-options">
@@ -105,22 +118,27 @@ const ViewWardrobe = () => {
                     </div>
                 </div>
                 
+                {/* View button - always show regardless of wardrobe selection */}
+                <div className="view-actions">
+                    <button className="view-button small-right" onClick={handleViewClick}>View</button>
+                </div>
+                
                 {loading && <div className="loading">Loading items...</div>}
                 {error && <p className="error-message">{error}</p>}
                 
-                {!loading && !error && items.length === 0 && selectedWardrobe && (
+                {!loading && !error && displayItems && items.length === 0 && selectedWardrobe && (
                     <p className="no-items-message">No items found in this wardrobe.</p>
                 )}
                 
-                {!loading && !error && items.length > 0 && (
+                {!loading && !error && displayItems && items.length > 0 && (
                     <div className={`items-container ${viewMode}`}>
                         {viewMode === 'images' ? (
                             // Image view mode
                             items.map(item => (
                                 <div key={item.id} className="item-card">
                                     <div className="item-image">
-                                        {item.photo ? (
-                                            <img src={item.photo} alt={item.itemType} />
+                                        {item.photoUrl ? (
+                                            <img src={item.photoUrl} alt={item.itemType} />
                                         ) : (
                                             <div className="placeholder-image">
                                                 <i className="image-icon">🖼️</i>
@@ -141,6 +159,7 @@ const ViewWardrobe = () => {
                                         <th>Type</th>
                                         <th>Color</th>
                                         <th>Weather</th>
+                                        <th>Style</th>
                                         <th>Location</th>
                                     </tr>
                                 </thead>
@@ -148,20 +167,15 @@ const ViewWardrobe = () => {
                                     {items.map(item => (
                                         <tr key={item.id}>
                                             <td>{item.itemType}</td>
-                                            <td>{item.color.join(', ')}</td>
-                                            <td>{item.weather.join(', ')}</td>
+                                            <td>{Array.isArray(item.color) ? item.color.join(', ') : 'N/A'}</td>
+                                            <td>{Array.isArray(item.weather) ? item.weather.join(', ') : 'N/A'}</td>
+                                            <td>{Array.isArray(item.style) ? item.style.join(', ') : 'N/A'}</td>
                                             <td>Door: {item.door}, Shelf: {item.shelf}</td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
                         )}
-                    </div>
-                )}
-                
-                {selectedWardrobe && items.length > 0 && (
-                    <div className="view-actions">
-                        <button className="view-button">View</button>
                     </div>
                 )}
             </div>

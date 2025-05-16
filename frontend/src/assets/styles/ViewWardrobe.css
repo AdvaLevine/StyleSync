@@ -49,13 +49,19 @@ html body {
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    transition: width 0.3s ease;
+}
+
+/* הגדלת קופסת התצוגה כשיש טבלה */
+.view-wardrobe-box.list-view {
+    width: 700px;
 }
 
 /* View Wardrobe Title */
 .view-wardrobe-box h2 {
     font-size: 24px;
     color: #111;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     text-align: center;
     margin-top: 0px;
 }
@@ -67,14 +73,28 @@ html body {
 
 .view-options-row {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: space-between;
 }
 
+/* Prevent dropdown input from stretching too wide */
 .dropdown-wrapper {
     flex: 1;
     margin-right: 15px;
     text-align: left;
+    max-width: 300px; /* Limit maximum width */
+}
+
+.dropdown-wrapper input {
+    width: 100%;
+    max-width: 300px; /* Ensure input doesn't stretch beyond this */
+    box-sizing: border-box;
+}
+
+/* When in image view mode with wider container */
+.view-wardrobe-box:has(.items-container.images) .dropdown-wrapper,
+.view-wardrobe-box.list-view .dropdown-wrapper {
+    max-width: 300px; /* Keep consistent even in wider containers */
 }
 
 .dropdown-wrapper .dropdown label {
@@ -91,7 +111,8 @@ html body {
     display: flex;
     align-items: center;
     margin-left: 10px;
-    margin-bottom: 5px; /* Aligns with dropdown input */
+    margin-bottom: 0;
+    margin-top: 25px;
 }
 
 .view-mode-toggle label {
@@ -110,41 +131,62 @@ html body {
 /* Items container */
 .items-container {
     margin-top: 20px;
-    max-height: 400px;
-    overflow-y: auto;
+    max-height: 60vh; /* Limit height to 60% of viewport height */
+    overflow-y: auto; /* Add vertical scrollbar when needed */
+}
+
+/* List view mode needs more space */
+.items-container.list {
+    width: 100%;
+    overflow-x: auto;
+    padding-right: 5px; /* Add padding for scrollbar */
 }
 
 /* Image view styles */
 .items-container.images {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    padding-right: 5px; /* Add padding for scrollbar */
 }
 
+/* More elegant item card styling with visible border */
 .item-card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    border: 1px solid #e0ebff; /* Add subtle border */
+    border-radius: 12px;
     overflow: hidden;
-    transition: transform 0.2s;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(74, 134, 232, 0.08);
+    background: white;
+    position: relative;
 }
 
 .item-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(74, 134, 232, 0.15);
+    border-color: #c0d6ff; /* Darker border on hover */
 }
 
 .item-image {
-    height: 120px;
-    background-color: #f5f5f5;
+    height: 170px; /* Increase height further (was 150px) */
+    background-color: #f8fbff;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-bottom: 1px solid #edf4ff;
+    overflow: hidden;
 }
 
 .item-image img {
     max-width: 100%;
     max-height: 100%;
     object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.item-card:hover .item-image img {
+    transform: scale(1.05);
 }
 
 .placeholder-image {
@@ -153,39 +195,136 @@ html body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
-    color: #aaa;
+    font-size: 2.2rem;
+    color: #a4c2f4;
+    background-image: linear-gradient(45deg, #f5f9ff 25%, #edf4ff 25%, #edf4ff 50%, #f5f9ff 50%, #f5f9ff 75%, #edf4ff 75%, #edf4ff 100%);
+    background-size: 20px 20px;
 }
 
 .item-details {
-    padding: 10px;
+    padding: 5px 10px; /* Further reduce padding (was 8px 12px) */
     font-size: 0.9rem;
+    background-color: white;
+    border-top: 1px solid rgba(164, 194, 244, 0.1);
+    min-height: 35px; /* Reduce minimum height (was 50px) */
 }
 
 .item-details p {
-    margin: 5px 0;
+    margin: 2px 0; /* Tighter margin for all paragraphs */
 }
 
-/* List view styles */
+.item-details p:first-child {
+    font-weight: 600;
+    color: #4a86e8;
+    font-size: 0.9rem; /* Slightly smaller font */
+}
+
+.item-details p:last-child {
+    color: #5b9bd5;
+    font-size: 0.75rem; /* Even smaller font */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Light Blue Table Theme */
 .items-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+    margin: 15px 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.items-table th,
-.items-table td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+/* Light blue header */
+.items-table thead tr {
+    background: none;
 }
 
 .items-table th {
-    background-color: #f5f5f5;
-    font-weight: bold;
+    color: #4a86e8;
+    font-weight: 600;
+    padding: 12px 15px;
+    text-align: center;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    border-bottom: 3px solid #a4c2f4;
 }
 
-.items-table tr:hover {
-    background-color: #f9f9f9;
+/* Card-style rows with light blue accents */
+.items-table tbody tr {
+    box-shadow: 0 3px 10px rgba(164, 194, 244, 0.2);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    transition: transform 0.2s, box-shadow 0.3s;
+}
+
+.items-table tbody tr:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(164, 194, 244, 0.4);
+    background: #ebf3ff;
+}
+
+.items-table td {
+    background-color: #f0f8ff;
+    padding: 15px;
+    border: none;
+}
+
+/* Rounded corners for each card */
+.items-table td:first-child {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.items-table td:last-child {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+/* Column styles with light blue tones */
+.items-table td:first-child { /* Type */
+    font-weight: 600;
+    color: #4a86e8;
+    border-left: 4px solid #a4c2f4;
+}
+
+.items-table td:nth-child(2) { /* Color */
+    color: #5b9bd5;
+}
+
+.items-table td:nth-child(3) { /* Weather */
+    color: #6fa8dc;
+}
+
+.items-table td:nth-child(4) { /* Style */
+    color: #5b9bd5;
+    font-style: italic;
+}
+
+.items-table td:nth-child(5) { /* Location */
+    font-weight: 500;
+    color: #4a86e8;
+}
+
+/* Make container match the style */
+.view-wardrobe-box.list-view {
+    width: 850px;
+    max-width: 92vw;
+    background: #f5f7fa;
+    border-radius: 12px;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .items-container.list {
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+    
+    .items-table {
+        min-width: 650px;
+    }
 }
 
 .loading {
@@ -212,13 +351,13 @@ html body {
 }
 
 .view-actions {
-    margin-top: 20px;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
 }
 
+/* Blue View Button */
 .view-button {
-    background-color: black;
+    background-color: #4a86e8;
     color: white;
     font-size: 16px;
     font-weight: bold;
@@ -229,10 +368,18 @@ html body {
     margin-top: 10px;
     margin-bottom: 5px;
     font-family: Georgia, 'Times New Roman', Times, serif;
+    transition: background-color 0.2s ease;
 }
 
 .view-button:hover {
-    background: #333;
+    background: #3b78de;
+}
+
+.view-button.small-right {
+    font-size: 14px;
+    padding: 6px 20px;
+    width: auto;
+    align-self: flex-end;
 }
 
 /* Responsive styles */
@@ -255,4 +402,49 @@ html body {
         font-size: 12px;
         padding: 8px;
     }
+}
+
+/* Wider container for image view */
+.view-wardrobe-box:has(.items-container.images) {
+    width: 850px; /* Much wider for images view */
+    max-width: 95vw; /* Responsive, but allows expansion */
+}
+
+/* Keep list view container width */
+.view-wardrobe-box.list-view {
+    width: 850px;
+    max-width: 95vw;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 900px) {
+    .items-container.images {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}
+
+/* For very small screens, ensure at least 2 columns */
+@media screen and (max-width: 600px) {
+    .items-container.images {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Style the scrollbar for better appearance */
+.items-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.items-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.items-container::-webkit-scrollbar-thumb {
+    background: #a4c2f4;
+    border-radius: 4px;
+}
+
+.items-container::-webkit-scrollbar-thumb:hover {
+    background: #4a86e8;
 }
