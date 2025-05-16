@@ -131,20 +131,24 @@ html body {
 /* Items container */
 .items-container {
     margin-top: 20px;
+    max-height: 60vh; /* Limit height to 60% of viewport height */
+    overflow-y: auto; /* Add vertical scrollbar when needed */
 }
 
 /* List view mode needs more space */
 .items-container.list {
     width: 100%;
     overflow-x: auto;
+    padding-right: 5px; /* Add padding for scrollbar */
 }
 
 /* Image view styles */
 .items-container.images {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Fixed 3 columns minimum */
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     width: 100%;
+    padding-right: 5px; /* Add padding for scrollbar */
 }
 
 .item-card {
@@ -393,4 +397,23 @@ html body {
     .items-container.images {
         grid-template-columns: repeat(2, 1fr);
     }
+}
+
+/* Style the scrollbar for better appearance */
+.items-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.items-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.items-container::-webkit-scrollbar-thumb {
+    background: #a4c2f4;
+    border-radius: 4px;
+}
+
+.items-container::-webkit-scrollbar-thumb:hover {
+    background: #4a86e8;
 }
