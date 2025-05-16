@@ -151,30 +151,42 @@ html body {
     padding-right: 5px; /* Add padding for scrollbar */
 }
 
+/* More elegant item card styling with visible border */
 .item-card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    border: 1px solid #e0ebff; /* Add subtle border */
+    border-radius: 12px;
     overflow: hidden;
-    transition: transform 0.2s;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(74, 134, 232, 0.08);
+    background: white;
+    position: relative;
 }
 
 .item-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(74, 134, 232, 0.15);
+    border-color: #c0d6ff; /* Darker border on hover */
 }
 
 .item-image {
-    height: 120px;
-    background-color: #f5f5f5;
+    height: 170px; /* Increase height further (was 150px) */
+    background-color: #f8fbff;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-bottom: 1px solid #edf4ff;
+    overflow: hidden;
 }
 
 .item-image img {
     max-width: 100%;
     max-height: 100%;
     object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.item-card:hover .item-image img {
+    transform: scale(1.05);
 }
 
 .placeholder-image {
@@ -183,17 +195,36 @@ html body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
-    color: #aaa;
+    font-size: 2.2rem;
+    color: #a4c2f4;
+    background-image: linear-gradient(45deg, #f5f9ff 25%, #edf4ff 25%, #edf4ff 50%, #f5f9ff 50%, #f5f9ff 75%, #edf4ff 75%, #edf4ff 100%);
+    background-size: 20px 20px;
 }
 
 .item-details {
-    padding: 10px;
+    padding: 5px 10px; /* Further reduce padding (was 8px 12px) */
     font-size: 0.9rem;
+    background-color: white;
+    border-top: 1px solid rgba(164, 194, 244, 0.1);
+    min-height: 35px; /* Reduce minimum height (was 50px) */
 }
 
 .item-details p {
-    margin: 5px 0;
+    margin: 2px 0; /* Tighter margin for all paragraphs */
+}
+
+.item-details p:first-child {
+    font-weight: 600;
+    color: #4a86e8;
+    font-size: 0.9rem; /* Slightly smaller font */
+}
+
+.item-details p:last-child {
+    color: #5b9bd5;
+    font-size: 0.75rem; /* Even smaller font */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Light Blue Table Theme */
