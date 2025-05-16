@@ -91,7 +91,7 @@ const ViewWardrobe = () => {
     return (
         <div className="view-wardrobe-container">
             <Link to="/home" className="back-button">⟵</Link>
-            <div className="view-wardrobe-box">
+            <div className={`view-wardrobe-box ${viewMode === 'list' ? 'list-view' : ''}`}>
                 <h2>View Wardrobe</h2>
                 
                 <div className="view-options">
@@ -159,6 +159,7 @@ const ViewWardrobe = () => {
                                         <th>Type</th>
                                         <th>Color</th>
                                         <th>Weather</th>
+                                        <th>Style</th>
                                         <th>Location</th>
                                     </tr>
                                 </thead>
@@ -166,8 +167,9 @@ const ViewWardrobe = () => {
                                     {items.map(item => (
                                         <tr key={item.id}>
                                             <td>{item.itemType}</td>
-                                            <td>{item.color.join(', ')}</td>
-                                            <td>{item.weather.join(', ')}</td>
+                                            <td>{Array.isArray(item.color) ? item.color.join(', ') : 'N/A'}</td>
+                                            <td>{Array.isArray(item.weather) ? item.weather.join(', ') : 'N/A'}</td>
+                                            <td>{Array.isArray(item.style) ? item.style.join(', ') : 'N/A'}</td>
                                             <td>Door: {item.door}, Shelf: {item.shelf}</td>
                                         </tr>
                                     ))}

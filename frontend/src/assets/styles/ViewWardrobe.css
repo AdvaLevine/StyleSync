@@ -49,6 +49,12 @@ html body {
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    transition: width 0.3s ease;
+}
+
+/* הגדלת קופסת התצוגה כשיש טבלה */
+.view-wardrobe-box.list-view {
+    width: 700px;
 }
 
 /* View Wardrobe Title */
@@ -111,8 +117,12 @@ html body {
 /* Items container */
 .items-container {
     margin-top: 20px;
-    max-height: 400px;
-    overflow-y: auto;
+}
+
+/* List view mode needs more space */
+.items-container.list {
+    width: 100%;
+    overflow-x: auto;
 }
 
 /* Image view styles */
