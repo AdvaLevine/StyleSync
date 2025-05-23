@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import MoonLoader from "react-spinners/MoonLoader";
-import { Link } from "react-router-dom";
 
 const GenerateCustomOutfit = () => {
   const [weather, setWeather] = useState("Any Weather");
@@ -54,7 +53,6 @@ const GenerateCustomOutfit = () => {
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100">
-     <Link to="/home" className="back-button">⟵</Link>
       <div className="container" style={{ maxWidth: '600px' }}>
         <div className="card p-4 shadow-sm">
           <h1 className="card-title text-center">Generate Outfit Recommendation</h1>

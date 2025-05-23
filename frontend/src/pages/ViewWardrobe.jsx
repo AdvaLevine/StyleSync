@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import Dropdown from '../components/Dropdown';
 import '../assets/styles/ViewWardrobe.css';
 
@@ -90,7 +89,6 @@ const ViewWardrobe = () => {
 
     return (
         <div className="view-wardrobe-container">
-            <Link to="/home" className="back-button">⟵</Link>
             <div className={`view-wardrobe-box ${viewMode === 'list' ? 'list-view' : ''}`}>
                 <h2>View Wardrobe</h2>
                 

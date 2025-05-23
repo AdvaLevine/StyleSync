@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import MoonLoader from "react-spinners/MoonLoader";
 import "../../assets/styles/CreateWardrobe.css";  
 
@@ -50,8 +50,6 @@ const CreateWardrobe = () => {
       return (
           <div className="create-wardrobe-container">
               <div className="create-wardrobe-box">
-                {/* Back Button */}
-                <Link to="/home" className="back-button">⟵</Link>
                   <h2>Create Wardrobe</h2>
                   <form onSubmit={handleSubmit}>
                       <label>Choose Wardrobe Name</label>

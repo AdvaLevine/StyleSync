@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import "../assets/styles/AddItem.css";
 import Dropdown from '../components/Dropdown';
 import MultiSelectDropdown from '../components/MultiSelectDropdown';
@@ -370,7 +370,6 @@ const AddItem = () => {
 
     return (
         <div className="add-item-container">
-            <Link to="/home" className="back-button">⟵</Link>
             <div className="add-item-box">
                 <h2>Add Item</h2>
                 {step === 1 && (
