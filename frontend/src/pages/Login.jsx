@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { CognitoUser, AuthenticationDetails } from 'amazon-cognito-identity-js';
 import MoonLoader from "react-spinners/MoonLoader";
 import userPool from "../aws/UserPool";
+import { forceWardrobeCacheRefresh } from "../services/wardrobeCache";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -38,8 +39,15 @@ const Login = () => {
           attributes.forEach(attr => {
             attrs[attr.getName()] = attr.getValue();
           });
+          
+          // Store user info in localStorage
           localStorage.setItem("user_id", attrs.sub);
           localStorage.setItem("name", attrs.name);
+          
+          // Force cache refresh on login
+          forceWardrobeCacheRefresh();
+          
+          // Navigate to home
           navigate("/home", { state: { name: attrs.name } });
         });
       },
