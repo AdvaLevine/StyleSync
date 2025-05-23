@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import Dropdown from '../components/Dropdown';
 import '../assets/styles/ViewWardrobe.css';
 import { getCachedWardrobes } from '../services/wardrobeCache';
+import { Shirt } from "lucide-react";
 
 const ViewWardrobe = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [wardrobes, setWardrobes] = useState([]);
     const [selectedWardrobe, setSelectedWardrobe] = useState(null);
     const [items, setItems] = useState([]);
@@ -13,23 +15,10 @@ const ViewWardrobe = () => {
     const [error, setError] = useState('');
     const [viewMode, setViewMode] = useState('images'); // 'images' or 'list'
     const [displayItems, setDisplayItems] = useState(false); // New state to control when to display items
-
-    // Load wardrobes from cache with better error handling
-    useEffect(() => {
-        const cached = getCachedWardrobes();
-        if (cached && cached.length > 0) {
-            setWardrobes(cached);
-        } else {
-            // If cache is empty, redirect to Home to refresh
-            setError("No wardrobe data available. Redirecting to Home page...");
-            setTimeout(() => {
-                navigate('/home');
-            }, 2000);
-        }
-    }, [navigate]);
+    const [hasWardrobes, setHasWardrobes] = useState(true); // Track if user has any wardrobes
 
     // Updated to use a single Lambda endpoint with viewMode parameter
-    const fetchWardrobeItems = async (wardrobeName) => {
+    const fetchWardrobeItems = useCallback(async (wardrobeName) => {
         if (!wardrobeName) return;
         
         setLoading(true);
@@ -53,7 +42,29 @@ const ViewWardrobe = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [viewMode]);
+
+    // Load wardrobes from cache with better error handling
+    useEffect(() => {
+        const cached = getCachedWardrobes();
+        if (cached && cached.length > 0) {
+            setWardrobes(cached);
+            setHasWardrobes(true);
+            
+            // Check if a wardrobe name was passed in the location state
+            const passedWardrobeName = location.state?.wardrobeName;
+            if (passedWardrobeName) {
+                const wardrobe = cached.find(w => w.name === passedWardrobeName);
+                if (wardrobe) {
+                    setSelectedWardrobe(wardrobe);
+                    // No automatic fetch here - user will need to click View
+                }
+            }
+        } else {
+            // User has no wardrobes, show the "Create Wardrobe First" screen
+            setHasWardrobes(false);
+        }
+    }, [navigate, location.state]);
 
     // Handle wardrobe selection
     const handleWardrobeSelect = (wardrobeName) => {
@@ -78,6 +89,24 @@ const ViewWardrobe = () => {
         }
     };
 
+    // If user has no wardrobes, show the "Create Wardrobe First" screen
+    if (!hasWardrobes) {
+        return (
+            <div className="view-wardrobe-container">
+                <div className="no-wardrobe-message">
+                    <div className="no-wardrobe-icon">
+                        <Shirt size={48} />
+                    </div>
+                    <h2>Create a Wardrobe First</h2>
+                    <p>You need to create a wardrobe before viewing items</p>
+                    <Link to="/create-wardrobe" className="create-wardrobe-btn">
+                        Create Your First Wardrobe
+                    </Link>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="view-wardrobe-container">
             <div className={`view-wardrobe-box ${viewMode === 'list' ? 'list-view' : ''}`}>
@@ -91,6 +120,7 @@ const ViewWardrobe = () => {
                                 label="Wardrobe Name"
                                 placeholder="Select a wardrobe..."
                                 onSelect={handleWardrobeSelect}
+                                initialValue={selectedWardrobe?.name} 
                             />
                         </div>
                         

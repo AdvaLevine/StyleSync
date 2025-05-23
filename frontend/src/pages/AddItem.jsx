@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import "../assets/styles/AddItem.css";
 import Dropdown from '../components/Dropdown';
 import MultiSelectDropdown from '../components/MultiSelectDropdown';
 import { getCachedWardrobes } from '../services/wardrobeCache';
+import { Shirt } from "lucide-react";
 
 const AddItem = () => {
     const navigate = useNavigate();
@@ -14,6 +15,7 @@ const AddItem = () => {
     const [formErrorStep2, setFormErrorStep2] = useState("");
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
+    const [hasWardrobes, setHasWardrobes] = useState(true); // Track if user has any wardrobes
     const [fromDate, setFromDate] = useState({
         wardrobe: "",
         itemType: "",
@@ -35,11 +37,30 @@ const AddItem = () => {
         const cached = getCachedWardrobes();
         if (cached && cached.length > 0) {
             setWardrobes(cached);
+            setHasWardrobes(true);
         } else {
-            // If cache is empty, we need to navigate to Home to refresh
-            navigate("/home");
+            // User has no wardrobes, show the "Create Wardrobe First" screen
+            setHasWardrobes(false);
         }
     }, [navigate]);
+
+    // If user has no wardrobes, show the "Create Wardrobe First" screen
+    if (!hasWardrobes) {
+        return (
+            <div className="add-item-container">
+                <div className="no-wardrobe-message">
+                    <div className="no-wardrobe-icon">
+                        <Shirt size={48} />
+                    </div>
+                    <h2>Create a Wardrobe First</h2>
+                    <p>You need to create a wardrobe before adding items</p>
+                    <Link to="/create-wardrobe" className="create-wardrobe-btn">
+                        Create Your First Wardrobe
+                    </Link>
+                </div>
+            </div>
+        );
+    }
 
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;

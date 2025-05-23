@@ -125,9 +125,8 @@ const Home = () => {
                   <div className="wardrobe-card-header">
                     <h3>{wardrobe.name}</h3>
                   </div>
-                  <p className="wardrobe-description">No description</p>
                   <p className="wardrobe-info">{wardrobe.num_of_doors} Doors</p>
-                  <Link to="/view-wardrobe" className="view-wardrobe-btn">
+                  <Link to="/view-wardrobe" state={{ wardrobeName: wardrobe.name }} className="view-wardrobe-btn">
                     View Wardrobe
                   </Link>
                 </div>
