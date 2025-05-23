@@ -3,6 +3,8 @@ html, body {
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100%;
+    overflow-x: hidden;
 }
 
 * {
@@ -15,6 +17,7 @@ html, body {
     min-height: 100vh;
     width: 100%;
     background-color: #f5f7fa;
+    position: relative;
 }
 
 /* Sidebar - Fixed width */
@@ -26,6 +29,13 @@ html, body {
     flex-direction: column;
     border-right: 1px solid #eaedf0;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 1000;
+    overflow-y: auto;
 }
 
 .sidebar-header {
@@ -170,6 +180,9 @@ html, body {
     padding: 30px;
     background-color: #cde6e9;
     overflow-y: auto;
+    margin-left: 250px; /* Match sidebar width */
+    width: calc(100% - 250px);
+    min-height: 100vh;
 }
 
 .welcome-section {
@@ -418,26 +431,38 @@ html, body {
     }
     
     .sidebar {
+        position: fixed;
         width: 100%;
+        height: auto;
+        bottom: auto;
         border-right: none;
         border-bottom: 1px solid #eaedf0;
+        z-index: 1000;
     }
     
     .sidebar-menu {
         display: flex;
         overflow-x: auto;
         padding: 10px 0;
+        flex-grow: 0;
     }
     
     .menu-item {
         flex-direction: column;
         padding: 10px;
         text-align: center;
+        flex-shrink: 0;
     }
     
     .menu-item svg {
         margin-right: 0;
         margin-bottom: 5px;
+    }
+    
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        margin-top: 70px; /* Add top margin to account for fixed navbar */
     }
     
     .stats-container {
