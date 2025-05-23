@@ -11,6 +11,12 @@ const getUserCacheInvalidationKey = () => {
   return `wardrobe_cache_needs_update_${userId}`;
 };
 
+// Check if we're already fetching to prevent duplicate API calls
+const getWardrobeFetchInProgressKey = () => {
+  const userId = localStorage.getItem("user_id");
+  return `wardrobe_fetch_in_progress_${userId}`;
+};
+
 // Set cache invalidation flag when data changes
 export const invalidateWardrobeCache = () => {
   const key = getUserCacheInvalidationKey();
@@ -21,6 +27,24 @@ export const invalidateWardrobeCache = () => {
 export const needsCacheUpdate = () => {
   const key = getUserCacheInvalidationKey();
   return localStorage.getItem(key) === 'true' || !getCachedWardrobes().length;
+};
+
+// Check if a fetch is already in progress
+export const isWardrobeFetchInProgress = () => {
+  const key = getWardrobeFetchInProgressKey();
+  return localStorage.getItem(key) === 'true';
+};
+
+// Mark that a fetch is starting
+export const markWardrobeFetchInProgress = () => {
+  const key = getWardrobeFetchInProgressKey();
+  localStorage.setItem(key, 'true');
+};
+
+// Mark that a fetch has completed
+export const markWardrobeFetchCompleted = () => {
+  const key = getWardrobeFetchInProgressKey();
+  localStorage.removeItem(key);
 };
 
 // Force the cache to be updated on next fetch
@@ -55,4 +79,7 @@ export const updateWardrobeCache = (wardrobes) => {
   } catch (e) {
     console.error("Error updating wardrobe cache:", e);
   }
+  
+  // Mark the fetch as completed
+  markWardrobeFetchCompleted();
 }; 

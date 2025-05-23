@@ -6,6 +6,7 @@ import { CognitoUser, AuthenticationDetails } from 'amazon-cognito-identity-js';
 import MoonLoader from "react-spinners/MoonLoader";
 import userPool from "../aws/UserPool";
 import { forceWardrobeCacheRefresh } from "../services/wardrobeCache";
+import { invalidateCountCache } from "../services/itemsCache";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -46,6 +47,9 @@ const Login = () => {
           
           // Force cache refresh on login
           forceWardrobeCacheRefresh();
+          
+          // Only invalidate the count cache, the Home component will handle the fetch
+          invalidateCountCache();
           
           // Navigate to home
           navigate("/home", { state: { name: attrs.name } });

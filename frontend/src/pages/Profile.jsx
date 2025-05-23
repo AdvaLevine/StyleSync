@@ -1,163 +1,176 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { User, Mail, Calendar, Save } from "lucide-react";
 import "../assets/styles/Profile.css";
 import userPool from "../aws/UserPool";
 import MoonLoader from "react-spinners/MoonLoader";
 
-const Profile = () => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
-  const [userData, setUserData] = useState({
-    name: "",
-    email: "",
-    sub: "",
-    createdAt: ""
-  });
-  
-  const [formData, setFormData] = useState({
-    fullName: "",
-    bio: "",
-    favoriteStyle: "",
-    phoneNumber: ""
-  });
+class Profile extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: true,
+      error: null,
+      success: false,
+      userData: {
+        name: "",
+        email: "",
+        sub: "",
+        createdAt: ""
+      },
+      formData: {
+        fullName: "",
+        bio: "",
+        favoriteStyle: "",
+        phoneNumber: ""
+      }
+    };
+  }
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      setLoading(true);
-      setError(null);
-      setSuccess(false);
+  componentDidMount() {
+    this.fetchUserData();
+  }
+
+  fetchUserData = async () => {
+    this.setState({
+      loading: true,
+      error: null,
+      success: false
+    });
+    
+    try {
+      // Get current authenticated user
+      const currentUser = userPool.getCurrentUser();
       
-      try {
-        // Get current authenticated user
-        const currentUser = userPool.getCurrentUser();
-        
-        if (!currentUser) {
-          setError("User not authenticated. Please log in again.");
-          setLoading(false);
+      if (!currentUser) {
+        this.setState({
+          error: "User not authenticated. Please log in again.",
+          loading: false
+        });
+        return;
+      }
+      
+      currentUser.getSession((err, session) => {
+        if (err) {
+          console.error("Session error:", err);
+          this.setState({
+            error: "Failed to get user session. Please log in again.",
+            loading: false
+          });
           return;
         }
         
-        currentUser.getSession((err, session) => {
+        // Get user attributes
+        currentUser.getUserAttributes((err, attributes) => {
           if (err) {
-            console.error("Session error:", err);
-            setError("Failed to get user session. Please log in again.");
-            setLoading(false);
+            console.error("Attributes error:", err);
+            this.setState({
+              error: "Failed to get user information. Please try again later.",
+              loading: false
+            });
             return;
           }
           
-          // Get user attributes
-          currentUser.getUserAttributes((err, attributes) => {
-            if (err) {
-              console.error("Attributes error:", err);
-              setError("Failed to get user information. Please try again later.");
-              setLoading(false);
-              return;
-            }
-            
-            const userAttrs = {};
-            attributes.forEach(attr => {
-              userAttrs[attr.getName()] = attr.getValue();
-            });
-            
-            // Check for saved profile data in localStorage
-            const savedBio = localStorage.getItem("user_bio") || "";
-            const savedStyle = localStorage.getItem("user_favorite_style") || "";
-            const savedPhone = localStorage.getItem("user_phone") || "";
-            
-            // Update user data
-            setUserData({
+          const userAttrs = {};
+          attributes.forEach(attr => {
+            userAttrs[attr.getName()] = attr.getValue();
+          });
+          
+          // Check for saved profile data in localStorage
+          const savedBio = localStorage.getItem("user_bio") || "";
+          const savedStyle = localStorage.getItem("user_favorite_style") || "";
+          const savedPhone = localStorage.getItem("user_phone") || "";
+          
+          // Update user data and form data
+          this.setState({
+            userData: {
               name: userAttrs.name || localStorage.getItem("name") || "User",
               email: userAttrs.email || "",
               sub: userAttrs.sub || localStorage.getItem("user_id") || "",
               createdAt: userAttrs['custom:createdAt'] || new Date().toLocaleDateString()
-            });
-            
-            // Update form data
-            setFormData({
+            },
+            formData: {
               fullName: userAttrs.name || localStorage.getItem("name") || "User",
               bio: savedBio,
               favoriteStyle: savedStyle,
               phoneNumber: savedPhone || userAttrs.phone_number || "",
-            });
-            
-            setLoading(false);
+            },
+            loading: false
           });
         });
-      } catch (err) {
-        console.error("Error fetching user data:", err);
-        
-        // Show specific error message based on the error
-        if (err.message) {
-          setError(`Error: ${err.message}`);
-        } else {
-          setError("Failed to load profile data. Please try again later.");
-        }
-        
-        // Fallback to localStorage if Cognito fetch fails
-        const name = localStorage.getItem("name") || "User";
-        const savedBio = localStorage.getItem("user_bio") || "";
-        const savedStyle = localStorage.getItem("user_favorite_style") || "";
-        const savedPhone = localStorage.getItem("user_phone") || "";
-        
-        setUserData({
+      });
+    } catch (err) {
+      console.error("Error fetching user data:", err);
+      
+      // Show specific error message based on the error
+      const errorMessage = err.message 
+        ? `Error: ${err.message}` 
+        : "Failed to load profile data. Please try again later.";
+      
+      // Fallback to localStorage if Cognito fetch fails
+      const name = localStorage.getItem("name") || "User";
+      const savedBio = localStorage.getItem("user_bio") || "";
+      const savedStyle = localStorage.getItem("user_favorite_style") || "";
+      const savedPhone = localStorage.getItem("user_phone") || "";
+      
+      this.setState({
+        error: errorMessage,
+        userData: {
           name: name,
           email: localStorage.getItem("email") || "",
           sub: localStorage.getItem("user_id") || "",
           createdAt: new Date().toLocaleDateString()
-        });
-        
-        setFormData({
+        },
+        formData: {
           fullName: name,
           bio: savedBio,
           favoriteStyle: savedStyle,
           phoneNumber: savedPhone,
-        });
-        
-        setLoading(false);
-      }
-    };
-    
-    fetchUserData();
-  }, []);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-    
-    // Clear any previous error/success messages when user starts editing
-    if (error) setError(null);
-    if (success) setSuccess(false);
+        },
+        loading: false
+      });
+    }
   };
 
-  const validateForm = () => {
+  handleChange = (e) => {
+    const { name, value } = e.target;
+    this.setState(prevState => ({
+      formData: {
+        ...prevState.formData,
+        [name]: value
+      },
+      // Clear any previous error/success messages when user starts editing
+      error: null,
+      success: false
+    }));
+  };
+
+  validateForm = () => {
     // Basic validation
-    if (!formData.fullName || formData.fullName.trim() === "") {
-      setError("Full name is required");
+    if (!this.state.formData.fullName || this.state.formData.fullName.trim() === "") {
+      this.setState({ error: "Full name is required" });
       return false;
     }
     
     // Phone validation - optional but if provided must be valid
-    if (formData.phoneNumber && !/^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/im.test(formData.phoneNumber)) {
-      setError("Please enter a valid phone number");
+    if (this.state.formData.phoneNumber && !/^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/im.test(this.state.formData.phoneNumber)) {
+      this.setState({ error: "Please enter a valid phone number" });
       return false;
     }
     
     return true;
   };
 
-  const handleSubmit = async (e) => {
+  handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setSuccess(false);
+    this.setState({
+      loading: true,
+      error: null,
+      success: false
+    });
     
     // Validate form before submitting
-    if (!validateForm()) {
-      setLoading(false);
+    if (!this.validateForm()) {
+      this.setState({ loading: false });
       return;
     }
     
@@ -166,202 +179,209 @@ const Profile = () => {
       const currentUser = userPool.getCurrentUser();
       
       if (!currentUser) {
-        setError("User not authenticated. Please log in again.");
-        setLoading(false);
+        this.setState({
+          error: "User not authenticated. Please log in again.",
+          loading: false
+        });
         return;
       }
       
       currentUser.getSession((err, session) => {
         if (err) {
           console.error("Session error:", err);
-          setError("Failed to get user session. Please log in again.");
-          setLoading(false);
+          this.setState({
+            error: "Failed to get user session. Please log in again.",
+            loading: false
+          });
           return;
         }
         
         // In a real app, you would update the user attributes here
         try {
           // Save all profile data to localStorage
-          localStorage.setItem("name", formData.fullName);
-          localStorage.setItem("user_bio", formData.bio);
-          localStorage.setItem("user_favorite_style", formData.favoriteStyle);
-          localStorage.setItem("user_phone", formData.phoneNumber);
+          localStorage.setItem("name", this.state.formData.fullName);
+          localStorage.setItem("user_bio", this.state.formData.bio);
+          localStorage.setItem("user_favorite_style", this.state.formData.favoriteStyle);
+          localStorage.setItem("user_phone", this.state.formData.phoneNumber);
           
           // Update local userData state
-          setUserData(prev => ({
-            ...prev,
-            name: formData.fullName
+          this.setState(prevState => ({
+            userData: {
+              ...prevState.userData,
+              name: this.state.formData.fullName
+            },
+            loading: false,
+            success: true
           }));
-          
-          setLoading(false);
-          setSuccess(true);
           
           // Auto-hide success message after 5 seconds
           setTimeout(() => {
-            setSuccess(false);
+            this.setState({ success: false });
           }, 5000);
-        } catch (storageError) {
-          console.error("Storage error:", storageError);
-          setError("Failed to save your profile. Please try again.");
-          setLoading(false);
+          
+        } catch (saveErr) {
+          console.error("Error saving profile:", saveErr);
+          this.setState({
+            error: "Failed to save profile data. Please try again.",
+            loading: false
+          });
         }
       });
-    } catch (err) {
-      console.error("Error updating profile:", err);
-      
-      // Show specific error message based on the error
-      if (err.message) {
-        setError(`Error: ${err.message}`);
-      } else {
-        setError("Failed to update profile. Please try again later.");
-      }
-      
-      setLoading(false);
+    } catch (error) {
+      console.error("Profile update error:", error);
+      this.setState({
+        error: "An unexpected error occurred. Please try again later.",
+        loading: false
+      });
     }
   };
 
-  // Function to dismiss the success message
-  const dismissSuccess = () => {
-    setSuccess(false);
-  };
-  
-  // Function to dismiss the error message
-  const dismissError = () => {
-    setError(null);
+  dismissSuccess = () => {
+    this.setState({ success: false });
   };
 
-  if (loading && !userData.name) {
+  dismissError = () => {
+    this.setState({ error: null });
+  };
+
+  render() {
+    const { loading, error, success, userData, formData } = this.state;
+    
+    if (loading && !userData.name) {
+      return (
+        <div className="profile-loading-container">
+          <MoonLoader color="#5C6BC0" loading={loading} size={60} />
+          <h3>Loading profile data...</h3>
+        </div>
+      );
+    }
+
     return (
-      <div className="profile-page profile-loading">
-        <MoonLoader size={40} color="#3b82f6" />
-        <p>Loading profile...</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="profile-page">
-      <div className="profile-header">
-        <h1 className="profile-title">Your Profile</h1>
-      </div>
-      
-      {error && (
-        <div className="profile-error">
-          <span>{error}</span>
-          <button className="dismiss-button error-dismiss" onClick={dismissError}>×</button>
-        </div>
-      )}
-      
-      {success && (
-        <div className="profile-success">
-          <span>Profile updated successfully!</span>
-          <button className="dismiss-button" onClick={dismissSuccess}>×</button>
-        </div>
-      )}
-      
       <div className="profile-container">
-        <div className="profile-top">
-          <div className="profile-avatar">
-            <User size={36} />
-          </div>
-          <div className="profile-user-info">
-            <h2>{userData.name}</h2>
-            <p className="profile-email">{userData.email}</p>
+        <div className="profile-header">
+          <h1>Your Profile</h1>
+          <div className="profile-meta">
+            <div className="profile-meta-item">
+              <User size={16} />
+              <span>{userData.name}</span>
+            </div>
+            <div className="profile-meta-item">
+              <Mail size={16} />
+              <span>{userData.email}</span>
+            </div>
+            <div className="profile-meta-item">
+              <Calendar size={16} />
+              <span>Member since {userData.createdAt}</span>
+            </div>
           </div>
         </div>
-        
-        <form className="profile-form" onSubmit={handleSubmit}>
-          <div className="form-group full-width">
-            <label className="form-label">Full Name</label>
-            <input 
-              type="text"
-              name="fullName"
-              className="form-input"
-              value={formData.fullName}
-              onChange={handleChange}
-              placeholder="Your full name"
-            />
-          </div>
-          
-          <div className="form-group full-width">
-            <label className="form-label">Bio</label>
-            <input 
-              type="text"
-              name="bio"
-              className="form-input"
-              value={formData.bio}
-              onChange={handleChange}
-              placeholder="Tell us a bit about yourself"
-            />
-          </div>
-          
-          <div className="form-group">
-            <label className="form-label">Favorite Style</label>
-            <input 
-              type="text"
-              name="favoriteStyle"
-              className="form-input"
-              value={formData.favoriteStyle}
-              onChange={handleChange}
-              placeholder="e.g., Casual, Formal, Vintage"
-            />
-          </div>
-          
-          <div className="form-group">
-            <label className="form-label">Phone Number</label>
-            <input 
-              type="tel"
-              name="phoneNumber"
-              className="form-input"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              placeholder="Your phone number"
-            />
-          </div>
-          
-          <div className="info-row full-width">
-            <div className="info-icon">
-              <Mail size={20} />
+
+        <div className="profile-section">
+          <h2>Edit Your Information</h2>
+          <form className="profile-form" onSubmit={this.handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="fullName">Full Name</label>
+              <input
+                type="text"
+                id="fullName"
+                name="fullName"
+                value={formData.fullName}
+                onChange={this.handleChange}
+                required
+              />
             </div>
-            <div className="info-content">
-              <h3 className="info-label">Email Address</h3>
-              <p className="info-value">{userData.email}</p>
+
+            <div className="form-group">
+              <label htmlFor="bio">Bio</label>
+              <textarea
+                id="bio"
+                name="bio"
+                value={formData.bio}
+                onChange={this.handleChange}
+                placeholder="Tell us about yourself..."
+                rows={4}
+              />
             </div>
-          </div>
-          
-          <div className="info-row full-width">
-            <div className="info-icon">
-              <Calendar size={20} />
+
+            <div className="form-group">
+              <label htmlFor="favoriteStyle">Favorite Style</label>
+              <select
+                id="favoriteStyle"
+                name="favoriteStyle"
+                value={formData.favoriteStyle}
+                onChange={this.handleChange}
+              >
+                <option value="">Select your style...</option>
+                <option value="Casual">Casual</option>
+                <option value="Formal">Formal</option>
+                <option value="Sporty">Sporty</option>
+                <option value="Vintage">Vintage</option>
+                <option value="Minimalist">Minimalist</option>
+                <option value="Bohemian">Bohemian</option>
+                <option value="Streetwear">Streetwear</option>
+                <option value="Business">Business</option>
+              </select>
             </div>
-            <div className="info-content">
-              <h3 className="info-label">Account Created</h3>
-              <p className="info-value">{userData.createdAt}</p>
+
+            <div className="form-group">
+              <label htmlFor="phoneNumber">Phone Number (optional)</label>
+              <input
+                type="tel"
+                id="phoneNumber"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={this.handleChange}
+                placeholder="(123) 456-7890"
+              />
             </div>
-          </div>
-          
-          <div className="form-group full-width">
-            <button 
-              type="submit" 
-              className="save-button"
+
+            <button
+              type="submit"
+              className="save-profile-button"
               disabled={loading}
             >
               {loading ? (
-                <>
-                  <MoonLoader size={16} color="#ffffff" />
-                  <span>Saving...</span>
-                </>
+                <span className="save-profile-spinner">
+                  <MoonLoader color="#ffffff" loading={loading} size={16} />
+                </span>
               ) : (
                 <>
                   <Save size={18} />
-                  <span>Save Changes</span>
+                  Save Changes
                 </>
               )}
             </button>
+          </form>
+
+          {success && (
+            <div className="success-message">
+              <span>Profile updated successfully!</span>
+              <button
+                type="button"
+                className="dismiss-button"
+                onClick={this.dismissSuccess}
+              >
+                ×
+              </button>
+            </div>
+          )}
+
+          {error && (
+            <div className="error-message">
+              <span>{error}</span>
+              <button
+                type="button"
+                className="dismiss-button"
+                onClick={this.dismissError}
+              >
+                ×
+              </button>
+            </div>
+          )}
         </div>
-        </form>
       </div>
-    </div>
-  );
-};
+    );
+  }
+}
 
 export default Profile; 
