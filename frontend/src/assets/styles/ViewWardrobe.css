@@ -1,14 +1,5 @@
 /* ViewWardrobe.css */
-/* Remove default body & html margin/padding */
-html body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    background-color: #cde6e9;
-    font-family: Georgia, 'Times New Roman', Times, serif;
-}
-
-/* Full-page background */
+/* Styles for view-wardrobe page only */
 .view-wardrobe-container {
     display: flex;
     flex-direction: column;
@@ -18,6 +9,7 @@ html body {
     min-height: 500px;
     position: relative;
     background-color: #cde6e9;
+    font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
 /* Back Button */

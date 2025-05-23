@@ -1,285 +1,278 @@
-/* Remove default body & html margin/padding */
-html body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    background-color: #cde6e9;
-    font-family: Georgia, 'Times New Roman', Times, serif;
-  }
-  
-  /* Full-page background */
-  .add-item-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    min-height: 500px;
-    position: relative;
-    background-color: #cde6e9;
-  }
-    /* Back Button */
-  .back-button {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    font-size: 28px;
-    text-decoration: none;
-    color: black;
-    border-radius: 5px;
-    transition: transform 0.2s ease, color 0.2s ease;
-  }
-  
-  .back-button:hover {
-    color: #007bff; /* Change color on hover */
-    transform: scale(1.1); /* Slightly enlarge on hover */
-  }
-  
-  /* Add Item Box */
-  .add-item-box {
-    background: white;
-    padding: 2rem;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    width: 400px;
-    max-width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  /* Add Item Title */
-  .add-item-box h2 {
-    font-size: 24px;
-    color: #111;
-    margin-bottom: 10px;
-    text-align: center;
-    margin-top: 0px;
-  }
-  
-  .add-item-subtitle {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 5px;
-    margin-top: 0;
-  }
-  
-  /* Form Fields */
-  .add-item-box form {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    width: 100%;
-  }
-  
-  .add-item-box label {
-    font-size: 14px;
-    font-weight: bold;
-    color: #444;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    text-align: left;
-    display: block;
-  }
-  
-  .add-item-box input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f3f3f3;
-    font-size: 14px;
-    box-sizing: border-box;
-  }
-  
-  /* Submit Button */
-  .add-item-box button {
-    padding: 12px;
-    background: black;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
+/* AddItem Styles */
+.add-item-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  min-height: 500px;
+  position: relative;
+  background-color: #cde6e9;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+/* Back Button */
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 28px;
+  text-decoration: none;
+  color: black;
+  border-radius: 5px;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.back-button:hover {
+  color: #007bff; /* Change color on hover */
+  transform: scale(1.1); /* Slightly enlarge on hover */
+}
+
+/* Add Item Box */
+.add-item-box {
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 400px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Add Item Title */
+.add-item-box h2 {
+  font-size: 24px;
+  color: #111;
+  margin-bottom: 10px;
+  text-align: center;
+  margin-top: 0px;
+}
+
+.add-item-subtitle {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+  margin-top: 0;
+}
+
+/* Form Fields */
+.add-item-box form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.add-item-box label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #444;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  text-align: left;
+  display: block;
+}
+
+.add-item-box input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f3f3f3;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* Submit Button */
+.add-item-box button {
+  padding: 12px;
+  background: black;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.add-item-box button:hover {
+  background: #333;
+}
+
+.add-item-box button:disabled {
+  background: #999;
+  cursor: not-allowed;
+}
+
+/* Buttons container */
+.buttons-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.back-btn {
+  width: 45%;
+}
+
+.add-btn {
+  width: 45%;
+}
+
+/* Links */
+.links {
+  margin-top: 2px;
+  text-align: right;
+  color: #666;
+}
+
+.links a {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  text-decoration: none;
+  margin-top: 5px;
+  text-align: center;
+}
+
+.links a.link-back {
+  color: #666;
+  font-weight: bold;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
+
+.error-message {
+  color: #8b0000;
+  background-color: #f8d7da;
+  border-left: 4px solid #f44336;
+  padding: 10px 12px;
+  font-size: 13px;
+  border-radius: 4px;
+  margin: 0px;
+  text-align: left;
+}
+
+/* Enhanced Upload Progress Styles */
+.upload-progress {
+  margin-top: 15px;
+  margin-bottom: 20px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  background-color: #e9ecef;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4a86e8, #6fa8dc);
+  transition: width 0.3s ease;
+  border-radius: 6px;
+}
+
+.progress-text {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4a86e8;
+  text-align: center;
+}
+
+@media screen and (max-width: 480px) {
+  .logo-container img {
+    width: 230px;
     margin-top: 10px;
-    margin-bottom: 5px;
-    font-family: Georgia, 'Times New Roman', Times, serif;
-  }
-  
-  .add-item-box button:hover {
-    background: #333;
+    margin-bottom: 10px;
   }
 
-  .add-item-box button:disabled {
-    background: #999;
-    cursor: not-allowed;
-  }
-  
-  /* Buttons container */
-  .buttons-container {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    margin-top: 10px;
-  }
-  
-  .back-btn {
-    width: 45%;
-  }
-  
-  .add-btn {
-    width: 45%;
-  }
-  
-  /* Links */
-  .links {
-    margin-top: 2px;
-    text-align: right;
-    color: #666;
-  }
-  
-  .links a {
-    display: block;
+  .add-item-subtitle {
     font-size: 12px;
-    color: #666;
-    text-decoration: none;
-    margin-top: 5px;
-    text-align: center;
   }
-  
-  .links a.link-back {
-    color: #666;
-    font-weight: bold;
+
+  .add-item-box {
+    width: 260px;
+    padding: 1.2rem;
+    margin-bottom: 10px;
   }
-  
-  .links a:hover {
-    text-decoration: underline;
+
+  .add-item-box h2 {
+    font-size: 18px;
   }
-  
-  .error-message {
-    color: #8b0000;
-    background-color: #f8d7da;
-    border-left: 4px solid #f44336;
-    padding: 10px 12px;
-    font-size: 13px;
-    border-radius: 4px;
-    margin: 0px;
-    text-align: left;
+
+  .add-item-box input {
+    font-size: 12px;
+    padding: 10px;
   }
-  
-  /* Enhanced Upload Progress Styles */
-  .upload-progress {
-    margin-top: 15px;
-    margin-bottom: 20px;
-  }
-  
-  .progress-bar {
-    width: 100%;
-    height: 12px;
-    background-color: #e9ecef;
-    border-radius: 6px;
-    overflow: hidden;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-  }
-  
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #4a86e8, #6fa8dc);
-    transition: width 0.3s ease;
-    border-radius: 6px;
-  }
-  
-  .progress-text {
-    margin-top: 8px;
+
+  .add-item-box button {
     font-size: 14px;
-    font-weight: 600;
-    color: #4a86e8;
-    text-align: center;
   }
- 
-  @media screen and (max-width: 480px) {
-    .logo-container img {
-      width: 230px;
-      margin-top: 10px;
-      margin-bottom: 10px;
-    }
-  
-    .add-item-subtitle {
-      font-size: 12px;
-    }
-  
-    .add-item-box {
-      width: 260px;
-      padding: 1.2rem;
-      margin-bottom: 10px;
-    }
-  
-    .add-item-box h2 {
-      font-size: 18px;
-    }
-  
-    .add-item-box input {
-      font-size: 12px;
-      padding: 10px;
-    }
-  
-    .add-item-box button {
-      font-size: 14px;
-    }
-  
-    .links a {
-      font-size: 11px;
-    }
-  
-    .error-message {
-      font-size: 12px;
-      padding: 8px;
-    }
+
+  .links a {
+    font-size: 11px;
   }
-  
-  @media screen and (max-width: 375px) {
-    .logo-container img {
-      width: 200px;
-    }
-  
-    .add-item-box {
-      width: 240px;
-      padding: 1rem;
-    }
-  
-    .add-item-box h2 {
-      font-size: 14px;
-    }
-  
-    .add-item-subtitle {
-      font-size: 9px;
-    }
-  
-    .add-item-box label {
-      font-size: 10px;
-      margin-bottom: 0;
-    }
-  
-    .add-item-box input {
-      font-size: 10px;
-      padding: 8px;
-      margin-top: 0;
-    }
-  
-    .add-item-box button {
-      font-size: 12px;
-      padding: 10px;
-    }
-  
-    .links a {
-      font-size: 10px;
-    }
-  
-    .error-message {
-      font-size: 10px;
-      padding: 8px;
-      margin: 0px;
-    }
+
+  .error-message {
+    font-size: 12px;
+    padding: 8px;
   }
+}
+
+@media screen and (max-width: 375px) {
+  .logo-container img {
+    width: 200px;
+  }
+
+  .add-item-box {
+    width: 240px;
+    padding: 1rem;
+  }
+
+  .add-item-box h2 {
+    font-size: 14px;
+  }
+
+  .add-item-subtitle {
+    font-size: 9px;
+  }
+
+  .add-item-box label {
+    font-size: 10px;
+    margin-bottom: 0;
+  }
+
+  .add-item-box input {
+    font-size: 10px;
+    padding: 8px;
+    margin-top: 0;
+  }
+
+  .add-item-box button {
+    font-size: 12px;
+    padding: 10px;
+  }
+
+  .links a {
+    font-size: 10px;
+  }
+
+  .error-message {
+    font-size: 10px;
+    padding: 8px;
+    margin: 0px;
+  }
+}

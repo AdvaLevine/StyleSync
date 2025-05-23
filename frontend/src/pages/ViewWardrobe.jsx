@@ -1,8 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Dropdown from '../components/Dropdown';
 import '../assets/styles/ViewWardrobe.css';
+import { getCachedWardrobes } from '../services/wardrobeCache';
 
 const ViewWardrobe = () => {
+    const navigate = useNavigate();
     const [wardrobes, setWardrobes] = useState([]);
     const [selectedWardrobe, setSelectedWardrobe] = useState(null);
     const [items, setItems] = useState([]);
@@ -10,24 +13,20 @@ const ViewWardrobe = () => {
     const [error, setError] = useState('');
     const [viewMode, setViewMode] = useState('images'); // 'images' or 'list'
     const [displayItems, setDisplayItems] = useState(false); // New state to control when to display items
-    const isFirstRender = useRef(true);
 
-    // Fetch wardrobes on component mount
-    const fetchWardrobes = async () => {
-        try {
-            const userId = localStorage.getItem("user_id");
-            const response = await fetch(`https://o5199uwx89.execute-api.us-east-1.amazonaws.com/dev/wardrobes?userId=${userId}`);
-            
-            if (!response.ok) {
-                throw new Error("Failed to fetch wardrobes");
-            }
-
-            const data = await response.json();
-            setWardrobes(data);
-        } catch (error) {
-            setError("Error fetching wardrobes: " + error.message);
+    // Load wardrobes from cache with better error handling
+    useEffect(() => {
+        const cached = getCachedWardrobes();
+        if (cached && cached.length > 0) {
+            setWardrobes(cached);
+        } else {
+            // If cache is empty, redirect to Home to refresh
+            setError("No wardrobe data available. Redirecting to Home page...");
+            setTimeout(() => {
+                navigate('/home');
+            }, 2000);
         }
-    };
+    }, [navigate]);
 
     // Updated to use a single Lambda endpoint with viewMode parameter
     const fetchWardrobeItems = async (wardrobeName) => {
@@ -55,14 +54,6 @@ const ViewWardrobe = () => {
             setLoading(false);
         }
     };
-
-    // Initial fetch of wardrobes- check the api requests
-    useEffect(() => {
-        if (isFirstRender.current) {
-            isFirstRender.current = false;
-            fetchWardrobes();
-        }
-    }, []);
 
     // Handle wardrobe selection
     const handleWardrobeSelect = (wardrobeName) => {

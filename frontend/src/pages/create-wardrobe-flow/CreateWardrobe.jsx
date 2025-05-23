@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MoonLoader from "react-spinners/MoonLoader";
 import "../../assets/styles/CreateWardrobe.css";  
+import { invalidateWardrobeCache } from "../../services/wardrobeCache";
 
 const CreateWardrobe = () => {
   const navigate = useNavigate();
@@ -36,6 +37,8 @@ const CreateWardrobe = () => {
         const returnedData = await response.json();
 
         if (returnedData.statusCode === 201) {
+            // Mark cache as needing update
+            invalidateWardrobeCache();
             alert("Wardrobe created successfully!");
             navigate("/home");
         } else {

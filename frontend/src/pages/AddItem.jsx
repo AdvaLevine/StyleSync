@@ -1,8 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "../assets/styles/AddItem.css";
 import Dropdown from '../components/Dropdown';
 import MultiSelectDropdown from '../components/MultiSelectDropdown';
+import { getCachedWardrobes } from '../services/wardrobeCache';
 
 const AddItem = () => {
     const navigate = useNavigate();
@@ -13,7 +14,6 @@ const AddItem = () => {
     const [formErrorStep2, setFormErrorStep2] = useState("");
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
-    const isFirstRender = useRef(true);
     const [fromDate, setFromDate] = useState({
         wardrobe: "",
         itemType: "",
@@ -30,22 +30,16 @@ const AddItem = () => {
     // S3 bucket name - should match the one in your Lambda
     const BUCKET_NAME = 'wardrobe-item-images';
 
-    const fetchWardrobes = async () => {
-        const userId = localStorage.getItem("user_id");
-        const response = await fetch(`https://o5199uwx89.execute-api.us-east-1.amazonaws.com/dev/wardrobes?userId=${userId}`);
-        
-        if (!response.ok) {
-            return; 
+    // Load wardrobes from cache with better error handling
+    useEffect(() => {
+        const cached = getCachedWardrobes();
+        if (cached && cached.length > 0) {
+            setWardrobes(cached);
+        } else {
+            // If cache is empty, we need to navigate to Home to refresh
+            navigate("/home");
         }
-
-        const data = await response.json();
-        setWardrobes(data);
-    };
-
-    if (isFirstRender.current) {
-        isFirstRender.current = false;
-        fetchWardrobes();
-    }
+    }, [navigate]);
 
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;

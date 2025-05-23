@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "../assets/styles/Home.css";
 import { Link } from "react-router-dom";
 import { 
@@ -7,11 +7,52 @@ import {
   Shirt,
   Calendar,
   ShoppingCart,
-  Sparkles
+  Sparkles,
+  Trash2
 } from "lucide-react";
+import { getCachedWardrobes, needsCacheUpdate, updateWardrobeCache } from "../services/wardrobeCache";
 
 const Home = () => {
   const name = localStorage.getItem("name") || "Guest";
+  const [wardrobes, setWardrobes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Use useEffect instead of ref to ensure it runs once when component mounts
+  useEffect(() => {
+    const fetchWardrobes = async () => {
+      setLoading(true);
+      
+      // Force fetch if cache needs update or is empty
+      if (needsCacheUpdate()) {
+        try {
+          const userId = localStorage.getItem("user_id");
+          const response = await fetch(`https://o5199uwx89.execute-api.us-east-1.amazonaws.com/dev/wardrobes?userId=${userId}`);
+          
+          if (!response.ok) {
+            throw new Error("Failed to fetch wardrobes");
+          }
+
+          const data = await response.json();
+          console.log("Fetched wardrobes:", data);
+          setWardrobes(data);
+          updateWardrobeCache(data);
+        } catch (error) {
+          console.error("Error fetching wardrobes:", error);
+          // Fall back to cached data
+          setWardrobes(getCachedWardrobes());
+        }
+      } else {
+        // Use cached data
+        const cached = getCachedWardrobes();
+        console.log("Using cached wardrobes:", cached);
+        setWardrobes(cached);
+      }
+      
+      setLoading(false);
+    };
+    
+    fetchWardrobes();
+  }, []); // Empty dependency array ensures this runs once on mount
 
   return (
     <>
@@ -34,7 +75,7 @@ const Home = () => {
         <div className="stat-card wardrobes">
           <div className="stat-content">
             <h3>Wardrobes</h3>
-            <p className="stat-number">0</p>
+            <p className="stat-number">{loading ? "..." : wardrobes.length}</p>
           </div>
           <div className="stat-icon">
             <ShoppingBag />
@@ -71,16 +112,40 @@ const Home = () => {
           </Link>
         </div>
         
-        <div className="empty-wardrobe">
-          <div className="empty-icon">
-            <PlusSquare size={32} />
+        {loading ? (
+          <div className="loading-indicator">Loading wardrobes...</div>
+        ) : wardrobes.length > 0 ? (
+          <div className="wardrobes-scroll-container">
+            <div className="wardrobes-scroll">
+              {wardrobes.map((wardrobe, index) => (
+                <div className="wardrobe-card" key={wardrobe.id || `wardrobe-${index}`}>
+                  <button className="delete-button" aria-label="Delete wardrobe">
+                    <Trash2 size={16} />
+                  </button>
+                  <div className="wardrobe-card-header">
+                    <h3>{wardrobe.name}</h3>
+                  </div>
+                  <p className="wardrobe-description">No description</p>
+                  <p className="wardrobe-info">{wardrobe.num_of_doors} Doors</p>
+                  <Link to="/view-wardrobe" className="view-wardrobe-btn">
+                    View Wardrobe
+                  </Link>
+                </div>
+              ))}
+            </div>
           </div>
-          <h3>Create Your First Wardrobe</h3>
-          <p>Start organizing your clothes by creating a wardrobe</p>
-          <Link to="/create-wardrobe" className="create-wardrobe-btn">
-            Create Wardrobe
-          </Link>
-        </div>
+        ) : (
+          <div className="empty-wardrobe">
+            <div className="empty-icon">
+              <PlusSquare size={32} />
+            </div>
+            <h3>Create Your First Wardrobe</h3>
+            <p>Start organizing your clothes by creating a wardrobe</p>
+            <Link to="/create-wardrobe" className="create-wardrobe-btn">
+              Create Wardrobe
+            </Link>
+          </div>
+        )}
       </div>
       
       <div className="bottom-sections">
