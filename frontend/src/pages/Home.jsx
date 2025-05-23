@@ -62,13 +62,42 @@ class Home extends React.Component {
   
   // Refresh just the recent items, useful when returning to home page
   refreshRecentItems = async () => {
-    // Force a refresh of the all items cache which will update recent items
-    await updateAllItemsCache();
+    // Get the current count before any cache updates
+    const currentCount = this.state.totalItems;
     
-    // Get the updated items
+    // Update recent items only, don't recalculate total count
+    // This prevents count from dropping when returning to page
+    await updateAllItemsCache(false); // false = don't update total count
+    
+    // Get the updated recent items
     const recent = getCachedRecentItems().slice(0, 4);
     
-    this.setState({ recentItems: recent });
+    // Preserve the current count
+    this.setState({ 
+      recentItems: recent,
+      totalItems: currentCount > 0 ? currentCount : getCachedTotalItemsCount()
+    });
+  }
+  
+  // Helper method to check if we have any wardrobe caches
+  checkForWardrobeCaches = () => {
+    const userId = localStorage.getItem("user_id");
+    if (!userId) return false;
+    
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.startsWith(`items_cache_${userId}_`)) {
+        try {
+          const items = JSON.parse(localStorage.getItem(key)) || [];
+          if (items.length > 0) {
+            return true;
+          }
+        } catch (e) {
+          // Continue checking other caches
+        }
+      }
+    }
+    return false;
   }
   
   fetchAllData = async () => {
@@ -82,12 +111,18 @@ class Home extends React.Component {
     
     // 2. Get items count (only after wardrobe fetch completes)
     let count = getCachedTotalItemsCount();
-    if (shouldFetchCount && needsCountUpdate()) {
-      // Double-check that it still needs updating after wardrobe fetch
+    
+    // Always try to get the most up-to-date count on initial load
+    if (shouldFetchCount || count === 0) {
       try {
-        count = await fetchTotalItemsCount(false);
+        // Force a fresh fetch of the count to ensure accuracy
+        count = await fetchTotalItemsCount(true);
+        // Update state immediately with the fresh count
+        this.setState({ totalItems: count });
       } catch (error) {
         console.error("Error getting items count:", error);
+        // Fallback to cached count if API fails
+        count = getCachedTotalItemsCount();
       }
     }
     

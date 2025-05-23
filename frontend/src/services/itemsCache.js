@@ -148,10 +148,55 @@ export const updateItemsCache = (wardrobeName, items) => {
     localStorage.setItem(cacheKey, JSON.stringify(items));
     localStorage.removeItem(invalidationKey);
     
-    // After updating a specific wardrobe's items, update the all items cache
-    updateAllItemsCache();
+    // DON'T automatically recalculate total count when updating individual wardrobes
+    // This prevents incorrect totals when not all wardrobes have been viewed
+    // Only update recent items if we have the data
+    updateRecentItemsOnly();
   } catch (e) {
     console.error(`Error updating items cache for wardrobe ${wardrobeName}:`, e);
+  }
+};
+
+// Helper function to update only recent items without affecting total count
+const updateRecentItemsOnly = () => {
+  const userId = localStorage.getItem("user_id");
+  let allItems = [];
+  
+  // Collect items from all wardrobe caches
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith(`items_cache_${userId}_`)) {
+      try {
+        const items = JSON.parse(localStorage.getItem(key)) || [];
+        
+        if (items.length > 0) {
+          // Extract wardrobe name from the key
+          const wardrobeName = key.replace(`items_cache_${userId}_`, "");
+          
+          // Ensure each item has wardrobe info if not already present
+          const itemsWithWardrobe = items.map(item => {
+            const enrichedItem = {...item};
+            if (!enrichedItem.wardrobe) {
+              enrichedItem.wardrobe = wardrobeName;
+            }
+            return enrichedItem;
+          });
+          
+          allItems = allItems.concat(itemsWithWardrobe);
+        }
+      } catch (e) {
+        console.error("Error parsing items when updating recent items:", e);
+      }
+    }
+  }
+  
+  // Update recent items cache only if we have items
+  if (allItems.length > 0) {
+    const recentItems = allItems
+      .sort((a, b) => new Date(b.createdAt || Date.now()) - new Date(a.createdAt || 0))
+      .slice(0, 4);
+    
+    localStorage.setItem(getRecentItemsCacheKey(), JSON.stringify(recentItems));
   }
 };
 
@@ -207,10 +252,11 @@ export const addItemToCache = (wardrobeName, newItem) => {
 };
 
 // Update total items count based on all wardrobe caches
-export const updateAllItemsCache = () => {
+export const updateAllItemsCache = (shouldUpdateTotalCount = false) => {
   const userId = localStorage.getItem("user_id");
   let totalItems = 0;
   let allItems = [];
+  let foundWardrobeCaches = false;
   
   // Collect items from all wardrobe caches
   for (let i = 0; i < localStorage.length; i++) {
@@ -219,36 +265,48 @@ export const updateAllItemsCache = () => {
       try {
         const items = JSON.parse(localStorage.getItem(key)) || [];
         
-        // Extract wardrobe name from the key
-        const wardrobeName = key.replace(`items_cache_${userId}_`, "");
-        
-        // Ensure each item has wardrobe info if not already present
-        const itemsWithWardrobe = items.map(item => {
-          // Make a copy to avoid modifying the original
-          const enrichedItem = {...item};
-          if (!enrichedItem.wardrobe) {
-            enrichedItem.wardrobe = wardrobeName;
-          }
-          return enrichedItem;
-        });
-        
-        totalItems += items.length;
-        allItems = allItems.concat(itemsWithWardrobe);
+        // Only count if this wardrobe actually has cached items
+        if (items.length > 0) {
+          foundWardrobeCaches = true;
+          
+          // Extract wardrobe name from the key
+          const wardrobeName = key.replace(`items_cache_${userId}_`, "");
+          
+          // Ensure each item has wardrobe info if not already present
+          const itemsWithWardrobe = items.map(item => {
+            // Make a copy to avoid modifying the original
+            const enrichedItem = {...item};
+            if (!enrichedItem.wardrobe) {
+              enrichedItem.wardrobe = wardrobeName;
+            }
+            return enrichedItem;
+          });
+          
+          totalItems += items.length;
+          allItems = allItems.concat(itemsWithWardrobe);
+        }
       } catch (e) {
         console.error("Error parsing items when calculating total:", e);
       }
     }
   }
   
-  // Store the total count
-  localStorage.setItem(getAllItemsCacheKey(), totalItems.toString());
+  // Only update the total count if explicitly requested AND we found wardrobe caches with items
+  if (shouldUpdateTotalCount && foundWardrobeCaches) {
+    localStorage.setItem(getAllItemsCacheKey(), totalItems.toString());
+  } else {
+    // If not updating count, return the existing cached count
+    totalItems = getCachedTotalItemsCount();
+  }
   
   // Update recent items cache (sort by date and take most recent 4)
-  const recentItems = allItems
-    .sort((a, b) => new Date(b.createdAt || Date.now()) - new Date(a.createdAt || 0))
-    .slice(0, 4);
-  
-  localStorage.setItem(getRecentItemsCacheKey(), JSON.stringify(recentItems));
+  if (allItems.length > 0) {
+    const recentItems = allItems
+      .sort((a, b) => new Date(b.createdAt || Date.now()) - new Date(a.createdAt || 0))
+      .slice(0, 4);
+    
+    localStorage.setItem(getRecentItemsCacheKey(), JSON.stringify(recentItems));
+  }
   
   return totalItems;
 };
@@ -357,9 +415,11 @@ export const fetchTotalItemsCount = async (forceRefresh = false) => {
       count = data.count;
     }
     
-    localStorage.setItem(getAllItemsCacheKey(), count.toString());
+    // ALWAYS save the fetched count to cache
+    const cacheKey = getAllItemsCacheKey();
+    localStorage.setItem(cacheKey, count.toString());
     
-    // Mark count as updated
+    // Mark count as updated (clear the invalidation flag)
     markCountUpdated();
     
     // Remove the in-progress flag
@@ -370,6 +430,7 @@ export const fetchTotalItemsCount = async (forceRefresh = false) => {
     console.error(`Error fetching total items count:`, error);
     // Remove the in-progress flag on error
     localStorage.removeItem('count_fetch_in_progress');
+    // Return cached count on error
     return getCachedTotalItemsCount();
   }
 };
