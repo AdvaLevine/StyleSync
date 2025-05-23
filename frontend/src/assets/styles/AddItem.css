@@ -8,7 +8,7 @@
   min-height: 500px;
   position: relative;
   background-color: #cde6e9;
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Back Button */
@@ -98,7 +98,7 @@
   cursor: pointer;
   margin-top: 10px;
   margin-bottom: 5px;
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .add-item-box button:hover {

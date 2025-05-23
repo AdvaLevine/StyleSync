@@ -9,7 +9,7 @@
     min-height: 500px;
     position: relative;
     background-color: #cde6e9;
-    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Back Button */
@@ -359,7 +359,7 @@
     padding: 12px 30px;
     margin-top: 10px;
     margin-bottom: 5px;
-    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     transition: background-color 0.2s ease;
 }
 
