@@ -115,6 +115,11 @@ html, body {
 
 .user-info {
     flex-grow: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding-right: 15px;
 }
 
 .user-name {
@@ -128,16 +133,35 @@ html, body {
     background: none;
     border: none;
     color: #6b7280;
-    padding: 0;
+    padding: 5px 10px;
     font-size: 0.75rem;
     display: flex;
     align-items: center;
     cursor: pointer;
-    margin-top: 2px;
+    margin-top: 0;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.logout-button:hover {
+    background-color: #f3f4f6;
+    color: #4b5563;
+    transform: translateY(-1px);
+}
+
+.logout-button:active {
+    background-color: #e5e7eb;
+    color: #374151;
+    transform: translateY(1px);
 }
 
 .logout-button svg {
     margin-right: 5px;
+    transition: transform 0.2s ease;
+}
+
+.logout-button:hover svg {
+    transform: translateX(-2px);
 }
 
 /* Main Content */
