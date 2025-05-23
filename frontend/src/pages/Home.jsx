@@ -123,32 +123,32 @@ class Home extends React.Component {
       // Mark that we're starting a fetch
       markWardrobeFetchInProgress();
       
-      try {
-        const userId = localStorage.getItem("user_id");
+        try {
+          const userId = localStorage.getItem("user_id");
         
-        const response = await fetch(`https://o5199uwx89.execute-api.us-east-1.amazonaws.com/dev/wardrobes?userId=${userId}`);
-        
-        if (!response.ok) {
-          throw new Error("Failed to fetch wardrobes");
-        }
+          const response = await fetch(`https://o5199uwx89.execute-api.us-east-1.amazonaws.com/dev/wardrobes?userId=${userId}`);
+          
+          if (!response.ok) {
+            throw new Error("Failed to fetch wardrobes");
+          }
 
-        const data = await response.json();
+          const data = await response.json();
         this.setState({ wardrobes: data });
         updateWardrobeCache(data); // This will also clear the fetch in progress flag
         
         // Initialize items cache WITHOUT invalidating the count again if specified
         initializeItemsCache(skipCountInvalidation);
-      } catch (error) {
-        console.error("Error fetching wardrobes:", error);
-        // Fall back to cached data
+        } catch (error) {
+          console.error("Error fetching wardrobes:", error);
+          // Fall back to cached data
         const cached = getCachedWardrobes();
         this.setState({ wardrobes: cached });
         // Clear the in-progress flag on error
         markWardrobeFetchCompleted();
-      }
-    } else {
-      // Use cached data
-      const cached = getCachedWardrobes();
+        }
+      } else {
+        // Use cached data
+        const cached = getCachedWardrobes();
       this.setState({ wardrobes: cached });
     }
   }
@@ -303,13 +303,13 @@ class Home extends React.Component {
           ) : (
             // Only show this when there are 0 wardrobes AND 0 items
             wardrobes.length === 0 && totalItems === 0 ? (
-              <div className="empty-items">
-                <Shirt size={32} />
-                <p>No items in your wardrobe yet</p>
-                <Link to="/add-item" className="add-first-item-btn">
-                  Add First Item
-                </Link>
-              </div>
+          <div className="empty-items">
+            <Shirt size={32} />
+            <p>No items in your wardrobe yet</p>
+            <Link to="/add-item" className="add-first-item-btn">
+              Add First Item
+            </Link>
+          </div>
             ) : (
               <div className="empty-items">
                 <Shirt size={32} />
@@ -323,21 +323,23 @@ class Home extends React.Component {
           <h2>Outfit Suggestions</h2>
             {/* Check if any wardrobe has at least 3 items - we'll need to update state to track this */}
             {this.hasEnoughItemsForOutfits() ? (
-              <div className="outfit-suggestions">
-                {/* Content for when there are enough items for suggestions */}
-                <p>Here are some outfit ideas based on your items</p>
-                <Link to="/outfit-recommendation" className="get-recommendations-btn">
-                  View Suggestions
+              <div className="outfit-suggestions-ready">
+                <Sparkles size={48} />
+                <h3>✨ Your Outfits Await!</h3>
+                <p>Discover amazing outfit combinations from your wardrobe.<br />Let AI style you perfectly!</p>
+                <Link to="/outfit-recommendation" className="get-recommendations-btn primary">
+                  🎨 Create My Outfits
                 </Link>
               </div>
             ) : (
           <div className="empty-suggestions">
-            <Sparkles size={32} />
-            <p>Add more items to get outfit suggestions</p>
+            <Sparkles size={48} />
+            <h3>🚀 Ready to Get Styled?</h3>
+            <p>Add a few more items to unlock personalized outfit recommendations just for you!</p>
             <Link to="/outfit-recommendation" className="get-recommendations-btn">
-              Get Recommendations
+              💡 Explore Suggestions
             </Link>
-              </div>
+          </div>
             )}
         </div>
       </div>

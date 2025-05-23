@@ -394,39 +394,80 @@ html, body {
     color: #111827;
 }
 
-.empty-items, .empty-suggestions {
+.empty-items, .empty-suggestions, .outfit-suggestions-ready {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     text-align: center;
-    padding: 30px 20px;
+    padding: 20px 20px;
+    min-height: 200px;
 }
 
-.empty-items svg, .empty-suggestions svg {
+.empty-items svg, .empty-suggestions svg, .outfit-suggestions-ready svg {
     color: #4285f4;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    animation: sparkle 2s ease-in-out infinite;
 }
 
-.empty-items p, .empty-suggestions p {
-    margin: 0 0 20px 0;
-    color: #4285f4;
-    font-size: 0.875rem;
+.empty-suggestions h3, .outfit-suggestions-ready h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #333;
+    background: linear-gradient(45deg, #4285f4, #34a853, #fbbc05);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.empty-items p, .empty-suggestions p, .outfit-suggestions-ready p {
+    margin: 0 0 25px 0;
+    color: #555;
+    font-size: 1rem;
+    line-height: 1.5;
+    max-width: 300px;
 }
 
 .add-first-item-btn, .get-recommendations-btn {
-    background-color: #4285f4; /* Google blue */
+    background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
     color: white;
     border: none;
-    border-radius: 4px;
-    padding: 10px 20px;
-    font-size: 0.9rem;
+    border-radius: 25px;
+    padding: 12px 24px;
+    font-size: 1rem;
     text-decoration: none;
-    font-weight: 500;
-    transition: background-color 0.2s;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.get-recommendations-btn.primary {
+    background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    font-size: 1.1rem;
+    padding: 14px 28px;
 }
 
 .add-first-item-btn:hover, .get-recommendations-btn:hover {
-    background-color: #3367d6; /* Darker blue on hover */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4);
+}
+
+.get-recommendations-btn.primary:hover {
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+.add-first-item-btn:active, .get-recommendations-btn:active {
+    transform: translateY(0);
+}
+
+/* Add sparkle animation */
+@keyframes sparkle {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.1) rotate(5deg); }
 }
 
 /* Responsive Adjustments */
@@ -698,8 +739,11 @@ html, body {
   padding: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   overflow: hidden;
-  max-height: 400px; /* Set a fixed maximum height */
+  min-height: 300px; /* Match the outfit suggestions section height */
+  max-height: 300px; /* Keep max height for scrolling if needed */
   overflow-y: auto; /* Enable vertical scrolling */
+  display: flex;
+  flex-direction: column;
 }
 
 .recent-items-grid {
