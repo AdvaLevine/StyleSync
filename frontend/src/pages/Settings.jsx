@@ -219,12 +219,12 @@ class Settings extends React.Component {
                     {error && <div className="error-message">{error}</div>}
                 </div>
                 
-                <div className="danger-zone">
-                    <h2>Danger Zone</h2>
-                    <div className="danger-action">
-                        <div>
+                <div className="settings-card danger-zone">
+                    <h2 className="danger-title">Danger Zone</h2>
+                    <div className="danger-option">
+                        <div className="danger-text">
                             <h3>Delete Account</h3>
-                            <p>This will permanently delete your account and all your wardrobes</p>
+                            <p>Once you delete your account, all of your data will be permanently removed. This action cannot be undone.</p>
                         </div>
                         <button 
                             className="delete-account-button"

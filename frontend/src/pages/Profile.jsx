@@ -13,16 +13,16 @@ class Profile extends React.Component {
       error: null,
       success: false,
       userData: {
-        name: "",
-        email: "",
-        sub: "",
-        createdAt: ""
+    name: "",
+    email: "",
+    sub: "",
+    createdAt: ""
       },
       formData: {
-        fullName: "",
-        bio: "",
-        favoriteStyle: "",
-        phoneNumber: ""
+    fullName: "",
+    bio: "",
+    favoriteStyle: "",
+    phoneNumber: ""
       }
     };
   }
@@ -37,50 +37,50 @@ class Profile extends React.Component {
       error: null,
       success: false
     });
-    
-    try {
-      // Get current authenticated user
-      const currentUser = userPool.getCurrentUser();
       
-      if (!currentUser) {
+      try {
+        // Get current authenticated user
+        const currentUser = userPool.getCurrentUser();
+        
+        if (!currentUser) {
         this.setState({
           error: "User not authenticated. Please log in again.",
           loading: false
         });
-        return;
-      }
-      
-      currentUser.getSession((err, session) => {
-        if (err) {
-          console.error("Session error:", err);
+          return;
+        }
+        
+        currentUser.getSession((err, session) => {
+          if (err) {
+            console.error("Session error:", err);
           this.setState({
             error: "Failed to get user session. Please log in again.",
             loading: false
           });
-          return;
-        }
-        
-        // Get user attributes
-        currentUser.getUserAttributes((err, attributes) => {
-          if (err) {
-            console.error("Attributes error:", err);
+            return;
+          }
+          
+          // Get user attributes
+          currentUser.getUserAttributes((err, attributes) => {
+            if (err) {
+              console.error("Attributes error:", err);
             this.setState({
               error: "Failed to get user information. Please try again later.",
               loading: false
             });
-            return;
-          }
-          
-          const userAttrs = {};
-          attributes.forEach(attr => {
-            userAttrs[attr.getName()] = attr.getValue();
-          });
-          
-          // Check for saved profile data in localStorage
-          const savedBio = localStorage.getItem("user_bio") || "";
-          const savedStyle = localStorage.getItem("user_favorite_style") || "";
-          const savedPhone = localStorage.getItem("user_phone") || "";
-          
+              return;
+            }
+            
+            const userAttrs = {};
+            attributes.forEach(attr => {
+              userAttrs[attr.getName()] = attr.getValue();
+            });
+            
+            // Check for saved profile data in localStorage
+            const savedBio = localStorage.getItem("user_bio") || "";
+            const savedStyle = localStorage.getItem("user_favorite_style") || "";
+            const savedPhone = localStorage.getItem("user_phone") || "";
+            
           // Update user data and form data
           this.setState({
             userData: {
@@ -96,23 +96,23 @@ class Profile extends React.Component {
               phoneNumber: savedPhone || userAttrs.phone_number || "",
             },
             loading: false
+            });
           });
         });
-      });
-    } catch (err) {
-      console.error("Error fetching user data:", err);
-      
-      // Show specific error message based on the error
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+        
+        // Show specific error message based on the error
       const errorMessage = err.message 
         ? `Error: ${err.message}` 
         : "Failed to load profile data. Please try again later.";
-      
-      // Fallback to localStorage if Cognito fetch fails
-      const name = localStorage.getItem("name") || "User";
-      const savedBio = localStorage.getItem("user_bio") || "";
-      const savedStyle = localStorage.getItem("user_favorite_style") || "";
-      const savedPhone = localStorage.getItem("user_phone") || "";
-      
+        
+        // Fallback to localStorage if Cognito fetch fails
+        const name = localStorage.getItem("name") || "User";
+        const savedBio = localStorage.getItem("user_bio") || "";
+        const savedStyle = localStorage.getItem("user_favorite_style") || "";
+        const savedPhone = localStorage.getItem("user_phone") || "";
+        
       this.setState({
         error: errorMessage,
         userData: {
@@ -128,16 +128,16 @@ class Profile extends React.Component {
           phoneNumber: savedPhone,
         },
         loading: false
-      });
-    }
-  };
-
+        });
+      }
+    };
+    
   handleChange = (e) => {
     const { name, value } = e.target;
     this.setState(prevState => ({
       formData: {
         ...prevState.formData,
-        [name]: value
+      [name]: value
       },
       // Clear any previous error/success messages when user starts editing
       error: null,
@@ -240,16 +240,16 @@ class Profile extends React.Component {
   dismissSuccess = () => {
     this.setState({ success: false });
   };
-
+  
   dismissError = () => {
     this.setState({ error: null });
   };
 
   render() {
     const { loading, error, success, userData, formData } = this.state;
-    
-    if (loading && !userData.name) {
-      return (
+
+  if (loading && !userData.name) {
+    return (
         <div className="profile-page">
           <div className="profile-header">
             <Link to="/" className="back-button">
@@ -263,65 +263,65 @@ class Profile extends React.Component {
               <p>Loading profile data...</p>
             </div>
           </div>
-        </div>
-      );
-    }
+      </div>
+    );
+  }
 
-    return (
-      <div className="profile-page">
-        <div className="profile-header">
+  return (
+    <div className="profile-page">
+      <div className="profile-header">
           <Link to="/" className="back-button">
             <ChevronLeft size={20} />
           </Link>
           <h1 className="profile-main-title">Your Profile</h1>
         </div>
-        <div className="profile-container">
-          <div className="profile-top">
-            <div className="profile-avatar">
+      <div className="profile-container">
+        <div className="profile-top">
+          <div className="profile-avatar">
               <User size={24} />
-            </div>
-            <div className="profile-user-info">
-              <h2>{userData.name}</h2>
-              <p className="profile-email">{userData.email}</p>
-              <p className="profile-email">Member since {userData.createdAt}</p>
-            </div>
           </div>
-
+          <div className="profile-user-info">
+            <h2>{userData.name}</h2>
+            <p className="profile-email">{userData.email}</p>
+              <p className="profile-email">Member since {userData.createdAt}</p>
+          </div>
+        </div>
+        
           <h2 className="profile-title">Edit Your Information</h2>
           <form className="profile-form" onSubmit={this.handleSubmit}>
             <div className="form-group">
               <label className="form-label" htmlFor="fullName">Full Name</label>
-              <input
+            <input 
                 className="form-input"
-                type="text"
+              type="text"
                 id="fullName"
-                name="fullName"
-                value={formData.fullName}
+              name="fullName"
+              value={formData.fullName}
                 onChange={this.handleChange}
                 required
-              />
-            </div>
-
-            <div className="form-group full-width">
+            />
+          </div>
+          
+          <div className="form-group full-width">
               <label className="form-label" htmlFor="bio">Bio</label>
               <textarea
                 className="form-input"
                 id="bio"
-                name="bio"
-                value={formData.bio}
+              name="bio"
+              value={formData.bio}
                 onChange={this.handleChange}
                 placeholder="Tell us about yourself..."
                 rows={3}
-              />
-            </div>
-
-            <div className="form-group">
+            />
+          </div>
+          
+          <div className="form-group">
               <label className="form-label" htmlFor="favoriteStyle">Favorite Style</label>
               <select
                 className="form-input"
                 id="favoriteStyle"
-                name="favoriteStyle"
-                value={formData.favoriteStyle}
+              name="favoriteStyle"
+              value={formData.favoriteStyle}
                 onChange={this.handleChange}
               >
                 <option value="">Select your style...</option>
@@ -334,40 +334,40 @@ class Profile extends React.Component {
                 <option value="Streetwear">Streetwear</option>
                 <option value="Business">Business</option>
               </select>
-            </div>
-
-            <div className="form-group">
+          </div>
+          
+          <div className="form-group">
               <label className="form-label" htmlFor="phoneNumber">Phone Number (optional)</label>
-              <input
+            <input 
                 className="form-input"
-                type="tel"
+              type="tel"
                 id="phoneNumber"
-                name="phoneNumber"
-                value={formData.phoneNumber}
+              name="phoneNumber"
+              value={formData.phoneNumber}
                 onChange={this.handleChange}
                 placeholder="(123) 456-7890"
-              />
-            </div>
-
+            />
+          </div>
+          
             <div className="button-container">
-              <button
-                type="submit"
-                className="save-button"
-                disabled={loading}
-              >
-                {loading ? (
+            <button 
+              type="submit" 
+              className="save-button"
+              disabled={loading}
+            >
+              {loading ? (
                   <span>
                     <MoonLoader color="#ffffff" loading={loading} size={16} />
                   </span>
-                ) : (
-                  <>
+              ) : (
+                <>
                     <Save size={16} />
-                    <span>Save Changes</span>
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
+                  <span>Save Changes</span>
+                </>
+              )}
+            </button>
+        </div>
+        </form>
 
           {success && (
             <div className="profile-success">
@@ -394,9 +394,9 @@ class Profile extends React.Component {
               </button>
             </div>
           )}
-        </div>
       </div>
-    );
+    </div>
+  );
   }
 }
 
