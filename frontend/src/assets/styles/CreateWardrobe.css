@@ -13,18 +13,8 @@ html, body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #E7E7E7; /* Light gray background */
+    background-color: #cde6e9 ; /* Light gray background */
     position: relative;
-  }
-  
-  /* Back Button */
-  .back-button {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    font-size: 24px;
-    text-decoration: none;
-    color: black;
   }
   
   /* Signup Box */
@@ -89,3 +79,10 @@ html, body {
     color: rgb(25, 179, 179);
     margin-top: 10px;
   }
+
+/* Make this specific to override browser defaults */
+.create-wardrobe-box button {
+  border-radius: 10px !important; /* Use !important to override other styles */
+  -webkit-appearance: none; /* Fix for Safari */
+  appearance: none; /* Standard property */
+}
