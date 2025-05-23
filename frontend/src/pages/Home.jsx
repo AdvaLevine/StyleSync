@@ -6,7 +6,6 @@ import {
   ShoppingBag, 
   Shirt,
   Calendar,
-  ShoppingCart,
   Sparkles,
   Trash2
 } from "lucide-react";
@@ -98,7 +97,7 @@ const Home = () => {
             <p className="stat-number">0</p>
           </div>
           <div className="stat-icon">
-            <ShoppingCart />
+            <Sparkles size={32} /> 
           </div>
         </div>
       </div>
@@ -136,7 +135,7 @@ const Home = () => {
         ) : (
           <div className="empty-wardrobe">
             <div className="empty-icon">
-              <PlusSquare size={32} />
+              +
             </div>
             <h3>Create Your First Wardrobe</h3>
             <p>Start organizing your clothes by creating a wardrobe</p>

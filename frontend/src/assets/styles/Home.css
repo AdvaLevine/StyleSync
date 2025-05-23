@@ -80,7 +80,7 @@ html, body {
 }
 
 .menu-item:hover {
-    background-color: #f5f7fa;
+    background-color: #d0e3ff;
 }
 
 .menu-item svg {
@@ -333,35 +333,44 @@ html, body {
     width: 64px;
     height: 64px;
     border-radius: 50%;
-    background-color: #f5f7fa;
+    background-color: #e6f0ff;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #6b7280;
+    color: #4285f4;
     margin-bottom: 20px;
+    font-size: 32px;
+    line-height: 0;
+    padding-bottom: 3px;
 }
 
 .empty-wardrobe h3 {
     margin: 0 0 10px 0;
-    font-size: 1rem;
+    font-size: 1.25rem;
     font-weight: 600;
-    color: #111827;
+    color: #333333; /* Darker text color */
 }
 
 .empty-wardrobe p {
     margin: 0 0 20px 0;
-    color: #6b7280;
-    font-size: 0.875rem;
+    color: #5f6368; /* Slightly gray text color */
+    font-size: 0.9rem;
 }
 
 .create-wardrobe-btn {
-    background-color: #3b82f6;
+    background-color: #4285f4; /* Google blue */
     color: white;
     border: none;
     border-radius: 4px;
-    padding: 8px 16px;
-    font-size: 0.875rem;
+    padding: 10px 20px;
+    font-size: 0.9rem;
     text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.create-wardrobe-btn:hover {
+    background-color: #3367d6; /* Darker blue on hover */
 }
 
 /* Bottom Sections */
@@ -394,24 +403,30 @@ html, body {
 }
 
 .empty-items svg, .empty-suggestions svg {
-    color: #9ca3af;
+    color: #4285f4;
     margin-bottom: 15px;
 }
 
 .empty-items p, .empty-suggestions p {
     margin: 0 0 20px 0;
-    color: #6b7280;
+    color: #4285f4;
     font-size: 0.875rem;
 }
 
 .add-first-item-btn, .get-recommendations-btn {
-    background-color: #f3f4f6;
-    color: #4b5563;
-    border: 1px solid #e5e7eb;
+    background-color: #4285f4; /* Google blue */
+    color: white;
+    border: none;
     border-radius: 4px;
-    padding: 8px 16px;
-    font-size: 0.875rem;
+    padding: 10px 20px;
+    font-size: 0.9rem;
     text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.add-first-item-btn:hover, .get-recommendations-btn:hover {
+    background-color: #3367d6; /* Darker blue on hover */
 }
 
 /* Responsive Adjustments */
