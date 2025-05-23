@@ -33,7 +33,6 @@ const getRecentItemsCacheKey = () => {
 export const needsCountUpdate = () => {
   const key = getCountInvalidationKey();
   const needsUpdate = localStorage.getItem(key) === 'true';
-  console.log(`needsCountUpdate: Checking key ${key}, result=${needsUpdate}`);
   return needsUpdate;
 };
 
@@ -41,14 +40,12 @@ export const needsCountUpdate = () => {
 export const invalidateCountCache = () => {
   const key = getCountInvalidationKey();
   localStorage.setItem(key, 'true');
-  console.log(`invalidateCountCache: Setting ${key}=true`);
 };
 
 // Function to mark the count as up-to-date
 export const markCountUpdated = () => {
   const key = getCountInvalidationKey();
   localStorage.removeItem(key);
-  console.log(`markCountUpdated: Removed ${key}`);
 };
 
 // Set cache invalidation flag when data changes
@@ -150,7 +147,6 @@ export const updateItemsCache = (wardrobeName, items) => {
   try {
     localStorage.setItem(cacheKey, JSON.stringify(items));
     localStorage.removeItem(invalidationKey);
-    console.log(`Cache updated with ${items.length} items for wardrobe ${wardrobeName}`);
     
     // After updating a specific wardrobe's items, update the all items cache
     updateAllItemsCache();
@@ -166,17 +162,46 @@ export const addItemToCache = (wardrobeName, newItem) => {
   // Force a cache invalidation for this wardrobe
   invalidateItemsCache(wardrobeName);
   
-  console.log(`Invalidated cache for wardrobe ${wardrobeName}`);
-  
   // Update the total count in localStorage
   const totalCountKey = getAllItemsCacheKey();
   const currentCount = parseInt(localStorage.getItem(totalCountKey) || "0", 10);
   localStorage.setItem(totalCountKey, (currentCount + 1).toString());
   
+  // Also add this item to recent items directly
+  const recentKey = getRecentItemsCacheKey();
+  let recentItems = [];
+  try {
+    const cachedRecent = localStorage.getItem(recentKey);
+    if (cachedRecent) {
+      recentItems = JSON.parse(cachedRecent);
+    }
+    
+    // Ensure the new item has a createdAt timestamp
+    if (!newItem.createdAt) {
+      newItem.createdAt = new Date().toISOString();
+    }
+    
+    // Add the wardrobe name to the item if it's not there
+    if (!newItem.wardrobe) {
+      newItem.wardrobe = wardrobeName;
+    }
+    
+    // Add the new item to the beginning of the array
+    recentItems.unshift(newItem);
+    
+    // Limit to 4 items
+    if (recentItems.length > 4) {
+      recentItems = recentItems.slice(0, 4);
+    }
+    
+    // Save the updated recent items
+    localStorage.setItem(recentKey, JSON.stringify(recentItems));
+  } catch (e) {
+    console.error("Error updating recent items cache:", e);
+  }
+  
   // Mark the count as already up-to-date since we just incremented it directly
   markCountUpdated();
-  
-  console.log(`Updated cached count to ${currentCount + 1}`);
   
   return true;
 };
@@ -193,8 +218,22 @@ export const updateAllItemsCache = () => {
     if (key.startsWith(`items_cache_${userId}_`)) {
       try {
         const items = JSON.parse(localStorage.getItem(key)) || [];
+        
+        // Extract wardrobe name from the key
+        const wardrobeName = key.replace(`items_cache_${userId}_`, "");
+        
+        // Ensure each item has wardrobe info if not already present
+        const itemsWithWardrobe = items.map(item => {
+          // Make a copy to avoid modifying the original
+          const enrichedItem = {...item};
+          if (!enrichedItem.wardrobe) {
+            enrichedItem.wardrobe = wardrobeName;
+          }
+          return enrichedItem;
+        });
+        
         totalItems += items.length;
-        allItems = allItems.concat(items);
+        allItems = allItems.concat(itemsWithWardrobe);
       } catch (e) {
         console.error("Error parsing items when calculating total:", e);
       }
@@ -204,10 +243,10 @@ export const updateAllItemsCache = () => {
   // Store the total count
   localStorage.setItem(getAllItemsCacheKey(), totalItems.toString());
   
-  // Update recent items cache (sort by date and take most recent 5)
+  // Update recent items cache (sort by date and take most recent 4)
   const recentItems = allItems
     .sort((a, b) => new Date(b.createdAt || Date.now()) - new Date(a.createdAt || 0))
-    .slice(0, 5);
+    .slice(0, 4);
   
   localStorage.setItem(getRecentItemsCacheKey(), JSON.stringify(recentItems));
   
@@ -244,11 +283,8 @@ export const fetchAndCacheItems = async (wardrobeName, viewMode = 'images') => {
 // Initialize items cache - now simply prepares the cache structure
 // without actually fetching anything (on-demand only)
 export const initializeItemsCache = (skipInvalidateCount = false) => {
-  console.log(`initializeItemsCache called with skipInvalidateCount=${skipInvalidateCount}`);
-  
   const userId = localStorage.getItem("user_id");
   if (!userId) {
-    console.log("initializeItemsCache: No userId found");
     return false;
   }
   
@@ -256,21 +292,16 @@ export const initializeItemsCache = (skipInvalidateCount = false) => {
     // Simply initialize the total count if it doesn't exist
     if (!localStorage.getItem(getAllItemsCacheKey())) {
       localStorage.setItem(getAllItemsCacheKey(), "0");
-      console.log("initializeItemsCache: Initialized count to 0");
     }
     
     // Initialize recent items if they don't exist
     if (!localStorage.getItem(getRecentItemsCacheKey())) {
       localStorage.setItem(getRecentItemsCacheKey(), "[]");
-      console.log("initializeItemsCache: Initialized recent items to empty array");
     }
     
     // Mark the count as needing update, unless specified to skip
     if (!skipInvalidateCount) {
-      console.log("initializeItemsCache: Invalidating count cache");
       invalidateCountCache();
-    } else {
-      console.log("initializeItemsCache: Skipping count invalidation as requested");
     }
     
     return true;
@@ -282,34 +313,25 @@ export const initializeItemsCache = (skipInvalidateCount = false) => {
 
 // Fetch total items count from dedicated Lambda endpoint
 export const fetchTotalItemsCount = async (forceRefresh = false) => {
-  const callId = Date.now().toString().slice(-4); // Create a unique ID for this function call
-  console.log(`[${callId}] fetchTotalItemsCount called with forceRefresh=${forceRefresh}`);
-  
   try {
     const userId = localStorage.getItem("user_id");
     
     // If not forcing refresh and we don't need an update, return the cached count
     if (!forceRefresh && !needsCountUpdate()) {
       const cachedCount = getCachedTotalItemsCount();
-      console.log(`[${callId}] Using cached count: ${cachedCount} (no refresh needed)`);
       return cachedCount;
     }
     
     // Check if we're already fetching - prevent duplicate API calls
     const isFetching = localStorage.getItem('count_fetch_in_progress');
     if (isFetching === 'true' && !forceRefresh) {
-      console.log(`[${callId}] Count fetch already in progress, using cached data`);
       return getCachedTotalItemsCount();
     }
     
     // Mark that we're starting a fetch
     localStorage.setItem('count_fetch_in_progress', 'true');
-    console.log(`[${callId}] Set count_fetch_in_progress flag to true`);
-    
-    console.log(`[${callId}] Fetching items count for userId: ${userId}`);
     
     if (!userId) {
-      console.error(`[${callId}] No user ID found in localStorage`);
       localStorage.removeItem('count_fetch_in_progress');
       return 0;
     }
@@ -317,11 +339,9 @@ export const fetchTotalItemsCount = async (forceRefresh = false) => {
     // Try with URL encoded parameter
     const encodedUserId = encodeURIComponent(userId);
     const apiUrl = `https://ejvfo74uj1.execute-api.us-east-1.amazonaws.com/deploy/items-count?userId=${encodedUserId}`;
-    console.log(`[${callId}] Calling API: ${apiUrl}`);
     
     const response = await fetch(apiUrl);
     const data = await response.json();
-    console.log(`[${callId}] Raw API response:`, data);
     
     // Handle nested response structure
     let count = 0;
@@ -331,29 +351,25 @@ export const fetchTotalItemsCount = async (forceRefresh = false) => {
         const bodyData = typeof data.body === 'string' ? JSON.parse(data.body) : data.body;
         count = bodyData.count || 0;
       } catch (e) {
-        console.error(`[${callId}] Error parsing body:`, e);
+        console.error(`Error parsing body:`, e);
       }
     } else if (data.count !== undefined) {
       count = data.count;
     }
     
-    console.log(`[${callId}] Final extracted count: ${count}`);
     localStorage.setItem(getAllItemsCacheKey(), count.toString());
     
     // Mark count as updated
     markCountUpdated();
-    console.log(`[${callId}] Marked count as updated`);
     
     // Remove the in-progress flag
     localStorage.removeItem('count_fetch_in_progress');
-    console.log(`[${callId}] Removed count_fetch_in_progress flag`);
     
     return count;
   } catch (error) {
-    console.error(`[${callId}] Error fetching total items count:`, error);
+    console.error(`Error fetching total items count:`, error);
     // Remove the in-progress flag on error
     localStorage.removeItem('count_fetch_in_progress');
-    console.log(`[${callId}] Removed count_fetch_in_progress flag (after error)`);
     return getCachedTotalItemsCount();
   }
-}; 
+};

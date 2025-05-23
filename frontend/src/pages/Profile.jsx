@@ -1,8 +1,9 @@
 import React from "react";
-import { User, Mail, Calendar, Save } from "lucide-react";
+import { User, Save, ChevronLeft } from "lucide-react";
 import "../assets/styles/Profile.css";
 import userPool from "../aws/UserPool";
 import MoonLoader from "react-spinners/MoonLoader";
+import { Link } from "react-router-dom";
 
 class Profile extends React.Component {
   constructor(props) {
@@ -249,39 +250,49 @@ class Profile extends React.Component {
     
     if (loading && !userData.name) {
       return (
-        <div className="profile-loading-container">
-          <MoonLoader color="#5C6BC0" loading={loading} size={60} />
-          <h3>Loading profile data...</h3>
+        <div className="profile-page">
+          <div className="profile-header">
+            <Link to="/" className="back-button">
+              <ChevronLeft size={20} />
+            </Link>
+            <h1 className="profile-main-title">Your Profile</h1>
+          </div>
+          <div className="profile-container">
+            <div className="profile-loading">
+              <MoonLoader color="#3b82f6" loading={loading} size={40} />
+              <p>Loading profile data...</p>
+            </div>
+          </div>
         </div>
       );
     }
 
     return (
-      <div className="profile-container">
+      <div className="profile-page">
         <div className="profile-header">
-          <h1>Your Profile</h1>
-          <div className="profile-meta">
-            <div className="profile-meta-item">
-              <User size={16} />
-              <span>{userData.name}</span>
+          <Link to="/" className="back-button">
+            <ChevronLeft size={20} />
+          </Link>
+          <h1 className="profile-main-title">Your Profile</h1>
+        </div>
+        <div className="profile-container">
+          <div className="profile-top">
+            <div className="profile-avatar">
+              <User size={24} />
             </div>
-            <div className="profile-meta-item">
-              <Mail size={16} />
-              <span>{userData.email}</span>
-            </div>
-            <div className="profile-meta-item">
-              <Calendar size={16} />
-              <span>Member since {userData.createdAt}</span>
+            <div className="profile-user-info">
+              <h2>{userData.name}</h2>
+              <p className="profile-email">{userData.email}</p>
+              <p className="profile-email">Member since {userData.createdAt}</p>
             </div>
           </div>
-        </div>
 
-        <div className="profile-section">
-          <h2>Edit Your Information</h2>
+          <h2 className="profile-title">Edit Your Information</h2>
           <form className="profile-form" onSubmit={this.handleSubmit}>
             <div className="form-group">
-              <label htmlFor="fullName">Full Name</label>
+              <label className="form-label" htmlFor="fullName">Full Name</label>
               <input
+                className="form-input"
                 type="text"
                 id="fullName"
                 name="fullName"
@@ -291,21 +302,23 @@ class Profile extends React.Component {
               />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="bio">Bio</label>
+            <div className="form-group full-width">
+              <label className="form-label" htmlFor="bio">Bio</label>
               <textarea
+                className="form-input"
                 id="bio"
                 name="bio"
                 value={formData.bio}
                 onChange={this.handleChange}
                 placeholder="Tell us about yourself..."
-                rows={4}
+                rows={3}
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="favoriteStyle">Favorite Style</label>
+              <label className="form-label" htmlFor="favoriteStyle">Favorite Style</label>
               <select
+                className="form-input"
                 id="favoriteStyle"
                 name="favoriteStyle"
                 value={formData.favoriteStyle}
@@ -324,8 +337,9 @@ class Profile extends React.Component {
             </div>
 
             <div className="form-group">
-              <label htmlFor="phoneNumber">Phone Number (optional)</label>
+              <label className="form-label" htmlFor="phoneNumber">Phone Number (optional)</label>
               <input
+                className="form-input"
                 type="tel"
                 id="phoneNumber"
                 name="phoneNumber"
@@ -335,26 +349,28 @@ class Profile extends React.Component {
               />
             </div>
 
-            <button
-              type="submit"
-              className="save-profile-button"
-              disabled={loading}
-            >
-              {loading ? (
-                <span className="save-profile-spinner">
-                  <MoonLoader color="#ffffff" loading={loading} size={16} />
-                </span>
-              ) : (
-                <>
-                  <Save size={18} />
-                  Save Changes
-                </>
-              )}
-            </button>
+            <div className="button-container">
+              <button
+                type="submit"
+                className="save-button"
+                disabled={loading}
+              >
+                {loading ? (
+                  <span>
+                    <MoonLoader color="#ffffff" loading={loading} size={16} />
+                  </span>
+                ) : (
+                  <>
+                    <Save size={16} />
+                    <span>Save Changes</span>
+                  </>
+                )}
+              </button>
+            </div>
           </form>
 
           {success && (
-            <div className="success-message">
+            <div className="profile-success">
               <span>Profile updated successfully!</span>
               <button
                 type="button"
@@ -367,11 +383,11 @@ class Profile extends React.Component {
           )}
 
           {error && (
-            <div className="error-message">
+            <div className="profile-error">
               <span>{error}</span>
               <button
                 type="button"
-                className="dismiss-button"
+                className="dismiss-button error-dismiss"
                 onClick={this.dismissError}
               >
                 ×
