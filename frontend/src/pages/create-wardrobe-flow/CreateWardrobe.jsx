@@ -5,20 +5,24 @@ import "../../assets/styles/CreateWardrobe.css";
 import { invalidateWardrobeCache } from "../../services/wardrobeCache";
 
 const CreateWardrobe = () => {
+  // eslint-disable-next-line no-unused-vars
   const navigate = useNavigate();
-  const [name, setName] = useState();
-  const [numOfDoors, setNumOfDoors] = useState(0);
-  const [error, setError] = useState();
+  const [name, setName] = useState("");
+  const [numOfDoors, setNumOfDoors] = useState(1);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
   const handleSubmit = async (e) => {
       e.preventDefault();
       setError(null);
+      setSuccess(false);
       setIsPending(true);
 
       const userId = localStorage.getItem("user_id");
       if (!userId) {
         setError("Please log in again – user id missing.");
+        setIsPending(false);
         return;
       }
 
@@ -39,13 +43,19 @@ const CreateWardrobe = () => {
         if (returnedData.statusCode === 201) {
             // Mark cache as needing update
             invalidateWardrobeCache();
-            alert("Wardrobe created successfully!");
-            navigate("/home");
+            
+            // Show success message instead of alert
+            setSuccess(true);
+            
+            // Redirect after a short delay to show the success message
+            setTimeout(() => {
+              navigate("/home");
+            }, 1500);
         } else {
-            setError(returnedData.body)
+            setError(returnedData.body);
         }
       } catch (err) {
-        setError("Failed to create wardrobe");
+        setError("Failed to create wardrobe. Please try again.");
       } finally {
         setIsPending(false);
       }
@@ -54,14 +64,36 @@ const CreateWardrobe = () => {
           <div className="create-wardrobe-container">
               <div className="create-wardrobe-box">
                   <h2>Create Wardrobe</h2>
+                  
+                  {/* Messages positioned right after the title */}
+                  {error && <div className="error-message">{error}</div>}
+                  {success && <div className="success-message">Wardrobe created successfully!</div>}
+                  
                   <form onSubmit={handleSubmit}>
                       <label>Choose Wardrobe Name</label>
-                      <input type="text" placeholder="Enter wardrobe's name" required onChange={(e) => setName(e.target.value)} />
-                      <label>Choose Number of Doors</label>
-                      <input type="number" placeholder="Number of Doors" required min="1" max="9" onChange={(e) => setNumOfDoors(Math.min(9, Math.max(1, Number(e.target.value))))} />
-                      <button type="submit">Create</button>
+                      <input 
+                        type="text" 
+                        placeholder="Enter wardrobe's name" 
+                        required 
+                        value={name}
+                        onChange={(e) => setName(e.target.value)} 
+                      />
                       
-                      {error && <p className="error-message">{error}</p>}
+                      <label>Choose Number of Doors</label>
+                      <input 
+                        type="number" 
+                        placeholder="Number of Doors" 
+                        required 
+                        min="1" 
+                        max="9" 
+                        value={numOfDoors}
+                        onChange={(e) => setNumOfDoors(Math.min(9, Math.max(1, Number(e.target.value))))} 
+                      />
+                      
+                      <button type="submit" disabled={isPending}>
+                        {isPending ? "Creating..." : "Create Wardrobe"}
+                      </button>
+                      
                       {/* Loader Container */}
                       {isPending && (
                         <div className="loader-container">
