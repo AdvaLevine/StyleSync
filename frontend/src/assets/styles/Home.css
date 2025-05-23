@@ -36,9 +36,13 @@ html, body {
 .app-logo {
     display: flex;
     align-items: center;
-    color: #3b82f6;
-    font-weight: 600;
-    font-size: 1.25rem;
+    justify-content: center;
+}
+
+.logo-image {
+    height: 100px;
+    width: auto;
+    object-fit: contain;
 }
 
 .logo-icon {
@@ -94,6 +98,7 @@ html, body {
     display: flex;
     align-items: center;
     padding: 15px 0;
+    margin-left: 20px;
 }
 
 .user-avatar {
@@ -420,4 +425,53 @@ html, body {
     height: 1px;
     background-color: #e5e7eb;
     margin: 15px 20px;
+}
+
+/* Profile Page Styles */
+.profile-page {
+  width: 100%;
+}
+
+.profile-details {
+  margin-top: 20px;
+}
+
+.profile-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.profile-card h3 {
+  margin: 0 0 20px 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 10px;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.info-item {
+  display: flex;
+  align-items: baseline;
+}
+
+.info-item label {
+  font-weight: 500;
+  color: #6b7280;
+  width: 100px;
+}
+
+.info-item p {
+  margin: 0;
+  color: #111827;
+  font-weight: 500;
 }
