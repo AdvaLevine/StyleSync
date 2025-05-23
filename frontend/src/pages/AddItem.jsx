@@ -4,6 +4,7 @@ import "../assets/styles/AddItem.css";
 import Dropdown from '../components/Dropdown';
 import MultiSelectDropdown from '../components/MultiSelectDropdown';
 import { getCachedWardrobes } from '../services/wardrobeCache';
+import { addItemToCache, fetchTotalItemsCount } from '../services/itemsCache';
 import { Shirt } from "lucide-react";
 
 const AddItem = () => {
@@ -343,7 +344,29 @@ const AddItem = () => {
             }
 
             await res.json();
-            // Removed alert - navigate directly to home
+            
+            // Create a new item object for the cache
+            const newItem = {
+                id: Date.now().toString(), // temporary ID until we get one from the server
+                user_id: userId,
+                wardrobe: fromDate.wardrobe,
+                itemType: Array.isArray(fromDate.itemType) ? fromDate.itemType[0] : fromDate.itemType,
+                color: fromDate.color,
+                weather: fromDate.weather,
+                style: fromDate.style,
+                door: fromDate.door,
+                shelf: fromDate.shelf,
+                photoUrl: uploadResult.url,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Add the new item directly to the cache
+            addItemToCache(fromDate.wardrobe, newItem);
+            
+            // Update the total items count in the cache (fetch from backend)
+            await fetchTotalItemsCount();
+            
+            // Navigate to home
             navigate("/home");
         } catch (err) {
             alert(`Could not add item: ${err.message}`);

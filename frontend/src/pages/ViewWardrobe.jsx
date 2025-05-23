@@ -3,6 +3,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import Dropdown from '../components/Dropdown';
 import '../assets/styles/ViewWardrobe.css';
 import { getCachedWardrobes } from '../services/wardrobeCache';
+import { getCachedItems, fetchAndCacheItems, needsItemsCacheUpdate } from '../services/itemsCache';
 import { Shirt } from "lucide-react";
 
 const ViewWardrobe = () => {
@@ -17,7 +18,7 @@ const ViewWardrobe = () => {
     const [displayItems, setDisplayItems] = useState(false); // New state to control when to display items
     const [hasWardrobes, setHasWardrobes] = useState(true); // Track if user has any wardrobes
 
-    // Updated to use a single Lambda endpoint with viewMode parameter
+    // Updated to use itemsCache
     const fetchWardrobeItems = useCallback(async (wardrobeName) => {
         if (!wardrobeName) return;
         
@@ -25,17 +26,20 @@ const ViewWardrobe = () => {
         setError('');
         
         try {
-            const userId = localStorage.getItem("user_id");
-            // Use a single Lambda endpoint and pass the viewMode parameter
-            const response = await fetch(`https://fml6ajrze5.execute-api.us-east-1.amazonaws.com/dev/items?userId=${userId}&wardrobe=${wardrobeName}&viewMode=${viewMode}`);
-            
-            if (!response.ok) {
-                throw new Error("Failed to fetch wardrobe items");
+            // ALWAYS check if we need to update the cache
+            if (needsItemsCacheUpdate(wardrobeName)) {
+                console.log(`Cache needs update for wardrobe ${wardrobeName}, fetching fresh data...`);
+                // Fetch from API and update cache
+                const data = await fetchAndCacheItems(wardrobeName, viewMode);
+                setItems(data);
+            } else {
+                console.log(`Using cached data for wardrobe ${wardrobeName}`);
+                // Use cached data
+                const cachedItems = getCachedItems(wardrobeName);
+                setItems(cachedItems);
             }
-
-            const data = await response.json();
-            setItems(data);
-            setDisplayItems(true); // Show items after successful fetch
+            
+            setDisplayItems(true);
         } catch (error) {
             setError("Error fetching items: " + error.message);
             setItems([]);

@@ -690,3 +690,77 @@ html, body {
 .view-wardrobe-btn:hover {
   background-color: #e5e5e5;
 }
+
+/* Recent Items Grid */
+.recent-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.recent-item-card {
+  border: 1px solid #e0ebff;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(74, 134, 232, 0.08);
+  background: white;
+  position: relative;
+}
+
+.recent-item-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(74, 134, 232, 0.15);
+  border-color: #c0d6ff;
+}
+
+.recent-item-card .item-image {
+  height: 120px;
+  background-color: #f8fbff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #edf4ff;
+  overflow: hidden;
+}
+
+.recent-item-card .item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.recent-item-card .placeholder-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8fbff;
+  color: #a0aec0;
+  font-size: 2rem;
+}
+
+.recent-item-card .item-details {
+  padding: 10px;
+}
+
+.recent-item-card .item-details p {
+  margin: 0;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recent-item-card .item-details p:first-child {
+  font-weight: 600;
+  color: #333;
+}
+
+.recent-item-card .item-details p:last-child {
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 5px;
+}

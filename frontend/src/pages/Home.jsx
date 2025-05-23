@@ -10,15 +10,18 @@ import {
   Trash2
 } from "lucide-react";
 import { getCachedWardrobes, needsCacheUpdate, updateWardrobeCache } from "../services/wardrobeCache";
+import { getCachedTotalItemsCount, getCachedRecentItems, initializeItemsCache, fetchTotalItemsCount } from "../services/itemsCache";
 
 const Home = () => {
   const name = localStorage.getItem("name") || "Guest";
   const [wardrobes, setWardrobes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [totalItems, setTotalItems] = useState(0);
+  const [recentItems, setRecentItems] = useState([]);
   
-  // Use useEffect instead of ref to ensure it runs once when component mounts
+  // Use useEffect to fetch wardrobes and initialize items cache
   useEffect(() => {
-    const fetchWardrobes = async () => {
+    const fetchData = async () => {
       setLoading(true);
       
       // Force fetch if cache needs update or is empty
@@ -35,6 +38,9 @@ const Home = () => {
           console.log("Fetched wardrobes:", data);
           setWardrobes(data);
           updateWardrobeCache(data);
+          
+          // Initialize items cache without fetching all items
+          initializeItemsCache();
         } catch (error) {
           console.error("Error fetching wardrobes:", error);
           // Fall back to cached data
@@ -47,10 +53,24 @@ const Home = () => {
         setWardrobes(cached);
       }
       
+      // Fetch the accurate total items count
+      try {
+        const count = await fetchTotalItemsCount();
+        setTotalItems(count);
+      } catch (error) {
+        console.error("Error updating items count:", error);
+        const cachedCount = getCachedTotalItemsCount();
+        setTotalItems(cachedCount);
+      }
+      
+      // Load recent items from cache
+      const recent = getCachedRecentItems();
+      setRecentItems(recent);
+      
       setLoading(false);
     };
     
-    fetchWardrobes();
+    fetchData();
   }, []); // Empty dependency array ensures this runs once on mount
 
   return (
@@ -64,7 +84,7 @@ const Home = () => {
         <div className="stat-card items">
           <div className="stat-content">
             <h3>Total Items</h3>
-            <p className="stat-number">0</p>
+            <p className="stat-number">{loading ? "..." : totalItems}</p>
           </div>
           <div className="stat-icon">
             <Shirt />
@@ -149,13 +169,35 @@ const Home = () => {
       <div className="bottom-sections">
         <div className="recent-items-section">
           <h2>Recent Items</h2>
-          <div className="empty-items">
-            <Shirt size={32} />
-            <p>No items in your wardrobe yet</p>
-            <Link to="/add-item" className="add-first-item-btn">
-              Add First Item
-            </Link>
-          </div>
+          {recentItems.length > 0 ? (
+            <div className="recent-items-grid">
+              {recentItems.map(item => (
+                <div key={item.id} className="recent-item-card">
+                  <div className="item-image">
+                    {item.photoUrl ? (
+                      <img src={item.photoUrl} alt={item.itemType} />
+                    ) : (
+                      <div className="placeholder-image">
+                        <i className="image-icon">🖼️</i>
+                      </div>
+                    )}
+                  </div>
+                  <div className="item-details">
+                    <p>{item.itemType}</p>
+                    <p>In: {item.wardrobe}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-items">
+              <Shirt size={32} />
+              <p>No items in your wardrobe yet</p>
+              <Link to="/add-item" className="add-first-item-btn">
+                Add First Item
+              </Link>
+            </div>
+          )}
         </div>
         
         <div className="suggestions-section">
