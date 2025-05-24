@@ -1,20 +1,26 @@
-import React, { useState, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import "../assets/styles/AddItem.css";
 import Dropdown from '../components/Dropdown';
 import MultiSelectDropdown from '../components/MultiSelectDropdown';
+import { getCachedWardrobes } from '../services/wardrobeCache';
+import { addItemToCache } from '../services/itemsCache';
+import { Shirt } from "lucide-react";
 
-const AddItem = () => {
-    const navigate = useNavigate();
-    const [wardrobes, setWardrobes] = useState([]);
-    const [selectedWardrobe, setSelectedWardrobe] = useState(null); 
-    const [errorMessage, setErrorMessage] = useState("");
-    const [formError, setFormError] = useState("");
-    const [formErrorStep2, setFormErrorStep2] = useState("");
-    const [uploadProgress, setUploadProgress] = useState(0);
-    const [isUploading, setIsUploading] = useState(false);
-    const isFirstRender = useRef(true);
-    const [fromDate, setFromDate] = useState({
+class AddItem extends React.Component {
+    constructor(props) {
+        super(props);
+        
+        this.state = {
+            wardrobes: [],
+            selectedWardrobe: null, 
+            errorMessage: "",
+            formError: "",
+            formErrorStep2: "",
+            uploadProgress: 0,
+            isUploading: false,
+            hasWardrobes: true, // Track if user has any wardrobes
+            fromDate: {
         wardrobe: "",
         itemType: "",
         color: [],
@@ -24,57 +30,62 @@ const AddItem = () => {
         shelf: "",
         photo: null,
         photoUrl: "", // Will store the S3 URL of the uploaded photo
-    });
-    const [step, setStep] = useState(1);
+            },
+            step: 1,
+        };
     
     // S3 bucket name - should match the one in your Lambda
-    const BUCKET_NAME = 'wardrobe-item-images';
-
-    const fetchWardrobes = async () => {
-        const userId = localStorage.getItem("user_id");
-        const response = await fetch(`https://o5199uwx89.execute-api.us-east-1.amazonaws.com/dev/wardrobes?userId=${userId}`);
-        
-        if (!response.ok) {
-            return; 
-        }
-
-        const data = await response.json();
-        setWardrobes(data);
-    };
-
-    if (isFirstRender.current) {
-        isFirstRender.current = false;
-        fetchWardrobes();
+        this.BUCKET_NAME = 'wardrobe-item-images';
+        this.navigate = props.navigate;
     }
 
-    const handleInputChange = (e) => {
+    componentDidMount() {
+    // Load wardrobes from cache with better error handling
+        const cached = getCachedWardrobes();
+        if (cached && cached.length > 0) {
+            this.setState({
+                wardrobes: cached,
+                hasWardrobes: true
+            });
+        } else {
+            // User has no wardrobes, show the "Create Wardrobe First" screen
+            this.setState({ hasWardrobes: false });
+    }
+    }
+
+    handleInputChange = (e) => {
         const { name, value, files } = e.target;
 
-        if (name === "door" && selectedWardrobe) {
-            const maxDoors = selectedWardrobe.num_of_doors;
+        if (name === "door" && this.state.selectedWardrobe) {
+            const maxDoors = this.state.selectedWardrobe.num_of_doors;
             if (value < 1 || value > maxDoors) {
-                setErrorMessage(`Please enter a door number between 1 and ${maxDoors}.`);
-                setFromDate((prev) => ({
-                    ...prev,
-                    door: "", 
-                }));
+                this.setState({
+                    errorMessage: `Please enter a door number between 1 and ${maxDoors}.`,
+                    fromDate: {
+                        ...this.state.fromDate,
+                        door: ""
+                    }
+                });
                 return;
             } else {
-                setErrorMessage(""); 
+                this.setState({ errorMessage: "" }); 
             }
         }
 
-        setFromDate((prev) => ({
-            ...prev,
-            [name]: files ? files[0] : value,
-        }));
+        this.setState({
+            fromDate: {
+                ...this.state.fromDate,
+                [name]: files ? files[0] : value
+            }
+        });
     };
 
-    const handleWardrobeSelect = (wardrobeName) => {
+    handleWardrobeSelect = (wardrobeName) => {
         if (!wardrobeName) {
-            setSelectedWardrobe(null);
-            setFromDate((prev) => ({
-                ...prev,
+            this.setState({
+                selectedWardrobe: null,
+                fromDate: {
+                    ...this.state.fromDate,
                 wardrobe: "",
                 door: "", 
                 shelf: "", 
@@ -83,17 +94,19 @@ const AddItem = () => {
                 weather: [],
                 style: [],
                 photo: null,
-                photoUrl: "",
-            }));
-            setErrorMessage("");
+                    photoUrl: ""
+                },
+                errorMessage: ""
+            });
             return;
         }
 
-        const wardrobe = wardrobes.find((w) => w.name === wardrobeName);
+        const wardrobe = this.state.wardrobes.find((w) => w.name === wardrobeName);
         if (!wardrobe) {
-            setSelectedWardrobe(null);
-            setFromDate((prev) => ({
-                ...prev,
+            this.setState({
+                selectedWardrobe: null,
+                fromDate: {
+                    ...this.state.fromDate,
                 wardrobe: "",
                 door: "", 
                 shelf: "", 
@@ -102,21 +115,25 @@ const AddItem = () => {
                 weather: [],
                 style: [],
                 photo: null,
-                photoUrl: "",
-            }));
+                    photoUrl: ""
+                }
+            });
         } else {
-            const isSameWardrobe = fromDate.wardrobe === wardrobeName;
-
-            setSelectedWardrobe(wardrobe);
+            const isSameWardrobe = this.state.fromDate.wardrobe === wardrobeName;
             
             if (isSameWardrobe) {
-                setFromDate((prev) => ({
-                    ...prev,
-                    wardrobe: wardrobeName,
-                }));
+                this.setState({
+                    selectedWardrobe: wardrobe,
+                    fromDate: {
+                        ...this.state.fromDate,
+                        wardrobe: wardrobeName
+                    }
+                });
             } else {
-                setFromDate((prev) => ({
-                    ...prev,
+                this.setState({
+                    selectedWardrobe: wardrobe,
+                    fromDate: {
+                        ...this.state.fromDate,
                     wardrobe: wardrobeName,
                     door: "", 
                     shelf: "", 
@@ -125,16 +142,17 @@ const AddItem = () => {
                     weather: [],
                     style: [],
                     photo: null,
-                    photoUrl: "",
-                }));
+                        photoUrl: ""
+                    }
+                });
             }
         }
 
-        setErrorMessage(""); 
+        this.setState({ errorMessage: "" }); 
     };
 
     // Get a presigned URL from Lambda
-    const getPresignedUrl = async (file) => {
+    getPresignedUrl = async (file) => {
         try {
             // יצירת שם קובץ ייחודי
             const timestamp = new Date().getTime();
@@ -195,13 +213,15 @@ const AddItem = () => {
     };
     
     // Upload image to S3 using presigned URL
-    const uploadImageToS3 = async (file) => {
+    uploadImageToS3 = async (file) => {
         try {
-            setIsUploading(true);
-            setUploadProgress(0);
+            this.setState({
+                isUploading: true,
+                uploadProgress: 0
+            });
             
             // Get presigned URL from Lambda
-            const presignedData = await getPresignedUrl(file);
+            const presignedData = await this.getPresignedUrl(file);
             
             if (!presignedData || !presignedData.uploadURL) {
                 throw new Error("No valid upload URL received");
@@ -210,13 +230,16 @@ const AddItem = () => {
             // Create a new XMLHttpRequest for tracking upload progress
             const xhr = new XMLHttpRequest();
             
+            // Store reference to component for use in callback
+            const self = this;
+            
             // Improved progress event handling with explicit React state updates
             xhr.upload.onprogress = (event) => {
                 if (event.lengthComputable) {
                     const percentComplete = Math.round((event.loaded / event.total) * 100);
                     // Force React state update with setTimeout to ensure UI updates
                     setTimeout(() => {
-                        setUploadProgress(percentComplete);
+                        self.setState({ uploadProgress: percentComplete });
                     }, 0);
                 }
             };
@@ -226,7 +249,7 @@ const AddItem = () => {
                 xhr.onload = () => {
                     if (xhr.status >= 200 && xhr.status < 300) {
                         // Since we're using PUT, construct the S3 URL
-                        const s3Url = `https://${BUCKET_NAME}.s3.amazonaws.com/${presignedData.fileName}`;
+                        const s3Url = `https://${this.BUCKET_NAME}.s3.amazonaws.com/${presignedData.fileName}`;
                         
                         resolve({
                             url: s3Url,
@@ -250,38 +273,38 @@ const AddItem = () => {
             throw error;
         } finally {
             // Don't immediately hide the upload status when complete
-            if (uploadProgress >= 100) {
+            if (this.state.uploadProgress >= 100) {
                 setTimeout(() => {
-                    setIsUploading(false);
+                    this.setState({ isUploading: false });
                 }, 2000); // Show the success message for 2 seconds
             }
         }
     };
 
-    const handleSubmit = async (e) => {
+    handleSubmit = async (e) => {
         e.preventDefault();
         
-        if (!fromDate.color || !Array.isArray(fromDate.color) || fromDate.color.length === 0) {
-            setFormErrorStep2("Please choose at least one color");
+        if (!this.state.fromDate.color || !Array.isArray(this.state.fromDate.color) || this.state.fromDate.color.length === 0) {
+            this.setState({ formErrorStep2: "Please choose at least one color" });
             return;
         }
         
-        if (!fromDate.weather || !Array.isArray(fromDate.weather) || fromDate.weather.length === 0) {
-            setFormErrorStep2("Please choose at least one weather type");
+        if (!this.state.fromDate.weather || !Array.isArray(this.state.fromDate.weather) || this.state.fromDate.weather.length === 0) {
+            this.setState({ formErrorStep2: "Please choose at least one weather type" });
             return;
         }
         
-        if (!fromDate.style || !Array.isArray(fromDate.style) || fromDate.style.length === 0) {
-            setFormErrorStep2("Please choose at least one style");
+        if (!this.state.fromDate.style || !Array.isArray(this.state.fromDate.style) || this.state.fromDate.style.length === 0) {
+            this.setState({ formErrorStep2: "Please choose at least one style" });
             return;
         }
         
-        if (!fromDate.photo) {
-            setFormErrorStep2("Please upload a photo");
+        if (!this.state.fromDate.photo) {
+            this.setState({ formErrorStep2: "Please upload a photo" });
             return;
         }
         
-        setFormErrorStep2("");
+        this.setState({ formErrorStep2: "" });
         
         const userId = localStorage.getItem("user_id");
         if (!userId) {
@@ -291,25 +314,25 @@ const AddItem = () => {
 
         try {
             // First upload the image to S3
-            const uploadResult = await uploadImageToS3(fromDate.photo);
+            const uploadResult = await this.uploadImageToS3(this.state.fromDate.photo);
             
             // Update form data with photoUrl
             const updatedFromDate = {
-                ...fromDate,
+                ...this.state.fromDate,
                 photoUrl: uploadResult.url
             };
-            setFromDate(updatedFromDate);
+            this.setState({ fromDate: updatedFromDate });
             
             // Create payload with the image URL
             const payload = {
                 user_id: userId,
-                wardrobe: fromDate.wardrobe,
-                itemType: Array.isArray(fromDate.itemType) ? fromDate.itemType[0] : fromDate.itemType,
-                color: fromDate.color,
-                weather: fromDate.weather,
-                style: fromDate.style,
-                door: fromDate.door,
-                shelf: fromDate.shelf,
+                wardrobe: this.state.fromDate.wardrobe,
+                itemType: Array.isArray(this.state.fromDate.itemType) ? this.state.fromDate.itemType[0] : this.state.fromDate.itemType,
+                color: this.state.fromDate.color,
+                weather: this.state.fromDate.weather,
+                style: this.state.fromDate.style,
+                door: this.state.fromDate.door,
+                shelf: this.state.fromDate.shelf,
                 photoUrl: uploadResult.url
             };
 
@@ -328,59 +351,97 @@ const AddItem = () => {
             }
 
             await res.json();
-            // Removed alert - navigate directly to home
-            navigate("/home");
+            
+            // Create a new item object for the cache
+            const newItem = {
+                id: Date.now().toString(), // temporary ID until we get one from the server
+                user_id: userId,
+                wardrobe: this.state.fromDate.wardrobe,
+                itemType: Array.isArray(this.state.fromDate.itemType) ? this.state.fromDate.itemType[0] : this.state.fromDate.itemType,
+                color: this.state.fromDate.color,
+                weather: this.state.fromDate.weather,
+                style: this.state.fromDate.style,
+                door: this.state.fromDate.door,
+                shelf: this.state.fromDate.shelf,
+                photoUrl: uploadResult.url,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Add the new item directly to the cache
+            // This will also update the total count and mark it as current
+            addItemToCache(this.state.fromDate.wardrobe, newItem);
+            
+            // Navigate to home
+            this.props.navigate("/home");
         } catch (err) {
             alert(`Could not add item: ${err.message}`);
         }
     };
 
-    const commonOptions = ["Shirt", "Pants", "Dress", "Jacket", "Shoes", "Hat", "Scarf", "Belt", "Socks", "Gloves"];
-    const colorOptions = ["Black", "White", "Red", "Blue", "Green", "Yellow", "Purple", "Pink", "Orange", "Brown"];
-    const weatherOptions = ["Hot", "Cold", "Rainy", "Snow", "Windy", "Sunny", "Cloudy", "Stormy", "Foggy", "Humid"];
-    const styleOptions = ["Casual", "Formal", "Fancy", "Business", "Sports", "Party", "Beach", "Outdoor", "Elegant", "Vintage"];
+    commonOptions = ["Shirt", "Pants", "Dress", "Jacket", "Shoes", "Hat", "Scarf", "Belt", "Socks", "Gloves"];
+    colorOptions = ["Black", "White", "Red", "Blue", "Green", "Yellow", "Purple", "Pink", "Orange", "Brown"];
+    weatherOptions = ["Hot", "Cold", "Rainy", "Snow", "Windy", "Sunny", "Cloudy", "Stormy", "Foggy", "Humid"];
+    styleOptions = ["Casual", "Formal", "Fancy", "Business", "Sports", "Party", "Beach", "Outdoor", "Elegant", "Vintage"];
 
-    const validateStep1 = () => {
-        if (!fromDate.wardrobe) {
-            setFormError("Please choose a wardrobe");
+    validateStep1 = () => {
+        if (!this.state.fromDate.wardrobe) {
+            this.setState({ formError: "Please choose a wardrobe" });
             return false;
         }
-        if (!fromDate.door) {
-            setFormError("Please enter a door number");
+        if (!this.state.fromDate.door) {
+            this.setState({ formError: "Please enter a door number" });
             return false;
         }
-        if (!fromDate.shelf) {
-            setFormError("Please enter a shelf number");
+        if (!this.state.fromDate.shelf) {
+            this.setState({ formError: "Please enter a shelf number" });
             return false;
         }
-        if (!fromDate.itemType) {
-            setFormError("Please choose an item type");
+        if (!this.state.fromDate.itemType) {
+            this.setState({ formError: "Please choose an item type" });
             return false;
         }
         
-        setFormError("");
+        this.setState({ formError: "" });
         return true;
     };
 
-    const handleNextStep = () => {
-        if (validateStep1()) {
-            setStep(2);
+    handleNextStep = () => {
+        if (this.validateStep1()) {
+            this.setState({ step: 2 });
         }
     };
 
+    render() {
+        // If user has no wardrobes, show the "Create Wardrobe First" screen
+        if (!this.state.hasWardrobes) {
+            return (
+                <div className="add-item-container">
+                    <div className="no-wardrobe-message">
+                        <div className="no-wardrobe-icon">
+                            <Shirt size={48} />
+                        </div>
+                        <h2>Create a Wardrobe First</h2>
+                        <p>You need to create a wardrobe before adding items</p>
+                        <Link to="/create-wardrobe" className="create-wardrobe-btn">
+                            Create Your First Wardrobe
+                        </Link>
+                    </div>
+                </div>
+            );
+        }
+
     return (
         <div className="add-item-container">
-            <Link to="/home" className="back-button">⟵</Link>
             <div className="add-item-box">
                 <h2>Add Item</h2>
-                {step === 1 && (
+                    {this.state.step === 1 && (
                     <form>
                         <Dropdown
-                            options={wardrobes.length > 0 ? wardrobes.map((w) => w.name) : []} 
+                                options={this.state.wardrobes.length > 0 ? this.state.wardrobes.map((w) => w.name) : []} 
                             label="Choose Wardrobe"
                             placeholder="Start typing wardrobe name..."
-                            onSelect={handleWardrobeSelect}
-                            initialValue={fromDate.wardrobe}
+                                onSelect={this.handleWardrobeSelect}
+                                initialValue={this.state.fromDate.wardrobe}
                         />
 
                         <label>Choose Door</label>
@@ -389,13 +450,13 @@ const AddItem = () => {
                             name="door"
                             placeholder="Door Number"
                             min="1"
-                            max={selectedWardrobe ? selectedWardrobe.num_of_doors : ""}
-                            value={fromDate.door}
-                            onChange={handleInputChange}
-                            disabled={!fromDate.wardrobe}
+                                max={this.state.selectedWardrobe ? this.state.selectedWardrobe.num_of_doors : ""}
+                                value={this.state.fromDate.door}
+                                onChange={this.handleInputChange}
+                                disabled={!this.state.fromDate.wardrobe}
                             required
                         />
-                        {errorMessage && <p className="error-message">{errorMessage}</p>}
+                            {this.state.errorMessage && <p className="error-message">{this.state.errorMessage}</p>}
 
                         <label>Choose Shelf</label>
                         <input
@@ -403,52 +464,52 @@ const AddItem = () => {
                             name="shelf"
                             placeholder="Shelf Number"
                             min="1"
-                            value={fromDate.shelf}
-                            onChange={handleInputChange}
-                            disabled={!fromDate.door} 
+                                value={this.state.fromDate.shelf}
+                                onChange={this.handleInputChange}
+                                disabled={!this.state.fromDate.door} 
                             required
                         />
 
                         <Dropdown
-                            options={commonOptions}
+                                options={this.commonOptions}
                             label="Choose Item Type"
                             placeholder="Start typing item type..."
-                            onSelect={(selected) => handleInputChange({ target: { name: 'itemType', value: selected } })}
-                            disabled={!fromDate.door} 
-                            initialValue={fromDate.itemType}
+                                onSelect={(selected) => this.handleInputChange({ target: { name: 'itemType', value: selected } })}
+                                disabled={!this.state.fromDate.door} 
+                                initialValue={this.state.fromDate.itemType}
                         />
 
-                        {formError && <p className="error-message">{formError}</p>}
-                        <button type="button" onClick={handleNextStep}>Next</button>
+                            {this.state.formError && <p className="error-message">{this.state.formError}</p>}
+                            <button type="button" onClick={this.handleNextStep}>Next</button>
                     </form>
                 )}
 
-                {step === 2 && (
-                    <form onSubmit={handleSubmit}>
-                        {fromDate.itemType && (
+                    {this.state.step === 2 && (
+                        <form onSubmit={this.handleSubmit}>
+                            {this.state.fromDate.itemType && (
                             <>
                                 <MultiSelectDropdown
-                                    options={colorOptions}
+                                        options={this.colorOptions}
                                     label="Choose Color"
                                     placeholder="Start typing color..."
-                                    onSelect={(selected) => handleInputChange({ target: { name: 'color', value: selected } })}
-                                    initialSelectedOptions={fromDate.color}
+                                        onSelect={(selected) => this.handleInputChange({ target: { name: 'color', value: selected } })}
+                                        initialSelectedOptions={this.state.fromDate.color}
                                 />
 
                                 <MultiSelectDropdown
-                                    options={weatherOptions}
+                                        options={this.weatherOptions}
                                     label="Choose Weather Type"
                                     placeholder="Start typing weather..."
-                                    onSelect={(selected) => handleInputChange({ target: { name: 'weather', value: selected } })}
-                                    initialSelectedOptions={fromDate.weather}
+                                        onSelect={(selected) => this.handleInputChange({ target: { name: 'weather', value: selected } })}
+                                        initialSelectedOptions={this.state.fromDate.weather}
                                 />
 
                                 <MultiSelectDropdown
-                                    options={styleOptions}
+                                        options={this.styleOptions}
                                     label="Choose Style"
                                     placeholder="Start typing style..."
-                                    onSelect={(selected) => handleInputChange({ target: { name: 'style', value: selected } })}
-                                    initialSelectedOptions={fromDate.style}
+                                        onSelect={(selected) => this.handleInputChange({ target: { name: 'style', value: selected } })}
+                                        initialSelectedOptions={this.state.fromDate.style}
                                 />
 
                                 <label>Upload Photo</label>
@@ -456,19 +517,19 @@ const AddItem = () => {
                                     type="file"
                                     accept="image/*"
                                     name="photo"
-                                    onChange={handleInputChange}
+                                        onChange={this.handleInputChange}
                                 />
                                 
-                                {isUploading && (
+                                    {this.state.isUploading && (
                                     <div className="upload-progress">
                                         <div className="progress-bar">
                                             <div 
                                                 className="progress-fill" 
-                                                style={{ width: `${uploadProgress}%` }}
+                                                    style={{ width: `${this.state.uploadProgress}%` }}
                                             ></div>
                                         </div>
                                         <div className="progress-text">
-                                            {uploadProgress < 100 
+                                                {this.state.uploadProgress < 100 
                                                 ? "Uploading..." 
                                                 : "✓ Upload Complete!"}
                                         </div>
@@ -477,14 +538,14 @@ const AddItem = () => {
                             </>
                         )}
                         
-                        {formErrorStep2 && <p className="error-message">{formErrorStep2}</p>}
+                            {this.state.formErrorStep2 && <p className="error-message">{this.state.formErrorStep2}</p>}
 
                         <div className="buttons-container">
                             <button 
                                 type="button" 
                                 className="back-btn" 
                                 onClick={() => {
-                                    setStep(1);
+                                        this.setState({ step: 1 });
                                 }}
                             >
                                 Back
@@ -492,9 +553,9 @@ const AddItem = () => {
                             <button 
                                 type="submit" 
                                 className="add-btn"
-                                disabled={isUploading}
+                                    disabled={this.state.isUploading}
                             >
-                                {isUploading ? "Uploading..." : "Add"}
+                                    {this.state.isUploading ? "Uploading..." : "Add"}
                             </button>
                         </div>
                     </form>
@@ -502,6 +563,13 @@ const AddItem = () => {
             </div>
         </div>
     );
+    }
+}
+
+// Add a wrapper that provides navigation
+const AddItemWithNavigation = (props) => {
+    const navigate = useNavigate();
+    return <AddItem {...props} navigate={navigate} />;
 };
 
-export default AddItem;
+export default AddItemWithNavigation;

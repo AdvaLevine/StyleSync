@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import UserPool from "../aws/UserPool";
 import MoonLoader from "react-spinners/MoonLoader";
 import { CognitoUserAttribute } from 'amazon-cognito-identity-js';
+import { forceWardrobeCacheRefresh } from "../services/wardrobeCache";
+import { invalidateCountCache } from "../services/itemsCache";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -41,9 +43,17 @@ const Signup = () => {
         return;
       }
   
-      // Navigate to confirmation or home page with user details
+      // Store user info in localStorage
       localStorage.setItem("user_id", result.userSub);
       localStorage.setItem("name", name);
+      
+      // Force cache refresh on signup
+      forceWardrobeCacheRefresh();
+      
+      // Only invalidate the count cache, the Home component will handle the fetch
+      invalidateCountCache();
+      
+      // Navigate to home
       navigate("/home", { state: { name: name } });
     });
   };

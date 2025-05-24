@@ -1,14 +1,5 @@
 /* ViewWardrobe.css */
-/* Remove default body & html margin/padding */
-html body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    background-color: #cde6e9;
-    font-family: Georgia, 'Times New Roman', Times, serif;
-}
-
-/* Full-page background */
+/* Styles for view-wardrobe page only */
 .view-wardrobe-container {
     display: flex;
     flex-direction: column;
@@ -18,6 +9,7 @@ html body {
     min-height: 500px;
     position: relative;
     background-color: #cde6e9;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Back Button */
@@ -367,7 +359,7 @@ html body {
     padding: 12px 30px;
     margin-top: 10px;
     margin-bottom: 5px;
-    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     transition: background-color 0.2s ease;
 }
 
@@ -447,4 +439,59 @@ html body {
 
 .items-container::-webkit-scrollbar-thumb:hover {
     background: #4a86e8;
+}
+
+/* Add styles for the "Create Wardrobe First" screen */
+.no-wardrobe-message {
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.no-wardrobe-icon {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    color: #a0cdff;
+}
+
+.no-wardrobe-message h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.no-wardrobe-message p {
+    color: #666;
+    margin-bottom: 25px;
+    font-size: 16px;
+}
+
+.create-wardrobe-btn {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.create-wardrobe-btn:hover {
+    background-color: #2563eb;
 }

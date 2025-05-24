@@ -4,7 +4,7 @@ html, body {
     padding: 0;
     height: 100%; /* Ensure full height */
     background-color: #E7E7E7; /* Set background at body level */
-    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
 
 /* Full-page background */

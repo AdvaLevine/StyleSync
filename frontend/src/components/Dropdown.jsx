@@ -1,62 +1,79 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import './Dropdown.css'; // Import the CSS file
 
-export default function Dropdown({ options, label, placeholder, onSelect, disabled, initialValue }) {
-  const [inputValue, setInputValue] = useState(initialValue || '');
-  const [showList, setShowList] = useState(false);
-
-  useEffect(() => {
-    setInputValue(initialValue || '');
-  }, [initialValue]);
-
-  const validOptions = options.filter((option) => typeof option === 'string');
-
-  const filteredOptions = validOptions.filter((option) =>
-    option.toLowerCase().includes(inputValue.toLowerCase())
-  );
-
-  const handleSelect = (option) => {
-    setInputValue(option);
-    setShowList(false);
-    onSelect(option);
+export default class Dropdown extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      inputValue: props.initialValue || '',
+      showList: false
+    };
+  }
+  
+  componentDidUpdate(prevProps) {
+    // Update state if initialValue prop changes
+    if (prevProps.initialValue !== this.props.initialValue) {
+      this.setState({ inputValue: this.props.initialValue || '' });
+    }
+  }
+  
+  handleSelect = (option) => {
+    this.setState({
+      inputValue: option,
+      showList: false
+    });
+    this.props.onSelect(option);
   };
-
-  const handleInputChange = (e) => {
+  
+  handleInputChange = (e) => {
     const newValue = e.target.value;
-    setInputValue(newValue);
-    setShowList(true);
+    this.setState({
+      inputValue: newValue,
+      showList: true
+    });
     
     if (newValue === '') {
-      onSelect(''); 
+      this.props.onSelect(''); 
     }
   };
-
-  return (
-    <div className="dropdown">
-      <label>{label}</label>
-      <input
-        type="text"
-        value={inputValue}
-        onChange={handleInputChange}
-        onFocus={() => setShowList(true)}
-        onBlur={() => setTimeout(() => setShowList(false), 200)}
-        placeholder={placeholder}
-        disabled={disabled}
-        required
-      />
-      {showList && (
-        <ul className="dropdown-list">
-          {filteredOptions.length > 0 ? (
-            filteredOptions.map((option, i) => (
-              <li key={i} onClick={() => handleSelect(option)}>
-                {option}
-              </li>
-            ))
-          ) : (
-            <li className="no-match">No matches</li>
-          )}
-        </ul>
-      )}
-    </div>
-  );
+  
+  render() {
+    const { options, label, placeholder, disabled } = this.props;
+    const { inputValue, showList } = this.state;
+    
+    const validOptions = options.filter((option) => typeof option === 'string');
+    
+    const filteredOptions = validOptions.filter((option) =>
+      option.toLowerCase().includes(inputValue.toLowerCase())
+    );
+    
+    return (
+      <div className="dropdown">
+        <label>{label}</label>
+        <input
+          type="text"
+          value={inputValue}
+          onChange={this.handleInputChange}
+          onFocus={() => this.setState({ showList: true })}
+          onBlur={() => setTimeout(() => this.setState({ showList: false }), 200)}
+          placeholder={placeholder}
+          disabled={disabled}
+          required
+        />
+        {showList && (
+          <ul className="dropdown-list">
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((option, i) => (
+                <li key={i} onClick={() => this.handleSelect(option)}>
+                  {option}
+                </li>
+              ))
+            ) : (
+              <li className="no-match">No matches</li>
+            )}
+          </ul>
+        )}
+      </div>
+    );
+  }
 }
