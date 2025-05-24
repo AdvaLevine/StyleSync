@@ -177,8 +177,8 @@ html, body {
 /* Main Content */
 .main-content {
     flex-grow: 1;
-    padding: 30px;
-    background-color: #cde6e9;
+  padding: 30px;
+    background-color: #e6f0ff;
     overflow-y: auto;
     margin-left: 250px; /* Match sidebar width */
     width: calc(100% - 250px);
@@ -237,6 +237,10 @@ html, body {
     border-top: 4px solid #f59e0b;
 }
 
+.stat-card.weather {
+  border-top: 4px solid #f59e0b;
+}
+
 .stat-content h3 {
     margin: 0 0 10px 0;
     color: #6b7280;
@@ -278,6 +282,11 @@ html, body {
 .outfits .stat-icon {
     background-color: #fffbeb;
     color: #f59e0b;
+}
+
+.weather .stat-icon {
+  background-color: #fffbeb;
+  color: #f59e0b;
 }
 
 .stat-date {

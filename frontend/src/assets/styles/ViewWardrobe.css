@@ -2,13 +2,12 @@
 /* Styles for view-wardrobe page only */
 .view-wardrobe-container {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: column;    justify-content: center;
     align-items: center;
     height: 100vh;
     min-height: 500px;
     position: relative;
-    background-color: #cde6e9;
+    background-color: #e6f0ff;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 

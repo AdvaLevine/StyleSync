@@ -270,13 +270,15 @@ class Home extends React.Component {
             </div>
           </div>
           
-          <div className="stat-card outfits">
+          
+          <div className="stat-card weather">
             <div className="stat-content">
-              <h3>Outfits</h3>
-              <p className="stat-number">0</p>
+              <h3>Today's Weather</h3>
+              <p className="stat-number">24°C</p>
+              <p className="weather-desc">Sunny</p>
             </div>
             <div className="stat-icon">
-              <Sparkles size={32} /> 
+              <div className="weather-icon">☀️</div>
             </div>
           </div>
         </div>

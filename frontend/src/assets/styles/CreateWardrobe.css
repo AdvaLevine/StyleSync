@@ -1,11 +1,10 @@
 /* Remove default margin/padding and set background for create-wardrobe page */
 .create-wardrobe-container {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: column;    justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #cde6e9; /* Light blue background */
+    background-color: #e6f0ff; /* Light blue background */
     position: relative;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
