@@ -13,11 +13,13 @@ import {
 import "../assets/styles/Home.css";
 import { clearUserCache } from "../services/itemsCache";
 import { clearWardrobeCache } from "../services/wardrobeCache";
+import { useAuth } from "react-oidc-context"; // הוספת ייבוא לאותנטיקציה
 
 const Layout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const name = localStorage.getItem("name") || "Guest";
+  const auth = useAuth(); // הוספת שימוש ב-auth
 
   const handleLogout = () => {
     // Clear all cached data for this user
@@ -25,9 +27,20 @@ const Layout = () => {
     clearWardrobeCache();
     
     // Remove auth data
-    localStorage.removeItem("user_id");
-    localStorage.removeItem("name");
-    navigate("/");
+    localStorage.clear(); // ניקוי כל ה-localStorage
+    
+    // אם המשתמש השתמש באותנטיקציית OIDC, התנתק גם משם
+    if (auth && auth.isAuthenticated) {
+      auth.signoutRedirect({
+        extraQueryParams: {
+          client_id: "6jt8p3s82dcj78eomqpra1qo0i",
+          logout_uri: "http://localhost:3000/login"
+        }
+      });
+    } else {
+      // אם לא משתמש ב-OIDC או שלא מחובר, רק נווט לדף הבית
+      navigate("/");
+    }
   };
 
   // Function to determine if a nav item is active based on the current path
@@ -110,4 +123,4 @@ const Layout = () => {
   );
 };
 
-export default Layout; 
+export default Layout;

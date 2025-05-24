@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import AddItem from "./pages/AddItem";
@@ -11,28 +11,13 @@ import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
 import Profile from "./pages/Profile";
 
-// Simple auth check - we'll consider a user logged in if they have a user_id in localStorage
-const isLoggedIn = () => {
-  return localStorage.getItem("user_id") !== null;
-};
-
-// Protected route component
-const ProtectedRoute = ({ children }) => {
-  if (!isLoggedIn()) {
-    return <Navigate to="/" replace />;
-  }
-  return children;
-};
-
 const App = () => {
   return (
     <Router>
       <Routes>        
         {/* Protected routes with Layout */}
         <Route element={
-          <ProtectedRoute>
             <Layout />
-          </ProtectedRoute>
         }>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/home" element={<Home />} />
