@@ -230,6 +230,7 @@ html, body {
 
 .stat-card.seasons {
     border-top: 4px solid #8b5cf6;
+    height: auto;
 }
 
 .stat-card.outfits {
@@ -277,6 +278,24 @@ html, body {
 .outfits .stat-icon {
     background-color: #fffbeb;
     color: #f59e0b;
+}
+
+.stat-date {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.mini-events {
+  margin-top: 4px;
+  font-size: 0.8rem;
+}
+
+.mini-event {
+  padding: 2px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Wardrobes Section */

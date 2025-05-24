@@ -258,8 +258,12 @@ class Home extends React.Component {
           
           <div className="stat-card seasons">
             <div className="stat-content">
-              <h3>Seasons</h3>
-              <p className="stat-number">0</p>
+              <h3>Today's Calendar</h3>
+              <p className="stat-date">{new Date().toLocaleDateString('en-GB')}</p>
+              <div className="mini-events">
+                <div className="mini-event">9:00 AM - Meeting</div>
+                <div className="mini-event">12:30 PM - Lunch</div>
+              </div>
             </div>
             <div className="stat-icon">
               <Calendar />
