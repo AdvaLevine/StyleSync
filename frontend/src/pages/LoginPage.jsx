@@ -16,7 +16,7 @@ const LoginPage = () => {
     if (auth.isAuthenticated && auth.user) {
       const userId = auth.user.profile.sub;
       const name = auth.user.profile.name || "Guest";
-
+      console.log(auth)
       localStorage.setItem("user_id", userId);
       localStorage.setItem("name", name);
 
