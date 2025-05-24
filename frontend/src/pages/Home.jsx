@@ -109,15 +109,20 @@ class Home extends React.Component {
     // we'll handle count updating separately
     await this.fetchWardrobes(true);
     
-    // 2. Get items count (only after wardrobe fetch completes)
+  // 2. Get items count (only after wardrobe fetch completes)
     let count = getCachedTotalItemsCount();
     
-    // Check if we need to update the count
-    if (needsCountUpdate() || count === 0) {
+    // Only fetch items count from API if:
+    // 1. The count is explicitly flagged as needing update (items added/removed), OR
+    // 2. Count is 0 AND we have wardrobes (likely first load with items)
+    const shouldFetchCount = needsCountUpdate() || 
+                             (count === 0 && this.state.wardrobes.length > 0);
+    
+    if (shouldFetchCount) {
       try {
-        // Force a fresh fetch of the count to ensure accuracy
-        count = await fetchTotalItemsCount(true);
-        // Update state immediately with the fresh count
+        // Use forceRefresh=false to allow the function to use its own logic
+        count = await fetchTotalItemsCount(false);
+        // Update state immediately with the count
         this.setState({ totalItems: count });
       } catch (error) {
         console.error("Error getting items count:", error);
@@ -146,7 +151,9 @@ class Home extends React.Component {
   }
   
   fetchWardrobes = async (skipCountInvalidation = false) => {
-    // Check if cache needs update
+    // Check if cache needs update based on either:
+    // 1. The invalidation flag is true (something changed), or
+    // 2. We have never loaded wardrobes before (no cache entry at all)
     if (needsCacheUpdate()) {
       // Check if another component is already fetching wardrobes
       if (isWardrobeFetchInProgress()) {
@@ -169,7 +176,9 @@ class Home extends React.Component {
 
         const data = await response.json();
         this.setState({ wardrobes: data });
-        updateWardrobeCache(data); // This will also clear the fetch in progress flag
+        
+        // This will update the cache AND clear the invalidation flag
+        updateWardrobeCache(data);
         
         // Initialize items cache WITHOUT invalidating the count again if specified
         initializeItemsCache(skipCountInvalidation);
@@ -182,7 +191,7 @@ class Home extends React.Component {
         markWardrobeFetchCompleted();
       }
     } else {
-      // Use cached data
+      // Use cached data - even if it's an empty array
       const cached = getCachedWardrobes();
       this.setState({ wardrobes: cached });
     }
