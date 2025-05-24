@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MoonLoader from "react-spinners/MoonLoader";
-import "../../assets/styles/CreateWardrobe.css";  
-import { invalidateWardrobeCache } from "../../services/wardrobeCache";
+import "../assets/styles/CreateWardrobe.css";  
+import { invalidateWardrobeCache } from "../services/wardrobeCache";
 
 const CreateWardrobe = () => {
   // eslint-disable-next-line no-unused-vars

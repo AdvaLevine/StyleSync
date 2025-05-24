@@ -27,11 +27,7 @@ const ProtectedRoute = ({ children }) => {
 const App = () => {
   return (
     <Router>
-      <Routes>
-        {/* Public routes */}
-        <Route path="/" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        
+      <Routes>        
         {/* Protected routes with Layout */}
         <Route element={
           <ProtectedRoute>
