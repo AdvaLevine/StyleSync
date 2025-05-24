@@ -1,20 +1,31 @@
 import React from "react";
 import "../assets/styles/Home.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useLocation } from 'react-router-dom';
+import { useAuth } from "react-oidc-context";
+import { useCheckUserLoggedIn } from "../hooks/useCheckUserLoggedIn";
 
 const Home = () => {
+  const auth = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
   const name = location.state?.name || localStorage.getItem("name") || "Guest";
 
   const handleLogout = () => {
-    localStorage.removeItem("user_id");
-    localStorage.removeItem("name");
-    navigate("/");
+  localStorage.clear();
+  auth.signoutRedirect({
+    extraQueryParams: {
+      client_id:  "6jt8p3s82dcj78eomqpra1qo0i",
+      logout_uri: "http://localhost:3000/login"
+    }
+    });
   };
 
-  return (
+  const { isLoading, isAuthenticated } = useCheckUserLoggedIn(auth);
+
+  if (isLoading || !isAuthenticated) {
+    return null;
+  } else {
+    return (
     <div className="home-container">
       <div className="header-container">
         <button onClick={handleLogout}>Log Out</button>
@@ -35,6 +46,7 @@ const Home = () => {
       </footer>
     </div>
   );
+  }
 };
 
 export default Home;

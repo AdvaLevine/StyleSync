@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import MoonLoader from "react-spinners/MoonLoader";
-import "../../assets/styles/CreateWardrobe.css";  
+import "../assets/styles/CreateWardrobe.css";  
+import { useAuth } from "react-oidc-context";
+import { useCheckUserLoggedIn } from "../hooks/useCheckUserLoggedIn";
 
 const CreateWardrobe = () => {
+  const auth = useAuth();
   const navigate = useNavigate();
   const [name, setName] = useState();
   const [numOfDoors, setNumOfDoors] = useState(0);
@@ -47,7 +50,12 @@ const CreateWardrobe = () => {
         setIsPending(false);
       }
     };
-      return (
+    const { isLoading, isAuthenticated } = useCheckUserLoggedIn(auth);
+    
+      if (isLoading || !isAuthenticated) {
+        return null;
+      } else { 
+        return (
           <div className="create-wardrobe-container">
               <div className="create-wardrobe-box">
                 {/* Back Button */}
@@ -75,6 +83,7 @@ const CreateWardrobe = () => {
               </div>
           </div>
       );
+      }
 }
 
 export default CreateWardrobe;

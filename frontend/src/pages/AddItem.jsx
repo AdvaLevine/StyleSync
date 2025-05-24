@@ -3,8 +3,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import "../assets/styles/AddItem.css";
 import Dropdown from '../components/Dropdown';
 import MultiSelectDropdown from '../components/MultiSelectDropdown';
+import { useAuth } from "react-oidc-context";
+import { useCheckUserLoggedIn } from "../hooks/useCheckUserLoggedIn";
 
 const AddItem = () => {
+    const auth = useAuth();
     const navigate = useNavigate();
     const [wardrobes, setWardrobes] = useState([]);
     const [selectedWardrobe, setSelectedWardrobe] = useState(null); 
@@ -142,7 +145,12 @@ const AddItem = () => {
     const colorOptions = ["Black", "White", "Red", "Blue", "Green", "Yellow", "Purple", "Pink", "Orange", "Brown"];
     const weatherOptions = ["Hot", "Cold", "Rainy", "Snow", "Windy", "Sunny", "Cloudy", "Stormy", "Foggy", "Humid"];
 
-    return (
+    const { isLoading, isAuthenticated } = useCheckUserLoggedIn(auth);
+    
+      if (isLoading || !isAuthenticated) {
+        return null;
+      } else { 
+        return (
         <div className="add-item-container">
             <Link to="/home" className="back-button">⟵</Link>
             <div className="add-item-box">
@@ -238,6 +246,7 @@ const AddItem = () => {
             </div>
         </div>
     );
+      }
 };
 
 export default AddItem;
