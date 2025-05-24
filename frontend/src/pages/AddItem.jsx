@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import "../assets/styles/AddItem.css";
 import Dropdown from '../components/Dropdown';
 import MultiSelectDropdown from '../components/MultiSelectDropdown';
+import { useAuth } from "react-oidc-context";
+import { useCheckUserLoggedIn } from "../hooks/useCheckUserLoggedIn";
 import { getCachedWardrobes } from '../services/wardrobeCache';
 import { addItemToCache } from '../services/itemsCache';
 import { Shirt } from "lucide-react";
@@ -21,26 +23,27 @@ class AddItem extends React.Component {
             isUploading: false,
             hasWardrobes: true, // Track if user has any wardrobes
             fromDate: {
-        wardrobe: "",
-        itemType: "",
-        color: [],
-        weather: [],
-        style: [],
-        door: "",
-        shelf: "",
-        photo: null,
-        photoUrl: "", // Will store the S3 URL of the uploaded photo
+                wardrobe: "",
+                itemType: "",
+                color: [],
+                weather: [],
+                style: [],
+                door: "",
+                shelf: "",
+                photo: null,
+                photoUrl: "", // Will store the S3 URL of the uploaded photo
             },
             step: 1,
         };
     
-    // S3 bucket name - should match the one in your Lambda
+        // S3 bucket name - should match the one in your Lambda
         this.BUCKET_NAME = 'wardrobe-item-images';
         this.navigate = props.navigate;
+        this.auth = props.auth;
     }
 
     componentDidMount() {
-    // Load wardrobes from cache with better error handling
+        // Load wardrobes from cache with better error handling
         const cached = getCachedWardrobes();
         if (cached && cached.length > 0) {
             this.setState({
@@ -50,7 +53,7 @@ class AddItem extends React.Component {
         } else {
             // User has no wardrobes, show the "Create Wardrobe First" screen
             this.setState({ hasWardrobes: false });
-    }
+        }
     }
 
     handleInputChange = (e) => {
@@ -86,14 +89,14 @@ class AddItem extends React.Component {
                 selectedWardrobe: null,
                 fromDate: {
                     ...this.state.fromDate,
-                wardrobe: "",
-                door: "", 
-                shelf: "", 
-                itemType: "", 
-                color: [],
-                weather: [],
-                style: [],
-                photo: null,
+                    wardrobe: "",
+                    door: "", 
+                    shelf: "", 
+                    itemType: "", 
+                    color: [],
+                    weather: [],
+                    style: [],
+                    photo: null,
                     photoUrl: ""
                 },
                 errorMessage: ""
@@ -107,14 +110,14 @@ class AddItem extends React.Component {
                 selectedWardrobe: null,
                 fromDate: {
                     ...this.state.fromDate,
-                wardrobe: "",
-                door: "", 
-                shelf: "", 
-                itemType: "", 
-                color: [],
-                weather: [],
-                style: [],
-                photo: null,
+                    wardrobe: "",
+                    door: "", 
+                    shelf: "", 
+                    itemType: "", 
+                    color: [],
+                    weather: [],
+                    style: [],
+                    photo: null,
                     photoUrl: ""
                 }
             });
@@ -134,14 +137,14 @@ class AddItem extends React.Component {
                     selectedWardrobe: wardrobe,
                     fromDate: {
                         ...this.state.fromDate,
-                    wardrobe: wardrobeName,
-                    door: "", 
-                    shelf: "", 
-                    itemType: "", 
-                    color: [],
-                    weather: [],
-                    style: [],
-                    photo: null,
+                        wardrobe: wardrobeName,
+                        door: "", 
+                        shelf: "", 
+                        itemType: "", 
+                        color: [],
+                        weather: [],
+                        style: [],
+                        photo: null,
                         photoUrl: ""
                     }
                 });
@@ -430,146 +433,160 @@ class AddItem extends React.Component {
             );
         }
 
-    return (
-        <div className="add-item-container">
-            <div className="add-item-box">
-                <h2>Add Item</h2>
-                    {this.state.step === 1 && (
-                    <form>
-                        <Dropdown
-                                options={this.state.wardrobes.length > 0 ? this.state.wardrobes.map((w) => w.name) : []} 
-                            label="Choose Wardrobe"
-                            placeholder="Start typing wardrobe name..."
-                                onSelect={this.handleWardrobeSelect}
-                                initialValue={this.state.fromDate.wardrobe}
-                        />
-
-                        <label>Choose Door</label>
-                        <input
-                            type="number"
-                            name="door"
-                            placeholder="Door Number"
-                            min="1"
-                                max={this.state.selectedWardrobe ? this.state.selectedWardrobe.num_of_doors : ""}
-                                value={this.state.fromDate.door}
-                                onChange={this.handleInputChange}
-                                disabled={!this.state.fromDate.wardrobe}
-                            required
-                        />
-                            {this.state.errorMessage && <p className="error-message">{this.state.errorMessage}</p>}
-
-                        <label>Choose Shelf</label>
-                        <input
-                            type="number"
-                            name="shelf"
-                            placeholder="Shelf Number"
-                            min="1"
-                                value={this.state.fromDate.shelf}
-                                onChange={this.handleInputChange}
-                                disabled={!this.state.fromDate.door} 
-                            required
-                        />
-
-                        <Dropdown
-                                options={this.commonOptions}
-                            label="Choose Item Type"
-                            placeholder="Start typing item type..."
-                                onSelect={(selected) => this.handleInputChange({ target: { name: 'itemType', value: selected } })}
-                                disabled={!this.state.fromDate.door} 
-                                initialValue={this.state.fromDate.itemType}
-                        />
-
-                            {this.state.formError && <p className="error-message">{this.state.formError}</p>}
-                            <button type="button" onClick={this.handleNextStep}>Next</button>
-                    </form>
-                )}
-
-                    {this.state.step === 2 && (
-                        <form onSubmit={this.handleSubmit}>
-                            {this.state.fromDate.itemType && (
-                            <>
-                                <MultiSelectDropdown
-                                        options={this.colorOptions}
-                                    label="Choose Color"
-                                    placeholder="Start typing color..."
-                                        onSelect={(selected) => this.handleInputChange({ target: { name: 'color', value: selected } })}
-                                        initialSelectedOptions={this.state.fromDate.color}
+        // Check authentication using the auth prop from the wrapper
+        const { isAuthenticated } = this.props;
+        
+        if (!isAuthenticated) {
+            return null;
+        } else { 
+            return (
+                <div className="add-item-container">
+                    <div className="add-item-box">
+                        <h2>Add Item</h2>
+                        {this.state.step === 1 && (
+                            <form>
+                                <Dropdown
+                                    options={this.state.wardrobes.length > 0 ? this.state.wardrobes.map((w) => w.name) : []} 
+                                    label="Choose Wardrobe"
+                                    placeholder="Start typing wardrobe name..."
+                                    onSelect={this.handleWardrobeSelect}
+                                    initialValue={this.state.fromDate.wardrobe}
                                 />
 
-                                <MultiSelectDropdown
-                                        options={this.weatherOptions}
-                                    label="Choose Weather Type"
-                                    placeholder="Start typing weather..."
-                                        onSelect={(selected) => this.handleInputChange({ target: { name: 'weather', value: selected } })}
-                                        initialSelectedOptions={this.state.fromDate.weather}
-                                />
-
-                                <MultiSelectDropdown
-                                        options={this.styleOptions}
-                                    label="Choose Style"
-                                    placeholder="Start typing style..."
-                                        onSelect={(selected) => this.handleInputChange({ target: { name: 'style', value: selected } })}
-                                        initialSelectedOptions={this.state.fromDate.style}
-                                />
-
-                                <label>Upload Photo</label>
+                                <label>Choose Door</label>
                                 <input
-                                    type="file"
-                                    accept="image/*"
-                                    name="photo"
-                                        onChange={this.handleInputChange}
+                                    type="number"
+                                    name="door"
+                                    placeholder="Door Number"
+                                    min="1"
+                                    max={this.state.selectedWardrobe ? this.state.selectedWardrobe.num_of_doors : ""}
+                                    value={this.state.fromDate.door}
+                                    onChange={this.handleInputChange}
+                                    disabled={!this.state.fromDate.wardrobe}
+                                    required
                                 />
-                                
-                                    {this.state.isUploading && (
-                                    <div className="upload-progress">
-                                        <div className="progress-bar">
-                                            <div 
-                                                className="progress-fill" 
-                                                    style={{ width: `${this.state.uploadProgress}%` }}
-                                            ></div>
-                                        </div>
-                                        <div className="progress-text">
-                                                {this.state.uploadProgress < 100 
-                                                ? "Uploading..." 
-                                                : "✓ Upload Complete!"}
-                                        </div>
-                                    </div>
-                                )}
-                            </>
-                        )}
-                        
-                            {this.state.formErrorStep2 && <p className="error-message">{this.state.formErrorStep2}</p>}
+                                {this.state.errorMessage && <p className="error-message">{this.state.errorMessage}</p>}
 
-                        <div className="buttons-container">
-                            <button 
-                                type="button" 
-                                className="back-btn" 
-                                onClick={() => {
-                                        this.setState({ step: 1 });
-                                }}
-                            >
-                                Back
-                            </button>
-                            <button 
-                                type="submit" 
-                                className="add-btn"
-                                    disabled={this.state.isUploading}
-                            >
-                                    {this.state.isUploading ? "Uploading..." : "Add"}
-                            </button>
-                        </div>
-                    </form>
-                )}
-            </div>
-        </div>
-    );
+                                <label>Choose Shelf</label>
+                                <input
+                                    type="number"
+                                    name="shelf"
+                                    placeholder="Shelf Number"
+                                    min="1"
+                                    value={this.state.fromDate.shelf}
+                                    onChange={this.handleInputChange}
+                                    disabled={!this.state.fromDate.door} 
+                                    required
+                                />
+
+                                <Dropdown
+                                    options={this.commonOptions}
+                                    label="Choose Item Type"
+                                    placeholder="Start typing item type..."
+                                    onSelect={(selected) => this.handleInputChange({ target: { name: 'itemType', value: selected } })}
+                                    disabled={!this.state.fromDate.door} 
+                                    initialValue={this.state.fromDate.itemType}
+                                />
+
+                                {this.state.formError && <p className="error-message">{this.state.formError}</p>}
+                                <button type="button" onClick={this.handleNextStep}>Next</button>
+                            </form>
+                        )}
+
+                        {this.state.step === 2 && (
+                            <form onSubmit={this.handleSubmit}>
+                                {this.state.fromDate.itemType && (
+                                    <>
+                                        <MultiSelectDropdown
+                                            options={this.colorOptions}
+                                            label="Choose Color"
+                                            placeholder="Start typing color..."
+                                            onSelect={(selected) => this.handleInputChange({ target: { name: 'color', value: selected } })}
+                                            initialSelectedOptions={this.state.fromDate.color}
+                                        />
+
+                                        <MultiSelectDropdown
+                                            options={this.weatherOptions}
+                                            label="Choose Weather Type"
+                                            placeholder="Start typing weather..."
+                                            onSelect={(selected) => this.handleInputChange({ target: { name: 'weather', value: selected } })}
+                                            initialSelectedOptions={this.state.fromDate.weather}
+                                        />
+
+                                        <MultiSelectDropdown
+                                            options={this.styleOptions}
+                                            label="Choose Style"
+                                            placeholder="Start typing style..."
+                                            onSelect={(selected) => this.handleInputChange({ target: { name: 'style', value: selected } })}
+                                            initialSelectedOptions={this.state.fromDate.style}
+                                        />
+
+                                        <label>Upload Photo</label>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            name="photo"
+                                            onChange={this.handleInputChange}
+                                        />
+                                        
+                                        {this.state.isUploading && (
+                                            <div className="upload-progress">
+                                                <div className="progress-bar">
+                                                    <div 
+                                                        className="progress-fill" 
+                                                        style={{ width: `${this.state.uploadProgress}%` }}
+                                                    ></div>
+                                                </div>
+                                                <div className="progress-text">
+                                                    {this.state.uploadProgress < 100 
+                                                        ? "Uploading..." 
+                                                        : "✓ Upload Complete!"}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                                
+                                {this.state.formErrorStep2 && <p className="error-message">{this.state.formErrorStep2}</p>}
+
+                                <div className="buttons-container">
+                                    <button 
+                                        type="button" 
+                                        className="back-btn" 
+                                        onClick={() => {
+                                            this.setState({ step: 1 });
+                                        }}
+                                    >
+                                        Back
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        className="add-btn"
+                                        disabled={this.state.isUploading}
+                                    >
+                                        {this.state.isUploading ? "Uploading..." : "Add"}
+                                    </button>
+                                </div>
+                            </form>
+                        )}
+                    </div>
+                </div>
+            );
+        }
     }
 }
 
-// Add a wrapper that provides navigation
+// Add a wrapper that provides navigation and authentication
 const AddItemWithNavigation = (props) => {
     const navigate = useNavigate();
-    return <AddItem {...props} navigate={navigate} />;
+    const auth = useAuth();
+    const { isLoading, isAuthenticated } = useCheckUserLoggedIn(auth);
+    
+    if (isLoading) {
+        return null;
+    }
+    
+    return <AddItem {...props} navigate={navigate} auth={auth} isAuthenticated={isAuthenticated} />;
 };
 
 export default AddItemWithNavigation;

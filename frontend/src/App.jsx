@@ -1,10 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import LoginPage from "./pages/LoginPage";
 import AddItem from "./pages/AddItem";
-import CreateWardrobe from "./pages/create-wardrobe-flow/CreateWardrobe";
+import CreateWardrobe from "./pages/CreateWardrobe";
 import OutfitRecommendation from "./pages/OutfitRecommendation";
 import Settings from "./pages/Settings";
 import ViewWardrobe from "./pages/ViewWardrobe";
@@ -39,6 +38,7 @@ const App = () => {
             <Layout />
           </ProtectedRoute>
         }>
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/home" element={<Home />} />
           <Route path="/add-item" element={<AddItem />} />
           <Route path="/create-wardrobe" element={<CreateWardrobe />} />

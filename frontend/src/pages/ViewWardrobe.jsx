@@ -5,6 +5,8 @@ import '../assets/styles/ViewWardrobe.css';
 import { getCachedWardrobes } from '../services/wardrobeCache';
 import { getCachedItems, fetchAndCacheItems, needsItemsCacheUpdate } from '../services/itemsCache';
 import { Shirt } from "lucide-react";
+import { useAuth } from "react-oidc-context";
+import { useCheckUserLoggedIn } from "../hooks/useCheckUserLoggedIn";
 
 class ViewWardrobe extends React.Component {
     constructor(props) {
@@ -115,6 +117,13 @@ class ViewWardrobe extends React.Component {
     };
     
     render() {
+        // בודק אם המשתמש מחובר
+        const { isLoading, isAuthenticated } = this.props;
+        
+        if (isLoading || !isAuthenticated) {
+            return null;
+        }
+        
         const { wardrobes, selectedWardrobe, items, loading, error, viewMode, displayItems, hasWardrobes } = this.state;
         
         // If user has no wardrobes, show the "Create Wardrobe First" screen
@@ -231,11 +240,23 @@ class ViewWardrobe extends React.Component {
     }
 }
 
-// Add a wrapper that provides navigation and location
+// Add a wrapper that provides navigation, location and authentication
 const ViewWardrobeWithRouter = (props) => {
     const navigate = useNavigate();
     const location = useLocation();
-    return <ViewWardrobe {...props} navigate={navigate} location={location} />;
+    const auth = useAuth();
+    const { isLoading, isAuthenticated } = useCheckUserLoggedIn(auth);
+    
+    return (
+        <ViewWardrobe 
+            {...props} 
+            navigate={navigate} 
+            location={location} 
+            isLoading={isLoading}
+            isAuthenticated={isAuthenticated}
+            auth={auth}
+        />
+    );
 };
 
 export default ViewWardrobeWithRouter;
