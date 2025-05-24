@@ -11,6 +11,8 @@ import {
   User
 } from "lucide-react";
 import "../assets/styles/Home.css";
+import { clearUserCache } from "../services/itemsCache";
+import { clearWardrobeCache } from "../services/wardrobeCache";
 
 const Layout = () => {
   const location = useLocation();
@@ -18,6 +20,11 @@ const Layout = () => {
   const name = localStorage.getItem("name") || "Guest";
 
   const handleLogout = () => {
+    // Clear all cached data for this user
+    clearUserCache();
+    clearWardrobeCache();
+    
+    // Remove auth data
     localStorage.removeItem("user_id");
     localStorage.removeItem("name");
     navigate("/");

@@ -99,21 +99,18 @@ class Home extends React.Component {
     }
     return false;
   }
-  
-  fetchAllData = async () => {
+    fetchAllData = async () => {
     this.setState({ loading: true });
     
-    // Store whether we'll need to fetch the count, but don't start fetching yet
-    const shouldFetchCount = needsCountUpdate();
-    
-    // 1. Fetch and update wardrobes first (this is async)
-    await this.fetchWardrobes(shouldFetchCount);
+    // Always pass true to fetchWardrobes to skip count invalidation
+    // we'll handle count updating separately
+    await this.fetchWardrobes(true);
     
     // 2. Get items count (only after wardrobe fetch completes)
     let count = getCachedTotalItemsCount();
     
-    // Always try to get the most up-to-date count on initial load
-    if (shouldFetchCount || count === 0) {
+    // Check if we need to update the count
+    if (needsCountUpdate() || count === 0) {
       try {
         // Force a fresh fetch of the count to ensure accuracy
         count = await fetchTotalItemsCount(true);

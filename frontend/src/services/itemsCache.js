@@ -29,6 +29,39 @@ const getRecentItemsCacheKey = () => {
   return `recent_items_cache_${userId}`;
 };
 
+// Clear all cache data for the current user on logout
+export const clearUserCache = () => {
+  try {
+    const userId = localStorage.getItem("user_id");
+    if (!userId) return; // No user to clear cache for
+
+    let keysToRemove = [];
+    
+    // Find all cache keys related to this user
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      
+      // Find all user-specific keys
+      if (key.includes(`_${userId}`) || 
+          key === `count_fetch_in_progress` ||
+          key === `wardrobe_fetch_in_progress_${userId}`) {
+        keysToRemove.push(key);
+      }
+    }
+    
+    // Remove all identified keys
+    keysToRemove.forEach(key => {
+      localStorage.removeItem(key);
+    });
+    
+    console.log(`Cache cleared for user: ${userId}`);
+    return true;
+  } catch (error) {
+    console.error("Error clearing user cache:", error);
+    return false;
+  }
+};
+
 // Function to check if we need to update the count
 export const needsCountUpdate = () => {
   const key = getCountInvalidationKey();
@@ -380,9 +413,11 @@ export const fetchTotalItemsCount = async (forceRefresh = false) => {
       return cachedCount;
     }
     
-    // Check if we're already fetching - prevent duplicate API calls
+    // Check if we're already fetching - prevent duplicate API calls 
+    // This helps prevent multiple simultaneous API calls
     const isFetching = localStorage.getItem('count_fetch_in_progress');
-    if (isFetching === 'true' && !forceRefresh) {
+    if (isFetching === 'true') {
+      console.log("Count fetch already in progress, returning cached count");
       return getCachedTotalItemsCount();
     }
     

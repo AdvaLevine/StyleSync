@@ -17,6 +17,24 @@ const getWardrobeFetchInProgressKey = () => {
   return `wardrobe_fetch_in_progress_${userId}`;
 };
 
+// Clear wardrobe cache for the current user
+export const clearWardrobeCache = () => {
+  try {
+    const userId = localStorage.getItem("user_id");
+    if (!userId) return false;
+    
+    // Clear wardrobe cache
+    localStorage.removeItem(getUserWardrobeCacheKey());
+    localStorage.removeItem(getUserCacheInvalidationKey());
+    localStorage.removeItem(getWardrobeFetchInProgressKey());
+    
+    return true;
+  } catch (error) {
+    console.error("Error clearing wardrobe cache:", error);
+    return false;
+  }
+};
+
 // Set cache invalidation flag when data changes
 export const invalidateWardrobeCache = () => {
   const key = getUserCacheInvalidationKey();
@@ -82,4 +100,4 @@ export const updateWardrobeCache = (wardrobes) => {
   
   // Mark the fetch as completed
   markWardrobeFetchCompleted();
-}; 
+};
