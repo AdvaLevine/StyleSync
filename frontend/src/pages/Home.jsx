@@ -212,18 +212,6 @@ class Home extends React.Component {
     return this.state.totalItems >= 3;
   }
   
-  handleLogout = () => {
-    localStorage.clear();
-    if (this.props.auth) {
-      this.props.auth.signoutRedirect({
-        extraQueryParams: {
-          client_id: "6jt8p3s82dcj78eomqpra1qo0i",
-          logout_uri: "http://localhost:3000/login"
-        }
-      });
-    }
-  };
-  
   render() {
     if (this.props.isLoading || !this.props.isAuthenticated) {
       return null;
@@ -234,7 +222,6 @@ class Home extends React.Component {
     return (
       <div className="home-container">
         <div className="header-container">
-          <button onClick={this.handleLogout}>Log Out</button>
           <h1>Welcome, {name}</h1>
           <p>Organize your wardrobe and discover new outfit ideas</p>
         </div>

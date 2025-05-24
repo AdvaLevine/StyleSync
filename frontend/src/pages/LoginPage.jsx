@@ -22,7 +22,7 @@ const LoginPage = () => {
 
       navigate("/home");
     }
-  }, [auth.isAuthenticated, auth.user, navigate]);
+  }, [auth,auth.isAuthenticated, auth.user, navigate]);
 
   return null;
 };
