@@ -470,6 +470,39 @@ html, body {
     50% { transform: scale(1.1) rotate(5deg); }
 }
 
+/* Loading Items Styles */
+.loading-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  background-color: var(--card-bg-color, #f7f7f9);
+  border-radius: 8px;
+  min-height: 150px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 1rem;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 3px solid var(--primary-color, #7165e3);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-items p {
+  color: var(--text-secondary, #666);
+  margin: 0;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 1024px) {
     .stats-container {

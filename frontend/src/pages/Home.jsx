@@ -324,7 +324,12 @@ class Home extends React.Component {
         <div className="bottom-sections">
           <div className="recent-items-section">
             <h2>Recent Items</h2>
-            {recentItems.length > 0 ? (
+            {loading ? (
+              <div className="loading-items">
+                <div className="loading-spinner"></div>
+                <p>Loading your items...</p>
+              </div>
+            ) : recentItems.length > 0 ? (
               <div className="recent-items-grid-container">
                 <div className="recent-items-grid">
                   {recentItems.slice(0, 4).map(item => (
