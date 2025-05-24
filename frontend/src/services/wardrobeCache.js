@@ -6,7 +6,8 @@ const getUserWardrobeCacheKey = () => {
   return `wardrobe_cache_${userId}`;
 };
 
-const getUserCacheInvalidationKey = () => {
+// Export this so it can be used in Home.jsx
+export const getUserCacheInvalidationKey = () => {
   const userId = localStorage.getItem("user_id");
   return `wardrobe_cache_needs_update_${userId}`;
 };
@@ -41,10 +42,22 @@ export const invalidateWardrobeCache = () => {
   localStorage.setItem(key, 'true');
 };
 
-// Check if cache needs update
+// Check if cache needs update - modified to handle empty wardrobes better
 export const needsCacheUpdate = () => {
   const key = getUserCacheInvalidationKey();
-  return localStorage.getItem(key) === 'true' || !getCachedWardrobes().length;
+  const needsUpdate = localStorage.getItem(key) === 'true';
+  
+  // If the invalidation flag is set, we definitely need an update
+  if (needsUpdate) {
+    return true;
+  }
+  
+  // Get the cached wardrobes
+  const cachedData = localStorage.getItem(getUserWardrobeCacheKey());
+  
+  // Only fetch if we've never fetched before (no cached data at all)
+  // This is different from having an empty array of wardrobes
+  return cachedData === null;
 };
 
 // Check if a fetch is already in progress
@@ -91,7 +104,11 @@ export const updateWardrobeCache = (wardrobes) => {
   const invalidationKey = getUserCacheInvalidationKey();
   
   try {
+    // Always store the data, even if it's an empty array
+    // This way we know we've fetched at least once
     localStorage.setItem(cacheKey, JSON.stringify(wardrobes));
+    
+    // Clear the invalidation flag
     localStorage.removeItem(invalidationKey);
     console.log("Cache updated with", wardrobes.length, "wardrobes");
   } catch (e) {
