@@ -217,10 +217,6 @@ class Home extends React.Component {
     }
   }
   
-  hasEnoughItemsForOutfits = () => {
-    return this.state.totalItems >= 3;
-  }
-  
   render() {
     if (this.props.isLoading || !this.props.isAuthenticated) {
       return null;
@@ -381,8 +377,7 @@ class Home extends React.Component {
           <div className="suggestions-section">
             <h2>Outfit Suggestions</h2>
               {/* Check if any wardrobe has at least 3 items - we'll need to update state to track this */}
-              {this.hasEnoughItemsForOutfits() ? (
-                <div className="outfit-suggestions-ready">
+              <div className="outfit-suggestions-ready">
                   <Sparkles size={48} />
                   <h3>✨ Your Outfits Await!</h3>
                   <p>Discover amazing outfit combinations from your wardrobe.<br />Let AI style you perfectly!</p>
@@ -390,16 +385,6 @@ class Home extends React.Component {
                     🎨 Create My Outfits
                   </Link>
                 </div>
-              ) : (
-                <div className="empty-suggestions">
-                  <Sparkles size={48} />
-                  <h3>🚀 Ready to Get Styled?</h3>
-                  <p>Add a few more items to unlock personalized outfit recommendations just for you!</p>
-                  <Link to="/outfit-recommendation" className="get-recommendations-btn">
-                    💡 Explore Suggestions
-                  </Link>
-                </div>
-              )}
           </div>
         </div>
       </div>
