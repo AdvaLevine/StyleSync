@@ -15,11 +15,9 @@ const App = () => {
   return (
     <Router>
       <Routes>        
+        <Route path="/login" element={<LoginPage />} />
         {/* Protected routes with Layout */}
-        <Route element={
-            <Layout />
-        }>
-          <Route path="/login" element={<LoginPage />} />
+        <Route element={<Layout />}>
           <Route path="/home" element={<Home />} />
           <Route path="/add-item" element={<AddItem />} />
           <Route path="/create-wardrobe" element={<CreateWardrobe />} />

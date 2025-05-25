@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useNavigate, useLocation, Outlet } from "react-router-dom";
+import { Link, useLocation, Outlet } from "react-router-dom";
 import { 
   LayoutDashboard, 
   PlusSquare, 
@@ -17,30 +17,25 @@ import { useAuth } from "react-oidc-context"; // הוספת ייבוא לאות�
 
 const Layout = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const name = localStorage.getItem("name") || "Guest";
   const auth = useAuth(); // הוספת שימוש ב-auth
+
+  if (!auth.isAuthenticated) {
+    return null;
+  }
 
   const handleLogout = () => {
     // Clear all cached data for this user
     clearUserCache();
     clearWardrobeCache();
+    localStorage.clear();
     
-    // Remove auth data
-    localStorage.clear(); // ניקוי כל ה-localStorage
-    
-    // אם המשתמש השתמש באותנטיקציית OIDC, התנתק גם משם
-    if (auth && auth.isAuthenticated) {
-      auth.signoutRedirect({
+    auth.signoutRedirect({
         extraQueryParams: {
           client_id: "6jt8p3s82dcj78eomqpra1qo0i",
           logout_uri: "http://localhost:3000/login"
         }
       });
-    } else {
-      // אם לא משתמש ב-OIDC או שלא מחובר, רק נווט לדף הבית
-      navigate("/");
-    }
   };
 
   // Function to determine if a nav item is active based on the current path

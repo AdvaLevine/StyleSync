@@ -20,7 +20,7 @@ const LoginPage = () => {
       const name = auth.user.profile.name || "Guest";
       const email = auth.user.profile.email || "No email provided";
       const birthdate = auth.user.profile.birthdate || "No birthdate provided";
-      
+
       localStorage.setItem("user_id", userId);
       localStorage.setItem("name", name);
       localStorage.setItem("email", email);
