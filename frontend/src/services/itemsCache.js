@@ -407,9 +407,15 @@ export const fetchTotalItemsCount = async (forceRefresh = false) => {
   try {
     const userId = localStorage.getItem("user_id");
     
-    // If not forcing refresh and we don't need an update, return the cached count
-    if (!forceRefresh && !needsCountUpdate()) {
-      const cachedCount = getCachedTotalItemsCount();
+    // Get cached count
+    const cachedCount = getCachedTotalItemsCount();
+    
+    // Skip API call in these cases:
+    // 1. Not forcing a refresh AND no update needed
+    // 2. Count is explicitly 0 in cache (means we've checked before and user has no items)
+    //    AND we aren't explicitly forcing a refresh (for example after adding first item)
+    if ((!forceRefresh && !needsCountUpdate()) || 
+        (cachedCount === 0 && !needsCountUpdate())) {
       return cachedCount;
     }
     
