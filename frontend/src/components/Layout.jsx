@@ -33,7 +33,7 @@ const Layout = () => {
     auth.signoutRedirect({
         extraQueryParams: {
           client_id: "6jt8p3s82dcj78eomqpra1qo0i",
-          logout_uri: "http://localhost:3000/login"
+          logout_uri: "https://main.d1qreohr4migr5.amplifyapp.com/login"
         }
       });
   };
