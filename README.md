@@ -35,8 +35,46 @@
 ---
 
 ## 📂 Project Structure
-<pre><code>```text StyleSync/ 
-  ├── frontend/ │ └── src/ │ ├── assets/ │ │ ├── images/ # Static images │ │ └── styles/ # CSS modules │ │ ├── AddItem.css │ │ ├── CreateWardrobe.css │ │ ├── Home.css │ │ ├── OutfitRecom.css │ │ ├── Profile.css │ │ ├── Settings.css │ │ └── ViewWardrobe.css │ ├── auth/ │ │ └── getUserInfo.jsx # User info utility │ ├── aws/ │ │ └── UserPool.jsx # Cognito configuration │ ├── components/ # Reusable UI components │ │ ├── Dropdown.css │ │ ├── Dropdown.jsx │ │ ├── Layout.jsx │ │ └── MultiSelectDropdown.jsx │ ├── hooks/ │ ├── pages/ # App pages │ │ ├── AddItem.jsx │ │ ├── CreateWardrobe.jsx │ │ ├── Home.jsx │ │ ├── LoginPage.jsx │ │ ├── NotFound.jsx │ │ ├── OutfitRecom.jsx │ │ ├── Profile.jsx │ │ ├── Settings.jsx │ │ └── ViewWardrobe.jsx │ ├── services/ │ │ ├── itemsCache.js │ │ └── wardrobeCache.js │ ├── App.jsx # Main React app │ └── index.js # Entry point ``` </code></pre>
+
+```text
+StyleSync/
+├── frontend/
+│   └── src/
+│       ├── assets/
+│       │   ├── images/                  # Static images
+│       │   └── styles/                  # CSS modules
+│       │       ├── AddItem.css
+│       │       ├── CreateWardrobe.css
+│       │       ├── Home.css
+│       │       ├── OutfitRecom.css
+│       │       ├── Profile.css
+│       │       ├── Settings.css
+│       │       └── ViewWardrobe.css
+│       ├── auth/
+│       │   └── getUserInfo.jsx          # User info utility
+│       ├── aws/
+│       │   └── UserPool.jsx             # Cognito configuration
+│       ├── components/                  # Reusable UI components
+│       │   ├── Dropdown.css
+│       │   ├── Dropdown.jsx
+│       │   ├── Layout.jsx
+│       │   └── MultiSelectDropdown.jsx
+│       ├── hooks/
+│       ├── pages/                       # App pages
+│       │   ├── AddItem.jsx
+│       │   ├── CreateWardrobe.jsx
+│       │   ├── Home.jsx
+│       │   ├── LoginPage.jsx
+│       │   ├── NotFound.jsx
+│       │   ├── OutfitRecom.jsx
+│       │   ├── Profile.jsx
+│       │   ├── Settings.jsx
+│       │   └── ViewWardrobe.jsx
+│       ├── services/
+│       │   ├── itemsCache.js
+│       │   └── wardrobeCache.js
+│       ├── App.jsx                      # Main React app
+│       └── index.js                     # Entry point
 
   
 ## 📸 Preview
