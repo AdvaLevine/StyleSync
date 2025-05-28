@@ -1,4 +1,3 @@
-![Demo](./frontend/src/assets/images/Style_Sync_Logo.png)
 # 👗 StyleSync – Smart AI-Powered Wardrobe Assistant
 
 > **StyleSync** is an intelligent cloud-based wardrobe manager that offers AI-generated outfit recommendations tailored to what you own considering the weather, your calendar, and personal style.
