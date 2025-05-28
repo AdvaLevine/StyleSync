@@ -2,7 +2,6 @@
 
 > **StyleSync** is an intelligent cloud-based wardrobe manager that offers AI-generated outfit recommendations tailored to what you own considering the weather, your calendar, and personal style.
 
----
 
 ## 🚀 Overview
 
@@ -17,7 +16,6 @@
 - 🔐 Secure user authentication with AWS Cognito
 - 📂 Serverless image uploads using presigned URLs
 
----
 
 ## 🧱 Architecture
 
@@ -32,7 +30,6 @@
 
 📖 [See full architecture, database schema and more »](https://docs.google.com/document/d/1ZKNXdOoVsXKeEqCixGz9XjZz7PlInmsP1lvIcFWbmcI/edit?usp=sharing)
 
----
 
 ## 📂 Project Structure
 
@@ -76,13 +73,11 @@ StyleSync/
 │       ├── App.jsx                      # Main React app
 │       └── index.js                     # Entry point
 ```
----
 ## 📸 Preview
 
 🖼️ View the full presentation here:  
 👉 [📽️ Canva Presentation](https://www.canva.com/design/DAGoXQ5NmL8/3Joqi5oPXk0UjTp440KRMw/edit?utm_content=DAGoXQ5NmL8&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
----
 
 ## ⚙️ Getting Started
 
@@ -94,8 +89,7 @@ StyleSync/
 - OpenAI API
 - Google Calendar API key
 - OpenWeatherMap API key
-
----
+- 
 
 ## 🌐 Live App
 
