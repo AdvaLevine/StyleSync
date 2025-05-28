@@ -76,7 +76,7 @@ StyleSync/
 │       ├── App.jsx                      # Main React app
 │       └── index.js                     # Entry point
 
-  
+---
 ## 📸 Preview
 
 🖼️ View the full presentation here:  
