@@ -74,7 +74,7 @@ StyleSync/
 │       │   ├── itemsCache.js
 │       │   └── wardrobeCache.js
 │       ├── App.jsx                      # Main React app
-│       └── index.js                     # Entry point
+│       └── index.js                     # Entry point```
 
 ---
 ## 📸 Preview
