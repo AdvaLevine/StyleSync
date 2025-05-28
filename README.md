@@ -89,7 +89,7 @@ StyleSync/
 - OpenAI API
 - Google Calendar API key
 - OpenWeatherMap API key
-- 
+  
 
 ## 🌐 Live App
 
