@@ -95,7 +95,7 @@ StyleSync/
 
 You can access the live **StyleSync** application here:
 
-[🔗 https://main.d1qreohr4migr5.amplifyapp.com](https://main.d1qreohr4migr5.amplifyapp.com)
+[🔗 ]()
 
 > **Login via AWS Cognito**  
 Use the secure authentication portal to sign in:
