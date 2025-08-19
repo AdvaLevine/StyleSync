@@ -38,13 +38,31 @@ class Home extends React.Component {
       wardrobes: [],
       loading: true,
       totalItems: 0,
-      recentItems: []
+      recentItems: [],
+      weather: {
+        temperature: null,
+        description: null,
+        icon: null,
+        loading: true,
+      },
+      location: {
+        latitude: null,
+        longitude: null,
+        loading: true
+      },
+      calendarEvents: [],
+      calendarLoading: true,
     };
   }
   
   componentDidMount() {
     this.fetchAllData();
-
+    this.getCoordinates().then(coords => {
+      if (coords) {
+        this.fetchWeather(coords.latitude, coords.longitude);
+      }
+    });
+    this.fetchCalendarEvents();
     // Add event listener for focus/visibility change to refresh data when user returns to tab
     document.addEventListener('visibilitychange', this.handleVisibilityChange);
   }
@@ -101,6 +119,176 @@ class Home extends React.Component {
     }
     return false;
   }
+
+  // Get user's location
+  getCoordinates = () => {
+    const cachedLocation = JSON.parse(localStorage.getItem('location_cache'));
+    const today = new Date().toDateString();
+
+    const defaultCoordinates = {
+        latitude: 32.0853, // Latitude for Tel Aviv, Israel
+        longitude: 34.7818, // Longitude for Tel Aviv, Israel
+        date: today
+    };
+
+    if (cachedLocation && cachedLocation.date === today) {
+        // Use cached location if it's from today
+        this.setState({ location: { ...cachedLocation, loading: false } });
+        return Promise.resolve({ latitude: cachedLocation.latitude, longitude: cachedLocation.longitude });
+    }
+
+    // Return a promise to handle the asynchronous nature of geolocation
+    return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+            console.error('Geolocation is not supported by your browser. Using default coordinates.');
+            this.setState({ location: { ...defaultCoordinates, loading: false } });
+            // Cache the default location as well
+            localStorage.setItem('location_cache', JSON.stringify(defaultCoordinates));
+            resolve({ latitude: defaultCoordinates.latitude, longitude: defaultCoordinates.longitude });
+            return;
+        }
+
+        // The error callback is the key to our fallback
+        const errorCallback = (error) => {
+            console.error('Error getting location:', error);
+            // On error (e.g., user denial), use the default coordinates
+            this.setState({ location: { ...defaultCoordinates, loading: false } });
+            // Cache the default location as well
+            localStorage.setItem('location_cache', JSON.stringify(defaultCoordinates));
+            resolve({ latitude: defaultCoordinates.latitude, longitude: defaultCoordinates.longitude });
+        };
+        
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                const newLocation = { latitude, longitude, date: today };
+                localStorage.setItem('location_cache', JSON.stringify(newLocation));
+                this.setState({ location: { ...newLocation, loading: false } });
+                resolve({ latitude, longitude });
+            },
+            errorCallback // Use the new error callback with the default
+        );
+    });
+};
+
+  // Get Weather Data
+  fetchWeather = async (latitude, longitude) => {
+    // Check for today's cached weather data
+    const cachedWeather = JSON.parse(localStorage.getItem('weather_cache'));
+    const theTimeNow = new Date().getTime();
+    const threeHours = 3 * 60 * 60 * 1000 
+
+    // Use cached data if it's less than 3 hours old
+    if (cachedWeather && (theTimeNow - cachedWeather.timestamp) < threeHours) {
+        this.setState({ weather: { ...cachedWeather, loading: false } });
+        return;
+    }
+
+    // If cache is missing or outdated, fetch new weather data
+    this.setState(prevState => ({ weather: { ...prevState.weather, loading: true } }));
+
+    try {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`;
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch weather data');
+        }
+
+        const data = await response.json();
+        const currentData = data.current_weather;
+
+        // Map the weather code to an icon and description
+        const weatherCode = currentData.weathercode;
+        const { description, icon } = this.getWeatherDescriptionAndIcon(weatherCode);
+
+        const newWeather = {
+            temperature: Math.round(currentData.temperature),
+            description: description,
+            icon: icon,
+            date: theTimeNow
+        };
+
+        // Cache the new data
+        localStorage.setItem('weather_cache', JSON.stringify(newWeather));
+
+        this.setState({ weather: { ...newWeather, loading: false } });
+
+    } catch (error) {
+        console.error("Error fetching weather:", error);
+        this.setState(prevState => ({ weather: { ...prevState.weather, loading: false } }));
+    }
+  }
+
+  fetchCalendarEvents = async () => {
+    const cachedEvents = JSON.parse(localStorage.getItem('calendar_cache'));
+    const today = new Date().toDateString();
+
+    if (cachedEvents && cachedEvents.date === today) {
+      this.setState({
+            calendarEvents: cachedEvents.events,
+            calendarLoading: false,
+        });
+        return;
+    }
+
+    this.setState({ calendarLoading: true });
+
+    const lambdaEndpont = 'https://YOUR_API_GATEWAY_URL/calendar';
+
+    try {
+      const response = await fetch(lambdaEndpont);
+      if (!response.ok) {
+        throw new Error('Failed to fetch calendar events');
+      }
+      const data = await response.json();
+
+      // Cache the new data
+      const newCache = {
+        date: today,
+        events: data.events,
+      };
+      localStorage.setItem('calendar_cache', JSON.stringify(newCache));
+
+      this.setState({
+            calendarEvents: data.events,
+            calendarLoading: false,
+        });
+    } catch (error) {
+      console.error("Error fetching calendar events:", error);
+      this.setState({ calendarLoading: false });
+    }
+  };
+
+  getWeatherDescriptionAndIcon = (code) => {
+    let description = 'N/A';
+    let icon = '❓'; // Default icon
+
+    if (code >= 0 && code <= 1) { // Clear sky, mainly clear
+        description = 'Clear Sky';
+        icon = '☀️';
+    } else if (code >= 2 && code <= 3) { // Partly cloudy, overcast
+        description = 'Partly Cloudy';
+        icon = '☁️';
+    } else if (code >= 45 && code <= 48) { // Fog
+        description = 'Foggy';
+        icon = '🌫️';
+    } else if (code >= 51 && code <= 57) { // Drizzle
+        description = 'Light Rain';
+        icon = '🌧️';
+    } else if (code >= 61 && code <= 67) { // Rain
+        description = 'Rainy';
+        icon = '☔';
+    } else if (code >= 71 && code <= 77) { // Snow fall
+        description = 'Snowy';
+        icon = '🌨️';
+    } else if (code >= 95 && code <= 96) { // Thunderstorm
+        description = 'Thunderstorm';
+        icon = '⛈️';
+    }
+
+    return { description, icon };
+  };
   
   fetchAllData = async () => {
     this.setState({ loading: true });
@@ -222,7 +410,7 @@ class Home extends React.Component {
       return null;
     }
 
-    const { name, wardrobes, loading, totalItems, recentItems } = this.state;
+    const { name, wardrobes, loading, totalItems, recentItems, weather } = this.state;
 
     return (
       <div className="home-container">
@@ -257,8 +445,17 @@ class Home extends React.Component {
               <h3>Today's Calendar</h3>
               <p className="stat-date">{new Date().toLocaleDateString('en-GB')}</p>
               <div className="mini-events">
-                <div className="mini-event">9:00 AM - Meeting</div>
-                <div className="mini-event">12:30 PM - Lunch</div>
+                {this.state.calendarLoading ? (
+                  <div className="mini-event">Loading...</div>
+                ) : this.state.calendarEvents.length > 0 ? ( 
+                  this.state.calendarEvents.map((event, index) => (
+                    <div className="mini-event" key={index}>
+                      {event.start.dateTime} - {event.summary}
+                    </div>
+                  ))
+                ) : (
+                  <div className="mini-event">No events today</div>
+                )}
               </div>
             </div>
             <div className="stat-icon">
@@ -270,11 +467,11 @@ class Home extends React.Component {
           <div className="stat-card weather">
             <div className="stat-content">
               <h3>Today's Weather</h3>
-              <p className="stat-number">24°C</p>
-              <p className="weather-desc">Sunny</p>
+              <p className="stat-number">{weather.loading ? "..." : `${weather.temperature}°C`}</p>
+              <p className="weather-desc">{weather.loading ? "Fetching..." : weather.description}</p>
             </div>
             <div className="stat-icon">
-              <div className="weather-icon">☀️</div>
+              <div className="weather-icon">{weather.loading ? "..." : weather.icon}</div>
             </div>
           </div>
         </div>
