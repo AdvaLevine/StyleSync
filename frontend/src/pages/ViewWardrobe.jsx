@@ -3,8 +3,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Dropdown from '../components/Dropdown';
 import '../assets/styles/ViewWardrobe.css';
 import { getCachedWardrobes } from '../services/wardrobeCache';
-import { getCachedItems, fetchAndCacheItems, needsItemsCacheUpdate } from '../services/itemsCache';
-import { Shirt } from "lucide-react";
+import { getCachedItems, fetchAndCacheItems, needsItemsCacheUpdate, removeItemFromCache } from '../services/itemsCache';
+import { Shirt, Trash2 } from "lucide-react";
 import { useAuth } from "react-oidc-context";
 import { useCheckUserLoggedIn } from "../hooks/useCheckUserLoggedIn";
 
@@ -20,7 +20,10 @@ class ViewWardrobe extends React.Component {
             error: '',
             viewMode: 'images', // 'images' or 'list'
             displayItems: false, // New state to control when to display items
-            hasWardrobes: true // Track if user has any wardrobes
+            hasWardrobes: true, // Track if user has any wardrobes
+            showConfirmModal: false, // For delete confirmation
+            itemToDelete: null, // Item to be deleted
+            successMessage: '' // Success message after deletion
         };
         
         this.navigate = props.navigate;
@@ -116,6 +119,81 @@ class ViewWardrobe extends React.Component {
         }
     };
     
+    // New methods for item deletion
+    handleDeleteClick = (item) => {
+        this.setState({
+            showConfirmModal: true,
+            itemToDelete: item
+        });
+    };
+    
+    handleCancelDelete = () => {
+        this.setState({
+            showConfirmModal: false,
+            itemToDelete: null
+        });
+    };
+    
+    handleConfirmDelete = async () => {
+        const { itemToDelete, selectedWardrobe } = this.state;
+        if (!itemToDelete) return;
+        
+        this.setState({ loading: true });
+        
+        try {
+            const userId = localStorage.getItem("user_id");
+            if (!userId) {
+                throw new Error("User ID not found. Please log in again.");
+            }
+            
+            const response = await fetch("https://4awnw7asd9.execute-api.us-east-1.amazonaws.com/dev/removeItem", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": localStorage.getItem("idToken")
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    item_id: itemToDelete.id
+                })
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
+            }
+            
+            // Remove from local state
+            const updatedItems = this.state.items.filter(item => item.id !== itemToDelete.id);
+            
+            // Update cache
+            if (selectedWardrobe) {
+                removeItemFromCache(selectedWardrobe.name, itemToDelete.id);
+                console.log(`Cache updated after deleting item ${itemToDelete.id} from wardrobe ${selectedWardrobe.name}`);
+            }
+            
+            this.setState({
+                items: updatedItems,
+                showConfirmModal: false,
+                itemToDelete: null,
+                error: '',
+                successMessage: 'Item deleted successfully!'
+            });
+            
+            // Clear success message after 3 seconds
+            setTimeout(() => {
+                this.setState({ successMessage: '' });
+            }, 3000);
+            
+        } catch (error) {
+            this.setState({
+                error: `Failed to delete item: ${error.message}`
+            });
+        } finally {
+            this.setState({ loading: false });
+        }
+    };
+    
     render() {
         // בודק אם המשתמש מחובר
         const { isLoading, isAuthenticated } = this.props;
@@ -124,7 +202,8 @@ class ViewWardrobe extends React.Component {
             return null;
         }
         
-        const { wardrobes, selectedWardrobe, items, loading, error, viewMode, displayItems, hasWardrobes } = this.state;
+        const { wardrobes, selectedWardrobe, items, loading, error, viewMode, displayItems, hasWardrobes,
+                showConfirmModal, successMessage } = this.state;
         
         // If user has no wardrobes, show the "Create Wardrobe First" screen
         if (!hasWardrobes) {
@@ -146,6 +225,21 @@ class ViewWardrobe extends React.Component {
 
         return (
             <div className="view-wardrobe-container">
+                {/* Delete Confirmation Modal */}
+                {showConfirmModal && (
+                    <div className="modal-overlay">
+                        <div className="modal-content">
+                            <h3>Delete Item</h3>
+                            <p>Are you sure you want to delete this item?</p>
+                            <p>This action cannot be undone.</p>
+                            <div className="modal-buttons">
+                                <button onClick={this.handleCancelDelete} className="cancel-btn">Cancel</button>
+                                <button onClick={this.handleConfirmDelete} className="delete-btn">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                
                 <div className={`view-wardrobe-box ${viewMode === 'list' ? 'list-view' : ''}`}>
                     <h2>View Wardrobe</h2>
                     
@@ -186,12 +280,22 @@ class ViewWardrobe extends React.Component {
                         <p className="no-items-message">No items found in this wardrobe.</p>
                     )}
                     
+                    {successMessage && <p className="success-message">{successMessage}</p>}
+                    
                     {!loading && !error && displayItems && items.length > 0 && (
                         <div className={`items-container ${viewMode}`}>
                             {viewMode === 'images' ? (
                                 // Image view mode
                                 items.map(item => (
                                     <div key={item.id} className="item-card">
+                                        {/* Delete button */}
+                                        <button 
+                                            className="delete-button" 
+                                            onClick={() => this.handleDeleteClick(item)} 
+                                            aria-label="Delete item"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
                                         <div className="item-image">
                                             {item.photoUrl ? (
                                                 <img src={item.photoUrl} alt={item.itemType} />
@@ -217,6 +321,7 @@ class ViewWardrobe extends React.Component {
                                             <th>Weather</th>
                                             <th>Style</th>
                                             <th>Location</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -227,6 +332,15 @@ class ViewWardrobe extends React.Component {
                                                 <td>{Array.isArray(item.weather) ? item.weather.join(', ') : 'N/A'}</td>
                                                 <td>{Array.isArray(item.style) ? item.style.join(', ') : 'N/A'}</td>
                                                 <td>Door: {item.door}, Shelf: {item.shelf}</td>
+                                                <td>
+                                                    <button 
+                                                        className="delete-button-list" 
+                                                        onClick={() => this.handleDeleteClick(item)}
+                                                        aria-label="Delete item"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
