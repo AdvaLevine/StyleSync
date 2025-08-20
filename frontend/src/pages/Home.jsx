@@ -220,45 +220,45 @@ class Home extends React.Component {
     }
   }
 
-  // fetchCalendarEvents = async () => {
-  //   const cachedEvents = JSON.parse(localStorage.getItem('calendar_cache'));
-  //   const today = new Date().toDateString();
+  fetchCalendarEvents = async () => {
+    const cachedEvents = JSON.parse(localStorage.getItem('calendar_cache'));
+    const today = new Date().toDateString();
 
-  //   if (cachedEvents && cachedEvents.date === today) {
-  //     this.setState({
-  //           calendarEvents: cachedEvents.events,
-  //           calendarLoading: false,
-  //       });
-  //       return;
-  //   }
+    if (cachedEvents && cachedEvents.date === today) {
+      this.setState({
+            calendarEvents: cachedEvents.events,
+            calendarLoading: false,
+        });
+        return;
+    }
 
-  //   this.setState({ calendarLoading: true });
+    this.setState({ calendarLoading: true });
 
-  //   const lambdaEndpont = 'https://YOUR_API_GATEWAY_URL/calendar';
+    const lambdaEndpont = 'https://YOUR_API_GATEWAY_URL/calendar';
 
-  //   try {
-  //     const response = await fetch(lambdaEndpont);
-  //     if (!response.ok) {
-  //       throw new Error('Failed to fetch calendar events');
-  //     }
-  //     const data = await response.json();
+    try {
+      const response = await fetch(lambdaEndpont);
+      if (!response.ok) {
+        throw new Error('Failed to fetch calendar events');
+      }
+      const data = await response.json();
 
-  //     // Cache the new data
-  //     const newCache = {
-  //       date: today,
-  //       events: data.events,
-  //     };
-  //     localStorage.setItem('calendar_cache', JSON.stringify(newCache));
+      // Cache the new data
+      const newCache = {
+        date: today,
+        events: data.events,
+      };
+      localStorage.setItem('calendar_cache', JSON.stringify(newCache));
 
-  //     this.setState({
-  //           calendarEvents: data.events,
-  //           calendarLoading: false,
-  //       });
-  //   } catch (error) {
-  //     console.error("Error fetching calendar events:", error);
-  //     this.setState({ calendarLoading: false });
-  //   }
-  // };
+      this.setState({
+            calendarEvents: data.events,
+            calendarLoading: false,
+        });
+    } catch (error) {
+      console.error("Error fetching calendar events:", error);
+      this.setState({ calendarLoading: false });
+    }
+  };
 
   getWeatherDescriptionAndIcon = (code) => {
     let description = 'N/A';
