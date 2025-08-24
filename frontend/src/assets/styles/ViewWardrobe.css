@@ -632,7 +632,7 @@
 }
 
 .select-all-btn {
-  background-color: #1890ff;
+  background-color: #4a86e8;
   color: white;
   border: none;
   padding: 6px 12px;
@@ -648,7 +648,7 @@
 
 .selected-count {
   font-weight: bold;
-  color: #1890ff;
+  color: #4a86e8;
 }
 
 .bulk-delete-btn {
