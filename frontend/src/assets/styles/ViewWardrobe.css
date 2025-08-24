@@ -601,3 +601,87 @@
 .item-card {
   position: relative;
 }
+
+/* Multi-select styles */
+.item-select {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+}
+
+.item-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.bulk-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.selection-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.select-all-btn {
+  background-color: #1890ff;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.select-all-btn:hover {
+  background-color: #40a9ff;
+}
+
+.selected-count {
+  font-weight: bold;
+  color: #1890ff;
+}
+
+.bulk-delete-btn {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.bulk-delete-btn:hover {
+  background-color: #ff7875;
+}
+
+.bulk-delete-btn.disabled {
+  background-color: #d9d9d9;
+  cursor: not-allowed;
+}
+
+/* Selected item highlight */
+.item-card.selected {
+  outline: 2px solid #1890ff;
+  box-shadow: 0 0 8px rgba(24, 144, 255, 0.5);
+}
+
+.items-table tr.selected {
+  background-color: rgba(24, 144, 255, 0.1);
+}
+
+.select-column {
+  width: 50px;
+  text-align: center;
+}
