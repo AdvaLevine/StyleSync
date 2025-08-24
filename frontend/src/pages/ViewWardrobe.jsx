@@ -23,7 +23,8 @@ class ViewWardrobe extends React.Component {
             hasWardrobes: true, // Track if user has any wardrobes
             showConfirmModal: false, // For delete confirmation
             itemToDelete: null, // Item to be deleted
-            successMessage: '' // Success message after deletion
+            successMessage: '', // Success message after deletion
+            isDeleting: false // Track if delete operation is in progress
         };
         
         this.navigate = props.navigate;
@@ -95,7 +96,7 @@ class ViewWardrobe extends React.Component {
         const wardrobe = this.state.wardrobes.find(w => w.name === wardrobeName);
         this.setState({
             selectedWardrobe: wardrobe,
-            displayItems: false // מסתיר פריטים קודמים בעת בחירת ארון חדש
+            displayItems: false // Hide previous items when selecting a new wardrobe
         });
     };
 
@@ -138,7 +139,7 @@ class ViewWardrobe extends React.Component {
         const { itemToDelete, selectedWardrobe } = this.state;
         if (!itemToDelete) return;
         
-        this.setState({ loading: true });
+        this.setState({ loading: true, isDeleting: true });
         
         try {
             const userId = localStorage.getItem("user_id");
@@ -190,12 +191,11 @@ class ViewWardrobe extends React.Component {
                 error: `Failed to delete item: ${error.message}`
             });
         } finally {
-            this.setState({ loading: false });
+            this.setState({ loading: false, isDeleting: false });
         }
     };
     
     render() {
-        // בודק אם המשתמש מחובר
         const { isLoading, isAuthenticated } = this.props;
         
         if (isLoading || !isAuthenticated) {
@@ -203,7 +203,7 @@ class ViewWardrobe extends React.Component {
         }
         
         const { wardrobes, selectedWardrobe, items, loading, error, viewMode, displayItems, hasWardrobes,
-                showConfirmModal, successMessage } = this.state;
+                showConfirmModal, successMessage, isDeleting } = this.state;
         
         // If user has no wardrobes, show the "Create Wardrobe First" screen
         if (!hasWardrobes) {
@@ -233,8 +233,16 @@ class ViewWardrobe extends React.Component {
                             <p>Are you sure you want to delete this item?</p>
                             <p>This action cannot be undone.</p>
                             <div className="modal-buttons">
-                                <button onClick={this.handleCancelDelete} className="cancel-btn">Cancel</button>
-                                <button onClick={this.handleConfirmDelete} className="delete-btn">Delete</button>
+                                <button 
+                                    onClick={this.handleCancelDelete} 
+                                    className="cancel-btn"
+                                    disabled={isDeleting}
+                                >Cancel</button>
+                                <button 
+                                    onClick={this.handleConfirmDelete} 
+                                    className="delete-btn"
+                                    disabled={isDeleting}
+                                >{isDeleting ? "Deleting..." : "Delete"}</button>
                             </div>
                         </div>
                     </div>
