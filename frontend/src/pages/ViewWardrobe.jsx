@@ -388,7 +388,7 @@ class ViewWardrobe extends React.Component {
         const { selectedWardrobe } = this.state;
         if (!selectedWardrobe) return;
         
-        this.setState({ loading: true, isDeletingWardrobe: true });
+        this.setState({ loading: true, isDeletingWardrobe: true, error: '' });
         
         try {
             const userId = localStorage.getItem("user_id");
@@ -396,7 +396,70 @@ class ViewWardrobe extends React.Component {
                 throw new Error("User ID not found. Please log in again.");
             }
             
-            // Call the API to delete the wardrobe
+            // First, fetch all items in the wardrobe if we haven't already
+            let itemsToDelete = [];
+            if (!this.state.displayItems) {
+                this.setState({ error: '' });
+                
+                try {
+                    if (needsItemsCacheUpdate(selectedWardrobe.name)) {
+                        console.log(`Fetching items for wardrobe ${selectedWardrobe.name} before deletion...`);
+                        itemsToDelete = await fetchAndCacheItems(selectedWardrobe.name, 'list');
+                    } else {
+                        console.log(`Using cached items for wardrobe ${selectedWardrobe.name} before deletion...`);
+                        itemsToDelete = getCachedItems(selectedWardrobe.name);
+                    }
+                } catch (error) {
+                    console.error("Error fetching items before wardrobe deletion:", error);
+                    // Continue with wardrobe deletion even if item fetch fails
+                }
+            } else {
+                itemsToDelete = this.state.items;
+            }
+            
+            // Delete all items in the wardrobe
+            let failedItems = 0;
+            let successCount = 0;
+            
+            if (itemsToDelete.length > 0) {
+                console.log(`Deleting ${itemsToDelete.length} items before wardrobe deletion...`);
+                
+                for (const item of itemsToDelete) {
+                    try {
+                        const response = await fetch("https://4awnw7asd9.execute-api.us-east-1.amazonaws.com/dev/removeItem", {
+                            method: "DELETE",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": localStorage.getItem("idToken")
+                            },
+                            body: JSON.stringify({
+                                user_id: userId,
+                                item_id: item.id
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            successCount++;
+                        } else {
+                            failedItems++;
+                            console.error(`Failed to delete item ${item.id}: HTTP ${response.status}`);
+                            
+                            // Add a small delay before the next request on failure
+                            await new Promise(resolve => setTimeout(resolve, 500));
+                        }
+                    } catch (error) {
+                        failedItems++;
+                        console.error(`Exception while deleting item ${item.id}:`, error);
+                        
+                        // Add a small delay before the next request
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                    }
+                }
+                
+                console.log(`Deleted ${successCount} items; ${failedItems} items failed to delete`);
+            }
+            
+            // Now delete the wardrobe itself
             const response = await fetch("https://h16jlm6x32.execute-api.us-east-1.amazonaws.com/dev/removeWardrobe", {
                 method: "DELETE",
                 headers: {
@@ -414,14 +477,20 @@ class ViewWardrobe extends React.Component {
                 throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
             }
             
-            const result = await response.json();
-            
             // Update local cache
             removeWardrobeFromCache(selectedWardrobe.name);
             clearWardrobeItemsCache(selectedWardrobe.name);
             
             // Update local state
             const updatedWardrobes = this.state.wardrobes.filter(w => w.name !== selectedWardrobe.name);
+            
+            let statusMessage = `Wardrobe "${selectedWardrobe.name}" deleted successfully.`;
+            if (successCount > 0) {
+                statusMessage += ` ${successCount} items were also removed.`;
+            }
+            if (failedItems > 0) {
+                statusMessage += ` Note: ${failedItems} items could not be deleted.`;
+            }
             
             this.setState({
                 wardrobes: updatedWardrobes,
@@ -430,7 +499,7 @@ class ViewWardrobe extends React.Component {
                 displayItems: false,
                 showDeleteWardrobeConfirm: false,
                 error: '',
-                successMessage: `Wardrobe "${selectedWardrobe.name}" deleted successfully. ${result.itemsDeleted > 0 ? `${result.itemsDeleted} items were also removed.` : ''}`
+                successMessage: statusMessage
             });
             
             // If no more wardrobes, show the "Create Wardrobe First" screen
@@ -440,7 +509,13 @@ class ViewWardrobe extends React.Component {
             
             // Clear success message after 5 seconds
             setTimeout(() => {
-                this.setState({ successMessage: '' });
+                this.setState(prevState => {
+                    // Only clear if the message hasn't changed
+                    if (prevState.successMessage === statusMessage) {
+                        return { successMessage: '' };
+                    }
+                    return null;
+                });
             }, 5000);
             
         } catch (error) {
