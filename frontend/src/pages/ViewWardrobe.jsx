@@ -2,8 +2,8 @@ import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Dropdown from '../components/Dropdown';
 import '../assets/styles/ViewWardrobe.css';
-import { getCachedWardrobes } from '../services/wardrobeCache';
-import { getCachedItems, fetchAndCacheItems, needsItemsCacheUpdate, removeItemFromCache } from '../services/itemsCache';
+import { getCachedWardrobes, removeWardrobeFromCache } from '../services/wardrobeCache';
+import { getCachedItems, fetchAndCacheItems, needsItemsCacheUpdate, removeItemFromCache, clearWardrobeItemsCache } from '../services/itemsCache';
 import { Shirt, Trash2 } from "lucide-react";
 import { useAuth } from "react-oidc-context";
 import { useCheckUserLoggedIn } from "../hooks/useCheckUserLoggedIn";
@@ -23,6 +23,8 @@ class ViewWardrobe extends React.Component {
             hasWardrobes: true, // Track if user has any wardrobes
             showConfirmModal: false, // For delete confirmation
             itemToDelete: null, // Item to be deleted
+            showDeleteWardrobeConfirm: false, // For wardrobe deletion confirmation
+            isDeletingWardrobe: false, // Track wardrobe deletion in progress
             successMessage: '', // Success message after deletion
             isDeleting: false, // Track if delete operation is in progress
             selectedItems: [], // Track selected items for bulk delete
@@ -99,7 +101,9 @@ class ViewWardrobe extends React.Component {
         this.setState({
             selectedWardrobe: wardrobe,
             displayItems: false, // Hide previous items when selecting a new wardrobe
-            selectedItems: [] // Reset selection when changing wardrobe
+            selectedItems: [], // Reset selection when changing wardrobe
+            successMessage: '', // Clear any previous success messages
+            error: '' // Clear any previous errors
         });
     };
 
@@ -365,6 +369,90 @@ class ViewWardrobe extends React.Component {
         }
     };
     
+    // New method to handle delete wardrobe button click
+    handleDeleteWardrobeClick = () => {
+        this.setState({
+            showDeleteWardrobeConfirm: true
+        });
+    };
+    
+    // New method to handle cancel delete wardrobe
+    handleCancelDeleteWardrobe = () => {
+        this.setState({
+            showDeleteWardrobeConfirm: false
+        });
+    };
+    
+    // New method to handle confirm delete wardrobe
+    handleConfirmDeleteWardrobe = async () => {
+        const { selectedWardrobe } = this.state;
+        if (!selectedWardrobe) return;
+        
+        this.setState({ loading: true, isDeletingWardrobe: true });
+        
+        try {
+            const userId = localStorage.getItem("user_id");
+            if (!userId) {
+                throw new Error("User ID not found. Please log in again.");
+            }
+            
+            // Call the API to delete the wardrobe
+            const response = await fetch("https://h16jlm6x32.execute-api.us-east-1.amazonaws.com/dev/removeWardrobe", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": localStorage.getItem("idToken")
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    wardrobe_name: selectedWardrobe.name
+                })
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            
+            // Update local cache
+            removeWardrobeFromCache(selectedWardrobe.name);
+            clearWardrobeItemsCache(selectedWardrobe.name);
+            
+            // Update local state
+            const updatedWardrobes = this.state.wardrobes.filter(w => w.name !== selectedWardrobe.name);
+            
+            this.setState({
+                wardrobes: updatedWardrobes,
+                selectedWardrobe: null,
+                items: [],
+                displayItems: false,
+                showDeleteWardrobeConfirm: false,
+                error: '',
+                successMessage: `Wardrobe "${selectedWardrobe.name}" deleted successfully. ${result.itemsDeleted > 0 ? `${result.itemsDeleted} items were also removed.` : ''}`
+            });
+            
+            // If no more wardrobes, show the "Create Wardrobe First" screen
+            if (updatedWardrobes.length === 0) {
+                this.setState({ hasWardrobes: false });
+            }
+            
+            // Clear success message after 5 seconds
+            setTimeout(() => {
+                this.setState({ successMessage: '' });
+            }, 5000);
+            
+        } catch (error) {
+            this.setState({
+                error: `Failed to delete wardrobe: ${error.message}`,
+                showDeleteWardrobeConfirm: false
+            });
+        } finally {
+            this.setState({ loading: false, isDeletingWardrobe: false });
+        }
+    };
+    
     render() {
         const { isLoading, isAuthenticated } = this.props;
         
@@ -373,7 +461,7 @@ class ViewWardrobe extends React.Component {
         }
         
         const { wardrobes, selectedWardrobe, items, loading, error, viewMode, displayItems, hasWardrobes,
-                showConfirmModal, showBulkDeleteConfirm, successMessage, isDeleting, selectedItems } = this.state;
+                showConfirmModal, showBulkDeleteConfirm, showDeleteWardrobeConfirm, successMessage, isDeleting, isDeletingWardrobe, selectedItems } = this.state;
         
         // If user has no wardrobes, show the "Create Wardrobe First" screen
         if (!hasWardrobes) {
@@ -413,6 +501,29 @@ class ViewWardrobe extends React.Component {
                                     className="delete-btn"
                                     disabled={isDeleting}
                                 >{isDeleting ? "Deleting..." : "Delete"}</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                
+                {/* Delete Wardrobe Confirmation Modal */}
+                {showDeleteWardrobeConfirm && (
+                    <div className="modal-overlay">
+                        <div className="modal-content">
+                            <h3>Delete Wardrobe</h3>
+                            <p>Are you sure you want to delete the wardrobe "{selectedWardrobe?.name}"?</p>
+                            <p>This will also delete all items in this wardrobe. This action cannot be undone.</p>
+                            <div className="modal-buttons">
+                                <button 
+                                    onClick={this.handleCancelDeleteWardrobe} 
+                                    className="cancel-btn"
+                                    disabled={isDeletingWardrobe}
+                                >Cancel</button>
+                                <button 
+                                    onClick={this.handleConfirmDeleteWardrobe} 
+                                    className="delete-btn"
+                                    disabled={isDeletingWardrobe}
+                                >{isDeletingWardrobe ? "Deleting..." : "Delete Wardrobe"}</button>
                             </div>
                         </div>
                     </div>
@@ -469,8 +580,16 @@ class ViewWardrobe extends React.Component {
                         </div>
                     </div>
                     
-                    {/* View button - always show regardless of wardrobe selection */}
+                    {/* View and Delete Wardrobe buttons */}
                     <div className="view-actions">
+                        {selectedWardrobe && displayItems && (
+                            <button 
+                                className="delete-wardrobe-btn" 
+                                onClick={this.handleDeleteWardrobeClick}
+                            >
+                                Delete Wardrobe
+                            </button>
+                        )}
                         <button className="view-button small-right" onClick={this.handleViewClick}>View</button>
                     </div>
                     

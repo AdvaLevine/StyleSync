@@ -476,6 +476,44 @@ export const fetchTotalItemsCount = async (forceRefresh = false) => {
   }
 };
 
+// New function to clear cache for a specific wardrobe
+export const clearWardrobeItemsCache = (wardrobeName) => {
+  if (!wardrobeName) return false;
+  
+  try {
+    const userId = localStorage.getItem("user_id");
+    if (!userId) return false;
+    
+    // Check if this wardrobe had any items first
+    const cacheKey = getUserItemsCacheKey(wardrobeName);
+    const cachedItems = localStorage.getItem(cacheKey);
+    const hadItems = cachedItems && JSON.parse(cachedItems).length > 0;
+    
+    console.log(`Wardrobe ${wardrobeName} had items before deletion: ${hadItems}`);
+    
+    // Remove the items cache for this wardrobe
+    localStorage.removeItem(cacheKey);
+    
+    // Remove the invalidation flag
+    const invalidationKey = getUserItemsCacheInvalidationKey(wardrobeName);
+    localStorage.removeItem(invalidationKey);
+    
+    // Only update the total count if the wardrobe actually had items
+    if (hadItems) {
+      console.log(`Updating total count because wardrobe ${wardrobeName} had items`);
+      updateAllItemsCache(true);
+    } else {
+      console.log(`Skipping count update for empty wardrobe ${wardrobeName}`);
+    }
+    
+    console.log(`Cleared items cache for wardrobe ${wardrobeName}`);
+    return true;
+  } catch (error) {
+    console.error(`Error clearing items cache for wardrobe ${wardrobeName}:`, error);
+    return false;
+  }
+};
+
 // Function to remove an item from all caches
 export const removeItemFromCache = (wardrobeName, itemId) => {
   const userId = localStorage.getItem("user_id");
