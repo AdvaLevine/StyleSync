@@ -753,6 +753,7 @@ class ViewWardrobe extends React.Component {
                                                 <th>Color</th>
                                                 <th>Weather</th>
                                                 <th>Style</th>
+                                                <th>Description</th>
                                                 <th>Location</th>
                                                 <th>Action</th>
                                             </tr>
@@ -775,6 +776,15 @@ class ViewWardrobe extends React.Component {
                                                         <td>{Array.isArray(item.color) ? item.color.join(', ') : 'N/A'}</td>
                                                         <td>{Array.isArray(item.weather) ? item.weather.join(', ') : 'N/A'}</td>
                                                         <td>{Array.isArray(item.style) ? item.style.join(', ') : 'N/A'}</td>
+                                                        <td className="description-column" 
+                                                            data-full-text={item.item_description || ""}
+                                                            title={item.item_description || "No description available"}>
+                                                            {item.item_description ? 
+                                                                (item.item_description.length > 50 ? 
+                                                                    `${item.item_description.substring(0, 50)}...` : 
+                                                                    item.item_description) : 
+                                                                '-'}
+                                                        </td>
                                                         <td>Door: {item.door}, Shelf: {item.shelf}</td>
                                                         <td>
                                                             <button 

@@ -293,7 +293,38 @@
     font-style: italic;
 }
 
-.items-table td:nth-child(5) { /* Location */
+.items-table td:nth-child(5) { /* Description */
+    color: #5b9bd5;
+    font-style: italic;
+    position: relative;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Add tooltip-like hover effect for description */
+.items-table td:nth-child(5)[data-full-text]:not([data-full-text=""]):hover::after {
+    content: attr(data-full-text);
+    position: absolute;
+    left: 0;
+    top: 100%;
+    z-index: 10;
+    background-color: white;
+    padding: 10px 15px;
+    border-radius: 6px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    width: 250px;
+    white-space: normal;
+    font-size: 0.9rem;
+    color: #333;
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.items-table td:nth-child(6) { /* Location */
     font-weight: 500;
     color: #4a86e8;
 }
@@ -315,6 +346,11 @@
     
     .items-table {
         min-width: 650px;
+    }
+
+    /* Make description column narrower on small screens */
+    .items-table td:nth-child(5) {
+        max-width: 150px;
     }
 }
 
