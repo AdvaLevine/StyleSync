@@ -13,6 +13,10 @@ class AddItem extends React.Component {
     constructor(props) {
         super(props);
         
+        // Add these two refs
+        this.fileInputRef = React.createRef();
+        this.cameraInputRef = React.createRef();
+        
         this.state = {
             wardrobes: [],
             selectedWardrobe: null, 
@@ -532,13 +536,81 @@ class AddItem extends React.Component {
                                             initialSelectedOptions={this.state.fromDate.style}
                                         />
 
-                                        <label>Upload Photo</label>
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            name="photo"
-                                            onChange={this.handleInputChange}
-                                        />
+                                        <div className="photo-upload-section">
+                                            <label>Upload or Capture Photo</label>
+                                            <div className="photo-upload-options">
+                                                <div className="upload-option">
+                                                    <label htmlFor="file-upload" className="custom-file-upload">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: "10px", verticalAlign: "text-top", position: "relative", top: "1px"}}>
+                                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                                            <polyline points="21 15 16 10 5 21"></polyline>
+                                                        </svg>
+                                                        Choose File
+                                                    </label>
+                                                    <input
+                                                        id="file-upload"
+                                                        type="file"
+                                                        accept="image/*"
+                                                        name="photo"
+                                                        onChange={this.handleInputChange}
+                                                        style={{display: 'none'}}
+                                                        ref={this.fileInputRef} // Add this ref
+                                                    />
+                                                </div>
+                                                <div className="upload-option">
+                                                    <label htmlFor="camera-capture" className="custom-file-upload">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: "10px", verticalAlign: "text-top", position: "relative", top: "1px"}}>
+                                                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                                            <circle cx="12" cy="13" r="4"></circle>
+                                                        </svg>
+                                                        Use Camera
+                                                    </label>
+                                                    <input
+                                                        id="camera-capture"
+                                                        type="file"
+                                                        accept="image/*"
+                                                        name="photo"
+                                                        onChange={this.handleInputChange}
+                                                        capture="environment"
+                                                        style={{display: 'none'}}
+                                                        ref={this.cameraInputRef} // Add this ref
+                                                    />
+                                                </div>
+                                            </div>
+                                            
+                                            {this.state.fromDate.photo && (
+                                                <div className="photo-preview">
+                                                    <img 
+                                                        src={URL.createObjectURL(this.state.fromDate.photo)} 
+                                                        alt="Preview" 
+                                                        style={{maxWidth: '100%', maxHeight: '200px', marginTop: '10px'}}
+                                                    />
+                                                    <button 
+                                                        type="button"
+                                                        className="remove-photo-btn"
+                                                        onClick={() => {
+                                                            // Reset the file input refs
+                                                            if (this.fileInputRef.current) {
+                                                                this.fileInputRef.current.value = '';
+                                                            }
+                                                            if (this.cameraInputRef.current) {
+                                                                this.cameraInputRef.current.value = '';
+                                                            }
+                                                            
+                                                            this.setState({
+                                                                fromDate: {
+                                                                    ...this.state.fromDate,
+                                                                    photo: null
+                                                                }
+                                                            });
+                                                        }}
+                                                    >
+                                                        Remove Photo
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
                                         
                                         <label>Description (optional)</label>
                                         <textarea

@@ -245,6 +245,24 @@ export const addItemToCache = (wardrobeName, newItem) => {
   const currentCount = parseInt(localStorage.getItem(totalCountKey) || "0", 10);
   localStorage.setItem(totalCountKey, (currentCount + 1).toString());
   
+  // Add the item to the wardrobe-specific cache
+  const wardrobeKey = getUserItemsCacheKey(wardrobeName);
+  let wardrobeItems = [];
+  try {
+    const cachedWardrobeItems = localStorage.getItem(wardrobeKey);
+    if (cachedWardrobeItems) {
+      wardrobeItems = JSON.parse(cachedWardrobeItems);
+    }
+    
+    // Add the new item to the wardrobe items
+    wardrobeItems.push(newItem);
+    
+    // Save the updated wardrobe items
+    localStorage.setItem(wardrobeKey, JSON.stringify(wardrobeItems));
+  } catch (e) {
+    console.error("Error updating wardrobe items cache:", e);
+  }
+  
   // Also add this item to recent items directly
   const recentKey = getRecentItemsCacheKey();
   let recentItems = [];
