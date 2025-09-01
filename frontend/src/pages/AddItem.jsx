@@ -32,6 +32,7 @@ class AddItem extends React.Component {
                 shelf: "",
                 photo: null,
                 photoUrl: "", // Will store the S3 URL of the uploaded photo
+                item_description: "", // Optional description for the item
             },
             step: 1,
         };
@@ -338,6 +339,11 @@ class AddItem extends React.Component {
                 shelf: this.state.fromDate.shelf,
                 photoUrl: uploadResult.url
             };
+            
+            // Add item_description to payload only if it's not empty
+            if (this.state.fromDate.item_description && this.state.fromDate.item_description.trim() !== "") {
+                payload.item_description = this.state.fromDate.item_description.trim();
+            }
 
             const res = await fetch("https://ul2bdgg3g9.execute-api.us-east-1.amazonaws.com/dev/item", {
                 method: "POST",
@@ -369,6 +375,11 @@ class AddItem extends React.Component {
                 photoUrl: uploadResult.url,
                 createdAt: new Date().toISOString()
             };
+            
+            // Add item_description to cache object if it's not empty
+            if (this.state.fromDate.item_description && this.state.fromDate.item_description.trim() !== "") {
+                newItem.item_description = this.state.fromDate.item_description.trim();
+            }
             
             // Add the new item directly to the cache
             // This will also update the total count and mark it as current
@@ -527,6 +538,17 @@ class AddItem extends React.Component {
                                             accept="image/*"
                                             name="photo"
                                             onChange={this.handleInputChange}
+                                        />
+                                        
+                                        <label>Description (optional)</label>
+                                        <textarea
+                                            name="item_description"
+                                            placeholder="Enter a description for this item (optional)"
+                                            value={this.state.fromDate.item_description || ""}
+                                            onChange={this.handleInputChange}
+                                            className="description-textarea"
+                                            rows={3}
+                                            style={{ resize: "vertical", width: "100%", marginBottom: "1em" }}
                                         />
                                         
                                         {this.state.isUploading && (
