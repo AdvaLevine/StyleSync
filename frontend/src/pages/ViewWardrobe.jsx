@@ -655,16 +655,8 @@ class ViewWardrobe extends React.Component {
                         </div>
                     </div>
                     
-                    {/* View and Delete Wardrobe buttons */}
+                    {/* View button */}
                     <div className="view-actions">
-                        {selectedWardrobe && displayItems && (
-                            <button 
-                                className="delete-wardrobe-btn" 
-                                onClick={this.handleDeleteWardrobeClick}
-                            >
-                                Delete Wardrobe
-                            </button>
-                        )}
                         <button className="view-button small-right" onClick={this.handleViewClick}>View</button>
                     </div>
                     
@@ -802,7 +794,29 @@ class ViewWardrobe extends React.Component {
                                     </table>
                                 )}
                             </div>
+                            
+                            {/* Delete Wardrobe button in a new section */}
+                            <div className="wardrobe-management-actions">
+                                <button 
+                                    className="delete-wardrobe-btn" 
+                                    onClick={this.handleDeleteWardrobeClick}
+                                >
+                                    Delete Wardrobe
+                                </button>
+                            </div>
                         </>
+                    )}
+                    
+                    {/* Add Delete Wardrobe button when there are no items but wardrobe is selected */}
+                    {!loading && !error && displayItems && items.length === 0 && selectedWardrobe && (
+                        <div className="wardrobe-management-actions">
+                            <button 
+                                className="delete-wardrobe-btn" 
+                                onClick={this.handleDeleteWardrobeClick}
+                            >
+                                Delete Wardrobe
+                            </button>
+                        </div>
                     )}
                 </div>
             </div>
