@@ -118,3 +118,30 @@ export const updateWardrobeCache = (wardrobes) => {
   // Mark the fetch as completed
   markWardrobeFetchCompleted();
 };
+
+// New function to remove a wardrobe from the cache
+export const removeWardrobeFromCache = (wardrobeName) => {
+  try {
+    const userId = localStorage.getItem("user_id");
+    if (!userId) return false;
+    
+    // Get current wardrobes from cache
+    const cacheKey = getUserWardrobeCacheKey();
+    const cachedData = localStorage.getItem(cacheKey);
+    
+    if (cachedData) {
+      const wardrobes = JSON.parse(cachedData);
+      // Filter out the wardrobe to be removed
+      const updatedWardrobes = wardrobes.filter(w => w.name !== wardrobeName);
+      
+      // Update the cache with the filtered list
+      localStorage.setItem(cacheKey, JSON.stringify(updatedWardrobes));
+      console.log(`Removed wardrobe ${wardrobeName} from cache`);
+    }
+    
+    return true;
+  } catch (error) {
+    console.error("Error removing wardrobe from cache:", error);
+    return false;
+  }
+};

@@ -328,6 +328,17 @@
     color: #8b0000;
     background-color: #f8d7da;
     border-left: 4px solid #f44336;
+}
+
+.success-message {
+    color: #1e8e3e;
+    background-color: #e6f4ea;
+    border-left: 4px solid #4caf50;
+    padding: 10px 15px;
+    margin: 10px 0;
+    border-radius: 4px;
+    text-align: center;
+    animation: fadeIn 0.3s ease;
     padding: 10px 12px;
     font-size: 13px;
     border-radius: 4px;
@@ -344,6 +355,47 @@
 .view-actions {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
+}
+
+/* Delete Wardrobe Button */
+.delete-wardrobe-btn {
+  background-color: #ff4d4f;
+  color: white;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 6px 15px;
+  margin-top: 10px;
+  margin-right: 10px;
+  margin-bottom: 5px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: background-color 0.2s ease;
+}
+
+.delete-wardrobe-btn:hover {
+  background: #ff7875;
+}
+
+/* Modal adjustments for wardrobe deletion */
+.modal-content h3.delete-wardrobe-header {
+  color: #ff4d4f;
+  font-size: 20px;
+}
+
+/* Responsive design for action buttons */
+@media screen and (max-width: 480px) {
+  .view-actions {
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+  .delete-wardrobe-btn {
+    margin-bottom: 8px;
+    font-size: 13px;
+    padding: 5px 12px;
+  }
 }
 
 /* Blue View Button */
@@ -493,4 +545,184 @@
 
 .create-wardrobe-btn:hover {
     background-color: #2563eb;
+}
+
+/* Delete button on items */
+.delete-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  opacity: 0.8;
+  transition: all 0.2s;
+}
+
+.delete-button:hover {
+  background-color: #ff4d4f;
+  color: white;
+  opacity: 1;
+}
+
+.delete-button-list {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.delete-button-list:hover {
+  background-color: #ff4d4f;
+  color: white;
+}
+
+/* Confirmation Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 8px;
+  padding: 24px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  color: #ff4d4f;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.cancel-btn {
+  background-color: transparent;
+  border: 1px solid #d9d9d9;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.delete-btn {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.item-card {
+  position: relative;
+}
+
+/* Multi-select styles */
+.item-select {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+}
+
+.item-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.bulk-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.selection-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.select-all-btn {
+  background-color: #4a86e8;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.select-all-btn:hover {
+  background-color: #40a9ff;
+}
+
+.selected-count {
+  font-weight: bold;
+  color: #4a86e8;
+}
+
+.bulk-delete-btn {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.bulk-delete-btn:hover {
+  background-color: #ff7875;
+}
+
+.bulk-delete-btn.disabled {
+  background-color: #d9d9d9;
+  cursor: not-allowed;
+}
+
+/* Selected item highlight */
+.item-card.selected {
+  outline: 2px solid #1890ff;
+  box-shadow: 0 0 8px rgba(24, 144, 255, 0.5);
+}
+
+.items-table tr.selected {
+  background-color: rgba(24, 144, 255, 0.1);
+}
+
+.select-column {
+  width: 50px;
+  text-align: center;
 }

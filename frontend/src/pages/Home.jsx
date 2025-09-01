@@ -15,7 +15,8 @@ import {
   updateWardrobeCache,
   isWardrobeFetchInProgress,
   markWardrobeFetchInProgress,
-  markWardrobeFetchCompleted
+  markWardrobeFetchCompleted,
+  removeWardrobeFromCache
 } from "../services/wardrobeCache";
 import { 
   getCachedTotalItemsCount, 
@@ -24,7 +25,10 @@ import {
   fetchTotalItemsCount,
   needsCountUpdate,
   fetchAndCacheItems,
-  updateAllItemsCache
+  updateAllItemsCache,
+  getCachedItems,
+  needsItemsCacheUpdate,
+  clearWardrobeItemsCache
 } from "../services/itemsCache";
 import { useAuth } from "react-oidc-context";
 import { useCheckUserLoggedIn } from "../hooks/useCheckUserLoggedIn";
@@ -52,6 +56,11 @@ class Home extends React.Component {
       },
       calendarEvents: [],
       calendarLoading: true,
+      showDeleteWardrobeConfirm: false,
+      wardrobeToDelete: null,
+      isDeletingWardrobe: false,
+      error: '',
+      successMessage: '',
     };
   }
   
@@ -404,20 +413,211 @@ class Home extends React.Component {
       console.error("Error fetching items:", error);
     }
   }
+
+  // Handle delete wardrobe button click
+  handleDeleteWardrobeClick = (wardrobe, e) => {
+    // Prevent triggering the view wardrobe link
+    e && e.stopPropagation();
+    e && e.preventDefault();
+    
+    this.setState({
+      showDeleteWardrobeConfirm: true,
+      wardrobeToDelete: wardrobe
+    });
+  };
+  
+  // Handle cancel delete wardrobe
+  handleCancelDeleteWardrobe = () => {
+    this.setState({
+      showDeleteWardrobeConfirm: false,
+      wardrobeToDelete: null
+    });
+  };
+  
+  // Handle confirm delete wardrobe
+  handleConfirmDeleteWardrobe = async () => {
+    const { wardrobeToDelete } = this.state;
+    if (!wardrobeToDelete) return;
+    
+    this.setState({ loading: true, isDeletingWardrobe: true, error: '' });
+    
+    try {
+      const userId = localStorage.getItem("user_id");
+      if (!userId) {
+        throw new Error("User ID not found. Please log in again.");
+      }
+      
+      // First, fetch all items in the wardrobe if needed
+      let itemsToDelete = [];
+      try {
+        if (needsItemsCacheUpdate(wardrobeToDelete.name)) {
+          console.log(`Fetching items for wardrobe ${wardrobeToDelete.name} before deletion...`);
+          itemsToDelete = await fetchAndCacheItems(wardrobeToDelete.name, 'list');
+        } else {
+          console.log(`Using cached items for wardrobe ${wardrobeToDelete.name} before deletion...`);
+          itemsToDelete = getCachedItems(wardrobeToDelete.name);
+        }
+      } catch (error) {
+        console.error("Error fetching items before wardrobe deletion:", error);
+        // Continue with wardrobe deletion even if item fetch fails
+      }
+      
+      // Delete all items in the wardrobe
+      let failedItems = 0;
+      let successCount = 0;
+      
+      if (itemsToDelete.length > 0) {
+        console.log(`Deleting ${itemsToDelete.length} items before wardrobe deletion...`);
+        
+        for (const item of itemsToDelete) {
+          try {
+            const response = await fetch("https://4awnw7asd9.execute-api.us-east-1.amazonaws.com/dev/removeItem", {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": localStorage.getItem("idToken")
+              },
+              body: JSON.stringify({
+                user_id: userId,
+                item_id: item.id
+              })
+            });
+            
+            if (response.ok) {
+              successCount++;
+            } else {
+              failedItems++;
+              console.error(`Failed to delete item ${item.id}: HTTP ${response.status}`);
+              
+              // Add a small delay before the next request on failure
+              await new Promise(resolve => setTimeout(resolve, 500));
+            }
+          } catch (error) {
+            failedItems++;
+            console.error(`Exception while deleting item ${item.id}:`, error);
+            
+            // Add a small delay before the next request
+            await new Promise(resolve => setTimeout(resolve, 500));
+          }
+        }
+        
+        console.log(`Deleted ${successCount} items; ${failedItems} items failed to delete`);
+      }
+      
+      // Now delete the wardrobe itself
+      const response = await fetch("https://h16jlm6x32.execute-api.us-east-1.amazonaws.com/dev/removeWardrobe", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": localStorage.getItem("idToken")
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          wardrobe_name: wardrobeToDelete.name
+        })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
+      }
+      
+      // Update local cache
+      removeWardrobeFromCache(wardrobeToDelete.name);
+      clearWardrobeItemsCache(wardrobeToDelete.name);
+      
+      // Update local state
+      const updatedWardrobes = this.state.wardrobes.filter(w => w.name !== wardrobeToDelete.name);
+      
+      let statusMessage = `Wardrobe "${wardrobeToDelete.name}" deleted successfully.`;
+      if (successCount > 0) {
+        statusMessage += ` ${successCount} items were also removed.`;
+      }
+      if (failedItems > 0) {
+        statusMessage += ` Note: ${failedItems} items could not be deleted.`;
+      }
+      
+      // Refresh recent items to avoid showing deleted items
+      await this.refreshRecentItems();
+      
+      // Update total items count after deletion
+      let newCount = this.state.totalItems - successCount;
+      if (newCount < 0) newCount = 0;
+      
+      this.setState({
+        wardrobes: updatedWardrobes,
+        totalItems: newCount,
+        showDeleteWardrobeConfirm: false,
+        wardrobeToDelete: null,
+        error: '',
+        successMessage: statusMessage
+      });
+      
+      // Clear success message after 5 seconds
+      setTimeout(() => {
+        this.setState(prevState => {
+          // Only clear if the message hasn't changed
+          if (prevState.successMessage === statusMessage) {
+            return { successMessage: '' };
+          }
+          return null;
+        });
+      }, 5000);
+      
+    } catch (error) {
+      this.setState({
+        error: `Failed to delete wardrobe: ${error.message}`,
+        showDeleteWardrobeConfirm: false,
+        wardrobeToDelete: null
+      });
+    } finally {
+      this.setState({ loading: false, isDeletingWardrobe: false });
+    }
+  };
   
   render() {
     if (this.props.isLoading || !this.props.isAuthenticated) {
       return null;
     }
 
-    const { name, wardrobes, loading, totalItems, recentItems, weather } = this.state;
+    const { 
+      name, wardrobes, loading, totalItems, recentItems, weather, 
+      showDeleteWardrobeConfirm, wardrobeToDelete, isDeletingWardrobe,
+      error, successMessage
+    } = this.state;
 
     return (
       <div className="home-container">
+        {/* Delete Wardrobe Confirmation Modal */}
+        {showDeleteWardrobeConfirm && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3>Delete Wardrobe</h3>
+              <p>Are you sure you want to delete the wardrobe "{wardrobeToDelete?.name}"?</p>
+              <p>This will also delete all items in this wardrobe. This action cannot be undone.</p>
+              <div className="modal-buttons">
+                <button 
+                  onClick={this.handleCancelDeleteWardrobe} 
+                  className="cancel-btn"
+                  disabled={isDeletingWardrobe}
+                >Cancel</button>
+                <button 
+                  onClick={this.handleConfirmDeleteWardrobe} 
+                  className="delete-btn"
+                  disabled={isDeletingWardrobe}
+                >{isDeletingWardrobe ? "Deleting..." : "Delete Wardrobe"}</button>
+              </div>
+            </div>
+          </div>
+        )}
+        
         <div className="header-container">
           <h1>Welcome, {name}</h1>
           <p>Organize your wardrobe and discover new outfit ideas</p>
         </div>
+        
+        {error && <p className="error-message">{error}</p>}
+        {successMessage && <p className="home-success-message">{successMessage}</p>}
       
         <div className="stats-container">
           <div className="stat-card items">
@@ -492,7 +692,11 @@ class Home extends React.Component {
               <div className="wardrobes-scroll">
                 {wardrobes.map((wardrobe, index) => (
                   <div className="wardrobe-card" key={wardrobe.id || `wardrobe-${index}`}>
-                    <button className="delete-button" aria-label="Delete wardrobe">
+                    <button 
+                      className="delete-button" 
+                      onClick={(e) => this.handleDeleteWardrobeClick(wardrobe, e)}
+                      aria-label="Delete wardrobe"
+                    >
                       <Trash2 size={16} />
                     </button>
                     <div className="wardrobe-card-header">
