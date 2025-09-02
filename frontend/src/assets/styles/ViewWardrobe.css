@@ -782,15 +782,16 @@
   text-align: center;
 }
 
-/* Filter controls */
+/* Filter controls - updated to match color scheme */
 .filter-controls {
     display: flex;
     align-items: center;
     margin-bottom: 15px;
     padding: 12px;
-    background-color: #f7f7f7;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background-color: #f0f8ff; /* Light blue background to match other elements */
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(74, 134, 232, 0.15);
+    border: 1px solid #e0ebff;
 }
 
 .filter-selector {
@@ -801,33 +802,42 @@
 
 .filter-selector select {
     padding: 8px 12px;
-    border-radius: 4px;
-    border: 1px solid #ddd;
+    border-radius: 6px;
+    border: 1px solid #a4c2f4; /* Match blue border color */
     background-color: white;
     font-size: 14px;
     min-width: 150px;
+    color: #4a86e8; /* Match blue text color */
+    transition: border-color 0.2s;
+}
+
+.filter-selector select:focus {
+    border-color: #4a86e8;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(74, 134, 232, 0.2);
 }
 
 .dismiss-filter-btn {
-    background-color: #f44336;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 8px 12px;
+    background-color: #fff1f0; /* Much lighter red background */
+    color: #cf1322; /* Less intense red text */
+    border: 1px solid #ffccc7; /* Lighter border */
+    border-radius: 5px;
+    padding: 8px 16px;
     font-size: 14px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
 }
 
 .dismiss-filter-btn:hover {
-    background-color: #d32f2f;
+    background-color: #ffa39e; /* Light red on hover */
+    color: #a8071a; /* Slightly darker red on hover */
 }
 
 .apply-filter-btn {
-    background-color: #4CAF50;
+    background-color: #4a86e8; /* Primary blue */
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     padding: 8px 12px;
     font-size: 14px;
     cursor: pointer;
@@ -835,7 +845,7 @@
 }
 
 .apply-filter-btn:hover {
-    background-color: #388E3C;
+    background-color: #3b78de;
 }
 
 .active-filter-info {
@@ -843,13 +853,19 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
-    padding: 8px 12px;
-    background-color: #e3f2fd;
-    border-radius: 4px;
-    border-left: 4px solid #2196f3;
+    padding: 10px 15px;
+    background-color: #ebf3ff; /* Lighter blue background */
+    border-radius: 6px;
+    border-left: 4px solid #4a86e8; /* Primary blue accent */
     font-size: 14px;
+    box-shadow: 0 1px 3px rgba(74, 134, 232, 0.1);
+}
+
+.active-filter-info strong {
+    color: #4a86e8; /* Blue text for emphasis */
 }
 
 .filter-count {
     font-weight: 500;
+    color: #5b9bd5;
 }
