@@ -904,9 +904,9 @@ class ViewWardrobe extends React.Component {
                             {this.state.filterActive && (
                                 <div className="active-filter-info">
                                     <span>
-                                        Filtering by:
+                                        Filtering by: <strong>{this.state.filterType}</strong>
                                         {this.state.filterType !== 'description' && (
-                                            <> <strong>{this.state.filterValue}</strong></>
+                                            <> - <strong>{this.state.filterValue}</strong></>
                                         )}
                                     </span>
                                     <span className="filter-count">
