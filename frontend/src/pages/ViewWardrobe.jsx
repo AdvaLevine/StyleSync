@@ -29,6 +29,11 @@ class ViewWardrobe extends React.Component {
             isDeleting: false, // Track if delete operation is in progress
             selectedItems: [], // Track selected items for bulk delete
             showBulkDeleteConfirm: false, // For bulk delete confirmation
+            // Filter related state
+            filterActive: false,
+            filterType: '', // 'color', 'style', 'itemType', 'description', 'weather'
+            filterValue: '', // The selected filter value
+            filteredItems: [], // Will hold the filtered items
         };
         
         this.navigate = props.navigate;
@@ -227,12 +232,15 @@ class ViewWardrobe extends React.Component {
     // Handle select all items
     handleSelectAll = () => {
         this.setState(prevState => {
-            // If all items are already selected, deselect all
-            if (prevState.selectedItems.length === prevState.items.length) {
+            // Get the current items list (either filtered or all items)
+            const currentItems = prevState.filterActive ? prevState.filteredItems : prevState.items;
+            
+            // If all current items are already selected, deselect all
+            if (prevState.selectedItems.length === currentItems.length) {
                 return { selectedItems: [] };
             }
-            // Otherwise select all items
-            return { selectedItems: [...prevState.items] };
+            // Otherwise select all current items
+            return { selectedItems: [...currentItems] };
         });
     };
     
@@ -528,6 +536,175 @@ class ViewWardrobe extends React.Component {
         }
     };
     
+    // Handle filter type change
+    handleFilterTypeChange = (e) => {
+        const filterType = e.target.value;
+        
+        this.setState({ 
+            filterType,
+            filterValue: '',
+            filterActive: false,
+            filteredItems: []
+        });
+    };
+
+    // Handle filter value selection
+    handleFilterValueChange = (e) => {
+        const filterValue = e.target.value;
+        
+        // Apply the filter immediately when a value is selected
+        if (filterValue) {
+            this.applyFilter(this.state.filterType, filterValue);
+        } else {
+            this.setState({ 
+                filterValue: '',
+                filterActive: false,
+                filteredItems: []
+            });
+        }
+    };
+
+    // Apply the selected filter
+    applyFilter = (filterType, filterValue) => {
+        const { items } = this.state;
+        let filteredItems = [];
+        
+        switch(filterType) {
+            case 'color':
+                filteredItems = items.filter(item => 
+                    Array.isArray(item.color) && 
+                    item.color.some(color => 
+                        color.toLowerCase() === filterValue.toLowerCase())
+                );
+                break;
+                
+            case 'style':
+                filteredItems = items.filter(item => 
+                    Array.isArray(item.style) && 
+                    item.style.some(style => 
+                        style.toLowerCase() === filterValue.toLowerCase())
+                );
+                break;
+                
+            case 'itemType':
+                filteredItems = items.filter(item => 
+                    item.itemType && 
+                    item.itemType.toLowerCase() === filterValue.toLowerCase()
+                );
+                break;
+                
+            case 'description':
+                // Special case: for description we just check if it exists and is not empty
+                filteredItems = items.filter(item => 
+                    item.item_description && item.item_description.trim() !== ''
+                );
+                break;
+                
+            case 'weather':
+                filteredItems = items.filter(item => 
+                    Array.isArray(item.weather) && 
+                    item.weather.some(weather => 
+                        weather.toLowerCase() === filterValue.toLowerCase())
+                );
+                break;
+                
+            default:
+                filteredItems = [...items];
+        }
+        
+        this.setState({ 
+            filterValue,
+            filterActive: true,
+            filteredItems,
+            // Reset selection when applying filter
+            selectedItems: []
+        });
+    };
+
+    // Handle dismissing the filter
+    handleDismissFilter = () => {
+        this.setState({ 
+            filterType: '',
+            filterValue: '',
+            filterActive: false,
+            filteredItems: [],
+            // Reset selection when dismissing filter
+            selectedItems: []
+        });
+    };
+
+    // Render the appropriate filter value selector based on the selected filter type
+    renderFilterValueSelector = () => {
+        const { filterType, items } = this.state;
+        
+        if (!filterType) return null;
+        
+        if (filterType === 'description') {
+            // Special case: description filter is just a yes/no toggle
+            return (
+                <button
+                    onClick={() => this.applyFilter('description', 'hasDescription')}
+                    className="apply-filter-btn"
+                >
+                    Show Items With Description
+                </button>
+            );
+        }
+        
+        // For other filter types, extract all possible values from items
+        let options = [];
+        
+        switch(filterType) {
+            case 'color':
+                // Collect all unique colors from all items
+                options = [...new Set(
+                    items.flatMap(item => 
+                        Array.isArray(item.color) ? item.color : [])
+                )].sort();
+                break;
+                
+            case 'style':
+                // Collect all unique styles from all items
+                options = [...new Set(
+                    items.flatMap(item => 
+                        Array.isArray(item.style) ? item.style : [])
+                )].sort();
+                break;
+                
+            case 'itemType':
+                // Collect all unique item types
+                options = [...new Set(
+                    items.map(item => item.itemType).filter(Boolean)
+                )].sort();
+                break;
+                
+            case 'weather':
+                // Collect all unique weather types
+                options = [...new Set(
+                    items.flatMap(item => 
+                        Array.isArray(item.weather) ? item.weather : [])
+                )].sort();
+                break;
+                
+            default:
+                break;
+        }
+        
+        return (
+            <select 
+                value={this.state.filterValue} 
+                onChange={this.handleFilterValueChange}
+            >
+                <option value="">Select {filterType}...</option>
+                {options.map(option => (
+                    <option key={option} value={option}>
+                        {option}
+                    </option>
+                ))}
+            </select>
+        );
+    };
+    
     render() {
         const { isLoading, isAuthenticated } = this.props;
         
@@ -693,10 +870,55 @@ class ViewWardrobe extends React.Component {
                                 </button>
                             </div>
                             
+                            {/* Filter controls */}
+                            <div className="filter-controls">
+                                <div className="filter-selector">
+                                    <select 
+                                        value={this.state.filterType} 
+                                        onChange={this.handleFilterTypeChange}
+                                        disabled={loading}
+                                    >
+                                        <option value="">Filter By...</option>
+                                        <option value="color">Color</option>
+                                        <option value="style">Style</option>
+                                        <option value="itemType">Item Type</option>
+                                        <option value="description">Has Description</option>
+                                        <option value="weather">Weather</option>
+                                    </select>
+                                    
+                                    {/* Render the appropriate filter value selector based on filterType */}
+                                    {this.renderFilterValueSelector()}
+                                </div>
+                                
+                                {this.state.filterActive && (
+                                    <button 
+                                        className="dismiss-filter-btn"
+                                        onClick={this.handleDismissFilter}
+                                    >
+                                        Dismiss Filter
+                                    </button>
+                                )}
+                            </div>
+                            
+                            {/* Active filter info */}
+                            {this.state.filterActive && (
+                                <div className="active-filter-info">
+                                    <span>
+                                        Filtering by: <strong>{this.state.filterType}</strong>
+                                        {this.state.filterType !== 'description' && (
+                                            <> : <strong>{this.state.filterValue}</strong></>
+                                        )}
+                                    </span>
+                                    <span className="filter-count">
+                                        {this.state.filteredItems.length} items match this filter
+                                    </span>
+                                </div>
+                            )}
+                            
                             <div className={`items-container ${viewMode}`}>
                                 {viewMode === 'images' ? (
                                     // Image view mode
-                                    items.map(item => {
+                                    (this.state.filterActive ? this.state.filteredItems : items).map(item => {
                                         const isSelected = selectedItems.some(selectedItem => selectedItem.id === item.id);
                                         
                                         return (
@@ -751,7 +973,7 @@ class ViewWardrobe extends React.Component {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {items.map(item => {
+                                            {(this.state.filterActive ? this.state.filteredItems : items).map(item => {
                                                 const isSelected = selectedItems.some(selectedItem => selectedItem.id === item.id);
                                                 
                                                 return (

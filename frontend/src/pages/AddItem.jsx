@@ -162,11 +162,9 @@ class AddItem extends React.Component {
     // Get a presigned URL from Lambda
     getPresignedUrl = async (file) => {
         try {
-            // יצירת שם קובץ ייחודי
             const timestamp = new Date().getTime();
             const fileName = `${timestamp}-${file.name}`;
             
-            // ננסה שיטת GET עם פרמטרים ב-URL
             const url = `https://j9z90t8zqh.execute-api.us-east-1.amazonaws.com/dev/presigned-url?fileName=${encodeURIComponent(fileName)}&fileType=${encodeURIComponent(file.type)}`;
             
             const response = await fetch(url, {
@@ -180,7 +178,6 @@ class AddItem extends React.Component {
                 throw new Error(`Failed to get presigned URL: ${response.statusText}`);
             }
             
-            // הדפסה של התגובה המלאה
             const responseText = await response.text();
             
             let data;
@@ -190,7 +187,6 @@ class AddItem extends React.Component {
                 throw new Error("Invalid response format from server");
             }
             
-            // בדוק אם התגובה היא מבנה עם body פנימי
             if (typeof data.body === 'string') {
                 try {
                     const parsedBody = JSON.parse(data.body);
@@ -206,7 +202,6 @@ class AddItem extends React.Component {
                 }
             }
             
-            // נסה למצוא את ה-URL בכל מיני מקומות אפשריים
             if (data.uploadURL) {
                 return {
                     uploadURL: data.uploadURL,
