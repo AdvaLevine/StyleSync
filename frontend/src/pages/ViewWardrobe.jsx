@@ -608,6 +608,14 @@ class ViewWardrobe extends React.Component {
                 );
                 break;
                 
+            case 'shelf':
+                // Filter items by matching shelf number
+                filteredItems = items.filter(item => 
+                    item.shelf && 
+                    item.shelf.toString() === filterValue.toString()
+                );
+                break;
+                
             default:
                 filteredItems = [...items];
         }
@@ -684,6 +692,13 @@ class ViewWardrobe extends React.Component {
                     items.flatMap(item => 
                         Array.isArray(item.weather) ? item.weather : [])
                 )].sort();
+                break;
+                
+            case 'shelf':
+                // Collect all unique shelf numbers
+                options = [...new Set(
+                    items.map(item => item.shelf).filter(Boolean)
+                )].sort((a, b) => a - b); // Numeric sort for shelf numbers
                 break;
                 
             default:
@@ -884,6 +899,7 @@ class ViewWardrobe extends React.Component {
                                         <option value="itemType">Item Type</option>
                                         <option value="description">Has Description</option>
                                         <option value="weather">Weather</option>
+                                        <option value="shelf">Shelf</option>
                                     </select>
                                     
                                     {/* Render the appropriate filter value selector based on filterType */}
