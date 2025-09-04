@@ -29,6 +29,20 @@ class ViewWardrobe extends React.Component {
             isDeleting: false, // Track if delete operation is in progress
             selectedItems: [], // Track selected items for bulk delete
             showBulkDeleteConfirm: false, // For bulk delete confirmation
+            
+            // Updated filter related state
+            filterActive: false,
+            filters: {
+                color: [],
+                style: [],
+                itemType: [],
+                description: false,
+                weather: [],
+                shelf: []
+            },
+            filteredItems: [],
+            // Track which filter category is currently expanded
+            expandedFilter: null, 
         };
         
         this.navigate = props.navigate;
@@ -227,12 +241,15 @@ class ViewWardrobe extends React.Component {
     // Handle select all items
     handleSelectAll = () => {
         this.setState(prevState => {
-            // If all items are already selected, deselect all
-            if (prevState.selectedItems.length === prevState.items.length) {
+            // Get the current items list (either filtered or all items)
+            const currentItems = prevState.filterActive ? prevState.filteredItems : prevState.items;
+            
+            // If all current items are already selected, deselect all
+            if (prevState.selectedItems.length === currentItems.length) {
                 return { selectedItems: [] };
             }
-            // Otherwise select all items
-            return { selectedItems: [...prevState.items] };
+            // Otherwise select all current items
+            return { selectedItems: [...currentItems] };
         });
     };
     
@@ -528,6 +545,344 @@ class ViewWardrobe extends React.Component {
         }
     };
     
+    // Toggle filter category expansion
+    toggleFilterExpansion = (filterType) => {
+        this.setState(prevState => ({
+            expandedFilter: prevState.expandedFilter === filterType ? null : filterType
+        }));
+    };
+
+    // Handle filter selection/deselection
+    handleFilterChange = (type, value) => {
+        this.setState(prevState => {
+            const updatedFilters = { ...prevState.filters };
+            
+            // Special case for description which is a boolean
+            if (type === 'description') {
+                updatedFilters.description = !updatedFilters.description;
+            } else {
+                // For array-based filters: add if not present, remove if present
+                if (updatedFilters[type].includes(value)) {
+                    updatedFilters[type] = updatedFilters[type].filter(item => item !== value);
+                } else {
+                    updatedFilters[type] = [...updatedFilters[type], value];
+                }
+            }
+            
+            // Check if we have any active filters
+            const hasActiveFilters = Object.values(updatedFilters).some(filter => 
+                Array.isArray(filter) ? filter.length > 0 : filter
+            );
+            
+            // Apply all active filters to get the filtered items
+            let filteredItems = this.state.items;
+            if (hasActiveFilters) {
+                filteredItems = this.applyAllFilters(updatedFilters);
+            }
+            
+            return {
+                filters: updatedFilters,
+                filterActive: hasActiveFilters,
+                filteredItems: hasActiveFilters ? filteredItems : [],
+                // Reset selection when changing filters
+                selectedItems: []
+            };
+        });
+    };
+
+    // Apply all active filters to the items
+    applyAllFilters = (filters) => {
+        let filteredItems = [...this.state.items];
+        
+        // Apply color filter
+        if (filters.color.length > 0) {
+            filteredItems = filteredItems.filter(item => 
+                Array.isArray(item.color) && 
+                item.color.some(color => 
+                    filters.color.some(filterColor => 
+                        color.toLowerCase() === filterColor.toLowerCase()
+                    )
+                )
+            );
+        }
+        
+        // Apply style filter
+        if (filters.style.length > 0) {
+            filteredItems = filteredItems.filter(item => 
+                Array.isArray(item.style) && 
+                item.style.some(style => 
+                    filters.style.some(filterStyle => 
+                        style.toLowerCase() === filterStyle.toLowerCase()
+                    )
+                )
+            );
+        }
+        
+        // Apply item type filter
+        if (filters.itemType.length > 0) {
+            filteredItems = filteredItems.filter(item => 
+                item.itemType && 
+                filters.itemType.some(filterType => 
+                    item.itemType.toLowerCase() === filterType.toLowerCase()
+                )
+            );
+        }
+        
+        // Apply description filter
+        if (filters.description) {
+            filteredItems = filteredItems.filter(item => 
+                item.item_description && item.item_description.trim() !== ''
+            );
+        }
+        
+        // Apply weather filter
+        if (filters.weather.length > 0) {
+            filteredItems = filteredItems.filter(item => 
+                Array.isArray(item.weather) && 
+                item.weather.some(weather => 
+                    filters.weather.some(filterWeather => 
+                        weather.toLowerCase() === filterWeather.toLowerCase()
+                    )
+                )
+            );
+        }
+        
+        // Apply shelf filter
+        if (filters.shelf.length > 0) {
+            filteredItems = filteredItems.filter(item => 
+                item.shelf && 
+                filters.shelf.some(filterShelf => 
+                    item.shelf.toString() === filterShelf.toString()
+                )
+            );
+        }
+        
+        return filteredItems;
+    };
+
+    // Clear all filters
+    handleClearFilters = () => {
+        this.setState({
+            filterActive: false,
+            filters: {
+                color: [],
+                style: [],
+                itemType: [],
+                description: false,
+                weather: [],
+                shelf: []
+            },
+            filteredItems: [],
+            expandedFilter: null,
+            selectedItems: []
+        });
+    };
+
+    // Get all available filter options from items
+    getFilterOptions = () => {
+        const { items } = this.state;
+        
+        // Extract all unique values for each filter type
+        const options = {
+            color: [...new Set(
+                items.flatMap(item => 
+                    Array.isArray(item.color) ? item.color : [])
+            )].sort(),
+            
+            style: [...new Set(
+                items.flatMap(item => 
+                    Array.isArray(item.style) ? item.style : [])
+            )].sort(),
+            
+            itemType: [...new Set(
+                items.map(item => item.itemType).filter(Boolean)
+            )].sort(),
+            
+            weather: [...new Set(
+                items.flatMap(item => 
+                    Array.isArray(item.weather) ? item.weather : [])
+            )].sort(),
+            
+            shelf: [...new Set(
+                items.map(item => item.shelf).filter(Boolean)
+            )].sort((a, b) => a - b) // Numeric sort for shelf numbers
+        };
+        
+        return options;
+    };
+
+    // Render the scrollable filters UI
+    renderScrollableFilters = () => {
+        const { loading, expandedFilter, filters } = this.state;
+        const filterOptions = this.getFilterOptions();
+        
+        const filterCategories = [
+            { key: 'color', icon: '🎨', label: 'Color' },
+            { key: 'style', icon: '👗', label: 'Style' },
+            { key: 'itemType', icon: '👕', label: 'Type' },
+            { key: 'weather', icon: '☔', label: 'Weather' },
+            { key: 'shelf', icon: '📚', label: 'Shelf' },
+            { key: 'description', icon: '📝', label: 'Description' }
+        ];
+        
+        // Count active filters for badge display
+        const getActiveCount = (type) => {
+            if (type === 'description') {
+                return filters.description ? 1 : 0;
+            }
+            return filters[type].length;
+        };
+        
+        // Calculate total active filters
+        const totalActiveFilters = Object.entries(filters).reduce((count, [key, value]) => {
+            if (key === 'description') {
+                return count + (value ? 1 : 0);
+            }
+            return count + (Array.isArray(value) ? value.length : 0);
+        }, 0);
+        
+        return (
+            <div className="filter-section">
+                <div className="filter-header">
+                    <h3>Filter Items</h3>
+                    {this.state.filterActive && (
+                        <button 
+                            className="clear-filters-btn"
+                            onClick={this.handleClearFilters}
+                        >
+                            Clear All ({totalActiveFilters})
+                        </button>
+                    )}
+                </div>
+                
+                <div className="filter-categories-scroll">
+                    <div className="filter-categories">
+                        {filterCategories.map(category => (
+                            <div 
+                                key={category.key}
+                                className={`filter-category ${expandedFilter === category.key ? 'expanded' : ''} ${getActiveCount(category.key) > 0 ? 'active' : ''}`}
+                                onClick={() => this.toggleFilterExpansion(category.key)}
+                            >
+                                <div className="filter-category-header">
+                                    <span className="filter-icon">{category.icon}</span>
+                                    <span className="filter-label">{category.label}</span>
+                                    {getActiveCount(category.key) > 0 && (
+                                        <span className="filter-badge">{getActiveCount(category.key)}</span>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                
+                {/* Expanded filter options */}
+                {expandedFilter && (
+                    <div className="filter-options-container">
+                        <div className="filter-options-header">
+                            <h4>
+                                {filterCategories.find(c => c.key === expandedFilter)?.label} Options
+                            </h4>
+                            <button 
+                                className="close-filter-btn"
+                                onClick={() => this.toggleFilterExpansion(null)}
+                            >
+                                ×
+                            </button>
+                        </div>
+                        
+                        <div className="filter-options-scroll">
+                            {expandedFilter === 'description' ? (
+                                <div className="description-filter-option">
+                                    <label className="filter-option">
+                                        <input 
+                                            type="checkbox"
+                                            checked={filters.description}
+                                            onChange={() => this.handleFilterChange('description')}
+                                            disabled={loading}
+                                        />
+                                        Has Description
+                                    </label>
+                                </div>
+                            ) : (
+                                <div className="filter-options">
+                                    {filterOptions[expandedFilter]?.map(option => (
+                                        <label key={option} className="filter-option">
+                                            <input 
+                                                type="checkbox"
+                                                checked={filters[expandedFilter].includes(option)}
+                                                onChange={() => this.handleFilterChange(expandedFilter, option)}
+                                                disabled={loading}
+                                            />
+                                            {option}
+                                        </label>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+                
+                {/* Active filter summary */}
+                {this.renderActiveFiltersSummary()}
+            </div>
+        );
+    };
+
+    // Render a summary of active filters
+    renderActiveFiltersSummary = () => {
+        const { filterActive, filters, filteredItems, items } = this.state;
+        
+        if (!filterActive) return null;
+        
+        // Create summary of active filters with specific values
+        const activeSummaries = [];
+        
+        if (filters.color.length > 0) {
+            activeSummaries.push(`Colors: ${filters.color.join(', ')}`);
+        }
+        
+        if (filters.style.length > 0) {
+            activeSummaries.push(`Styles: ${filters.style.join(', ')}`);
+        }
+        
+        if (filters.itemType.length > 0) {
+            activeSummaries.push(`Types: ${filters.itemType.join(', ')}`);
+        }
+        
+        if (filters.weather.length > 0) {
+            activeSummaries.push(`Weather: ${filters.weather.join(', ')}`);
+        }
+        
+        if (filters.shelf.length > 0) {
+            activeSummaries.push(`Shelves: ${filters.shelf.join(', ')}`);
+        }
+        
+        if (filters.description) {
+            activeSummaries.push('Has Description');
+        }
+        
+        return (
+            <div className="active-filters-summary">
+                <div className="active-filters-header">
+                    <span className="filter-icon">🔍</span>
+                    Filtered by:
+                </div>
+                
+                <div className="active-filters-list">
+                    {activeSummaries.map((summary, index) => (
+                        <div key={index} className="filter-summary-item">
+                            {summary}
+                        </div>
+                    ))}
+                </div>
+                
+                <div className="filter-results-count">
+                    Showing {filteredItems.length} of {items.length} items
+                </div>
+            </div>
+        );
+    };
+    
     render() {
         const { isLoading, isAuthenticated } = this.props;
         
@@ -655,16 +1010,8 @@ class ViewWardrobe extends React.Component {
                         </div>
                     </div>
                     
-                    {/* View and Delete Wardrobe buttons */}
+                    {/* View button */}
                     <div className="view-actions">
-                        {selectedWardrobe && displayItems && (
-                            <button 
-                                className="delete-wardrobe-btn" 
-                                onClick={this.handleDeleteWardrobeClick}
-                            >
-                                Delete Wardrobe
-                            </button>
-                        )}
                         <button className="view-button small-right" onClick={this.handleViewClick}>View</button>
                     </div>
                     
@@ -701,98 +1048,73 @@ class ViewWardrobe extends React.Component {
                                 </button>
                             </div>
                             
+                            {/* New scrollable filter UI */}
+                            {this.renderScrollableFilters()}
+                            
                             <div className={`items-container ${viewMode}`}>
-                                {viewMode === 'images' ? (
-                                    // Image view mode
-                                    items.map(item => {
-                                        const isSelected = selectedItems.some(selectedItem => selectedItem.id === item.id);
-                                        
-                                        return (
-                                            <div key={item.id} className={`item-card ${isSelected ? 'selected' : ''}`}>
-                                                {/* Selection checkbox */}
-                                                <div className="item-select">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={isSelected}
-                                                        onChange={() => this.handleItemSelection(item)}
-                                                        className="item-checkbox"
-                                                    />
-                                                </div>
-                                                
-                                                {/* Delete button */}
-                                                <button 
-                                                    className="delete-button" 
-                                                    onClick={() => this.handleDeleteClick(item)} 
-                                                    aria-label="Delete item"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-                                                <div className="item-image">
-                                                    {item.photoUrl ? (
-                                                        <img src={item.photoUrl} alt={item.itemType} />
-                                                    ) : (
-                                                        <div className="placeholder-image">
-                                                            <i className="image-icon">🖼️</i>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div className="item-details">
-                                                    <p>{item.itemType}</p>
-                                                    <p>Door: {item.door}, Shelf: {item.shelf}</p>
-                                                </div>
+                                {(this.state.filterActive ? this.state.filteredItems : items).map(item => {
+                                    const isSelected = selectedItems.some(selectedItem => selectedItem.id === item.id);
+                                    
+                                    return (
+                                        <div key={item.id} className={`item-card ${isSelected ? 'selected' : ''}`}>
+                                            {/* Selection checkbox */}
+                                            <div className="item-select">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isSelected}
+                                                    onChange={() => this.handleItemSelection(item)}
+                                                    className="item-checkbox"
+                                                />
                                             </div>
-                                        );
-                                    })
-                                ) : (
-                                    // List view mode
-                                    <table className="items-table">
-                                        <thead>
-                                            <tr>
-                                                <th className="select-column">Select</th>
-                                                <th>Type</th>
-                                                <th>Color</th>
-                                                <th>Weather</th>
-                                                <th>Style</th>
-                                                <th>Location</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {items.map(item => {
-                                                const isSelected = selectedItems.some(selectedItem => selectedItem.id === item.id);
-                                                
-                                                return (
-                                                    <tr key={item.id} className={isSelected ? 'selected' : ''}>
-                                                        <td className="select-column">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={isSelected}
-                                                                onChange={() => this.handleItemSelection(item)}
-                                                                className="item-checkbox"
-                                                            />
-                                                        </td>
-                                                        <td>{item.itemType}</td>
-                                                        <td>{Array.isArray(item.color) ? item.color.join(', ') : 'N/A'}</td>
-                                                        <td>{Array.isArray(item.weather) ? item.weather.join(', ') : 'N/A'}</td>
-                                                        <td>{Array.isArray(item.style) ? item.style.join(', ') : 'N/A'}</td>
-                                                        <td>Door: {item.door}, Shelf: {item.shelf}</td>
-                                                        <td>
-                                                            <button 
-                                                                className="delete-button-list" 
-                                                                onClick={() => this.handleDeleteClick(item)}
-                                                                aria-label="Delete item"
-                                                            >
-                                                                <Trash2 size={16} />
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })}
-                                        </tbody>
-                                    </table>
-                                )}
+                                            
+                                            {/* Delete button */}
+                                            <button 
+                                                className="delete-button" 
+                                                onClick={() => this.handleDeleteClick(item)} 
+                                                aria-label="Delete item"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                            <div className="item-image">
+                                                {item.photoUrl ? (
+                                                    <img src={item.photoUrl} alt={item.itemType} />
+                                                ) : (
+                                                    <div className="placeholder-image">
+                                                        <i className="image-icon">🖼️</i>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="item-details">
+                                                <p>{item.itemType}</p>
+                                                <p>Door: {item.door}, Shelf: {item.shelf}</p>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            
+                            {/* Delete Wardrobe button in a new section */}
+                            <div className="wardrobe-management-actions">
+                                <button 
+                                    className="delete-wardrobe-btn" 
+                                    onClick={this.handleDeleteWardrobeClick}
+                                >
+                                    Delete Wardrobe
+                                </button>
                             </div>
                         </>
+                    )}
+                    
+                    {/* Add Delete Wardrobe button when there are no items but wardrobe is selected */}
+                    {!loading && !error && displayItems && items.length === 0 && selectedWardrobe && (
+                        <div className="wardrobe-management-actions">
+                            <button 
+                                className="delete-wardrobe-btn" 
+                                onClick={this.handleDeleteWardrobeClick}
+                            >
+                                Delete Wardrobe
+                            </button>
+                        </div>
                     )}
                 </div>
             </div>

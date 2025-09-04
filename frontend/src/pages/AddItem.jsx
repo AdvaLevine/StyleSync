@@ -13,6 +13,10 @@ class AddItem extends React.Component {
     constructor(props) {
         super(props);
         
+        // Add these two refs
+        this.fileInputRef = React.createRef();
+        this.cameraInputRef = React.createRef();
+        
         this.state = {
             wardrobes: [],
             selectedWardrobe: null, 
@@ -32,6 +36,7 @@ class AddItem extends React.Component {
                 shelf: "",
                 photo: null,
                 photoUrl: "", // Will store the S3 URL of the uploaded photo
+                item_description: "", // Optional description for the item
             },
             step: 1,
         };
@@ -157,11 +162,9 @@ class AddItem extends React.Component {
     // Get a presigned URL from Lambda
     getPresignedUrl = async (file) => {
         try {
-            // יצירת שם קובץ ייחודי
             const timestamp = new Date().getTime();
             const fileName = `${timestamp}-${file.name}`;
             
-            // ננסה שיטת GET עם פרמטרים ב-URL
             const url = `https://j9z90t8zqh.execute-api.us-east-1.amazonaws.com/dev/presigned-url?fileName=${encodeURIComponent(fileName)}&fileType=${encodeURIComponent(file.type)}`;
             
             const response = await fetch(url, {
@@ -175,7 +178,6 @@ class AddItem extends React.Component {
                 throw new Error(`Failed to get presigned URL: ${response.statusText}`);
             }
             
-            // הדפסה של התגובה המלאה
             const responseText = await response.text();
             
             let data;
@@ -185,7 +187,6 @@ class AddItem extends React.Component {
                 throw new Error("Invalid response format from server");
             }
             
-            // בדוק אם התגובה היא מבנה עם body פנימי
             if (typeof data.body === 'string') {
                 try {
                     const parsedBody = JSON.parse(data.body);
@@ -201,7 +202,6 @@ class AddItem extends React.Component {
                 }
             }
             
-            // נסה למצוא את ה-URL בכל מיני מקומות אפשריים
             if (data.uploadURL) {
                 return {
                     uploadURL: data.uploadURL,
@@ -338,6 +338,11 @@ class AddItem extends React.Component {
                 shelf: this.state.fromDate.shelf,
                 photoUrl: uploadResult.url
             };
+            
+            // Add item_description to payload only if it's not empty
+            if (this.state.fromDate.item_description && this.state.fromDate.item_description.trim() !== "") {
+                payload.item_description = this.state.fromDate.item_description.trim();
+            }
 
             const res = await fetch("https://ul2bdgg3g9.execute-api.us-east-1.amazonaws.com/dev/item", {
                 method: "POST",
@@ -369,6 +374,11 @@ class AddItem extends React.Component {
                 photoUrl: uploadResult.url,
                 createdAt: new Date().toISOString()
             };
+            
+            // Add item_description to cache object if it's not empty
+            if (this.state.fromDate.item_description && this.state.fromDate.item_description.trim() !== "") {
+                newItem.item_description = this.state.fromDate.item_description.trim();
+            }
             
             // Add the new item directly to the cache
             // This will also update the total count and mark it as current
@@ -521,12 +531,91 @@ class AddItem extends React.Component {
                                             initialSelectedOptions={this.state.fromDate.style}
                                         />
 
-                                        <label>Upload Photo</label>
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            name="photo"
+                                        <div className="photo-upload-section">
+                                            <label>Upload or Capture Photo</label>
+                                            <div className="photo-upload-options">
+                                                <div className="upload-option">
+                                                    <label htmlFor="file-upload" className="custom-file-upload">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: "10px", verticalAlign: "text-top", position: "relative", top: "1px"}}>
+                                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                                            <polyline points="21 15 16 10 5 21"></polyline>
+                                                        </svg>
+                                                        Choose File
+                                                    </label>
+                                                    <input
+                                                        id="file-upload"
+                                                        type="file"
+                                                        accept="image/*"
+                                                        name="photo"
+                                                        onChange={this.handleInputChange}
+                                                        style={{display: 'none'}}
+                                                        ref={this.fileInputRef} // Add this ref
+                                                    />
+                                                </div>
+                                                <div className="upload-option">
+                                                    <label htmlFor="camera-capture" className="custom-file-upload">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: "10px", verticalAlign: "text-top", position: "relative", top: "1px"}}>
+                                                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                                            <circle cx="12" cy="13" r="4"></circle>
+                                                        </svg>
+                                                        Use Camera
+                                                    </label>
+                                                    <input
+                                                        id="camera-capture"
+                                                        type="file"
+                                                        accept="image/*"
+                                                        name="photo"
+                                                        onChange={this.handleInputChange}
+                                                        capture="environment"
+                                                        style={{display: 'none'}}
+                                                        ref={this.cameraInputRef} // Add this ref
+                                                    />
+                                                </div>
+                                            </div>
+                                            
+                                            {this.state.fromDate.photo && (
+                                                <div className="photo-preview">
+                                                    <img 
+                                                        src={URL.createObjectURL(this.state.fromDate.photo)} 
+                                                        alt="Preview" 
+                                                        style={{maxWidth: '100%', maxHeight: '200px', marginTop: '10px'}}
+                                                    />
+                                                    <button 
+                                                        type="button"
+                                                        className="remove-photo-btn"
+                                                        onClick={() => {
+                                                            // Reset the file input refs
+                                                            if (this.fileInputRef.current) {
+                                                                this.fileInputRef.current.value = '';
+                                                            }
+                                                            if (this.cameraInputRef.current) {
+                                                                this.cameraInputRef.current.value = '';
+                                                            }
+                                                            
+                                                            this.setState({
+                                                                fromDate: {
+                                                                    ...this.state.fromDate,
+                                                                    photo: null
+                                                                }
+                                                            });
+                                                        }}
+                                                    >
+                                                        Remove Photo
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                        
+                                        <label>Description (optional)</label>
+                                        <textarea
+                                            name="item_description"
+                                            placeholder="Enter a description for this item (optional)"
+                                            value={this.state.fromDate.item_description || ""}
                                             onChange={this.handleInputChange}
+                                            className="description-textarea"
+                                            rows={3}
+                                            style={{ resize: "vertical", width: "100%", marginBottom: "1em" }}
                                         />
                                         
                                         {this.state.isUploading && (

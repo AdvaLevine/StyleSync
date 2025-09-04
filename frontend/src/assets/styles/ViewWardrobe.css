@@ -293,7 +293,38 @@
     font-style: italic;
 }
 
-.items-table td:nth-child(5) { /* Location */
+.items-table td:nth-child(5) { /* Description */
+    color: #5b9bd5;
+    font-style: italic;
+    position: relative;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Add tooltip-like hover effect for description */
+.items-table td:nth-child(5)[data-full-text]:not([data-full-text=""]):hover::after {
+    content: attr(data-full-text);
+    position: absolute;
+    left: 0;
+    top: 100%;
+    z-index: 10;
+    background-color: white;
+    padding: 10px 15px;
+    border-radius: 6px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    width: 250px;
+    white-space: normal;
+    font-size: 0.9rem;
+    color: #333;
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.items-table td:nth-child(6) { /* Location */
     font-weight: 500;
     color: #4a86e8;
 }
@@ -315,6 +346,11 @@
     
     .items-table {
         min-width: 650px;
+    }
+
+    /* Make description column narrower on small screens */
+    .items-table td:nth-child(5) {
+        max-width: 150px;
     }
 }
 
@@ -358,24 +394,35 @@
     align-items: center;
 }
 
+/* Wardrobe Management Actions */
+.wardrobe-management-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 15px;
+}
+
 /* Delete Wardrobe Button */
 .delete-wardrobe-btn {
-  background-color: #ff4d4f;
-  color: white;
+  background-color: #f8d7da;
+  color: #8b0000;
+  border: 1px solid #f5c6cb;
   font-size: 14px;
-  border: none;
-  border-radius: 8px;
+  border-radius: 5px;
   cursor: pointer;
-  padding: 6px 15px;
-  margin-top: 10px;
-  margin-right: 10px;
-  margin-bottom: 5px;
+  padding: 8px 16px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .delete-wardrobe-btn:hover {
-  background: #ff7875;
+  background-color: #f5c6cb;
+  color: #721c24;
 }
 
 /* Modal adjustments for wardrobe deletion */
@@ -386,6 +433,14 @@
 
 /* Responsive design for action buttons */
 @media screen and (max-width: 480px) {
+  .wardrobe-management-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .delete-wardrobe-btn {
+    margin-top: 10px;
+  }
   .view-actions {
     flex-direction: column;
     align-items: flex-end;
@@ -725,4 +780,386 @@
 .select-column {
   width: 50px;
   text-align: center;
+}
+
+/* Filter controls - updated to match color scheme */
+.filter-controls {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 12px;
+    background-color: #f0f8ff; /* Light blue background to match other elements */
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(74, 134, 232, 0.15);
+    border: 1px solid #e0ebff;
+}
+
+.filter-selector {
+    display: flex;
+    gap: 10px;
+    flex-grow: 1;
+}
+
+.filter-selector select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #a4c2f4; /* Match blue border color */
+    background-color: white;
+    font-size: 14px;
+    min-width: 150px;
+    color: #4a86e8; /* Match blue text color */
+    transition: border-color 0.2s;
+}
+
+.filter-selector select:focus {
+    border-color: #4a86e8;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(74, 134, 232, 0.2);
+}
+
+.dismiss-filter-btn {
+    background-color: #fff1f0; /* Much lighter red background */
+    color: #cf1322; /* Less intense red text */
+    border: 1px solid #ffccc7; /* Lighter border */
+    border-radius: 5px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dismiss-filter-btn:hover {
+    background-color: #ffa39e; /* Light red on hover */
+    color: #a8071a; /* Slightly darker red on hover */
+}
+
+.apply-filter-btn {
+    background-color: #4a86e8; /* Primary blue */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.apply-filter-btn:hover {
+    background-color: #3b78de;
+}
+
+.active-filter-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    background-color: #ebf3ff; /* Lighter blue background */
+    border-radius: 6px;
+    border-left: 4px solid #4a86e8; /* Primary blue accent */
+    font-size: 14px;
+    box-shadow: 0 1px 3px rgba(74, 134, 232, 0.1);
+}
+
+.active-filter-info strong {
+    color: #4a86e8; /* Blue text for emphasis */
+}
+
+.filter-count {
+    font-weight: 500;
+    color: #5b9bd5;
+}
+
+/* Add these styles for the horizontal filter scroller */
+
+/* Filter section container */
+.filter-section {
+    margin: 1rem 0;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Filter header with title and clear button */
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.filter-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #4a86e8;
+}
+
+.clear-filters-btn {
+    background-color: #ffebeb;
+    color: #e64545;
+    border: 1px solid #ffc1c1;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.clear-filters-btn:hover {
+    background-color: #ffe0e0;
+    border-color: #ffaaaa;
+}
+
+.clear-filters-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Horizontal scrollable filter categories */
+.filter-categories-scroll {
+    overflow-x: auto;
+    padding: 10px 0;
+    scrollbar-width: thin;
+    scrollbar-color: #a4c2f4 #f0f8ff;
+}
+
+.filter-categories {
+    display: flex;
+    gap: 10px;
+    padding: 0 15px;
+    min-width: max-content;
+}
+
+.filter-category {
+    padding: 8px 15px;
+    background-color: #f5f9ff;
+    border: 1px solid #e0ebff;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+}
+
+.filter-category:hover {
+    background-color: #e0f0ff;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(74, 134, 232, 0.2);
+}
+
+.filter-category.expanded {
+    background-color: #4a86e8;
+    color: white;
+    border-color: #4a86e8;
+}
+
+.filter-category.active {
+    background-color: #ebf3ff;
+    border-color: #a4c2f4;
+}
+
+.filter-category.expanded.active {
+    background-color: #4a86e8;
+    border-color: #4a86e8;
+}
+
+.filter-category-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-icon {
+    font-size: 1.1rem;
+}
+
+.filter-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.filter-badge {
+    background-color: #4a86e8;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    margin-left: 5px;
+}
+
+.filter-category.expanded .filter-badge {
+    background-color: white;
+    color: #4a86e8;
+}
+
+/* Expanded filter options panel */
+.filter-options-container {
+    padding: 15px;
+    background-color: #f9fbff;
+    border-top: 1px solid #e0ebff;
+    animation: slideDown 0.3s ease;
+}
+
+.filter-options-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.filter-options-header h4 {
+    margin: 0;
+    color: #4a86e8;
+    font-size: 1rem;
+}
+
+.close-filter-btn {
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0 5px;
+    line-height: 1;
+}
+
+.close-filter-btn:hover {
+    color: #4a86e8;
+}
+
+.filter-options-scroll {
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.filter-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 5px 0;
+}
+
+.filter-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background-color: white;
+    border: 1px solid #e0ebff;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.filter-option:hover {
+    background-color: #f0f8ff;
+}
+
+.description-filter-option {
+    padding: 5px 0;
+}
+
+/* Active filters summary */
+.active-filters-summary {
+    padding: 12px 15px;
+    background-color: #ebf3ff;
+    border-top: 1px solid #d0e3ff;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.active-filters-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    color: #4a86e8;
+    font-size: 0.95rem;
+}
+
+.active-filters-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.filter-summary-item {
+    background-color: white;
+    border: 1px solid #a4c2f4;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 0.85rem;
+    color: #4a86e8;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(74, 134, 232, 0.1);
+}
+
+.filter-results-count {
+    font-weight: 500;
+    color: #4a86e8;
+    text-align: right;
+    font-size: 0.9rem;
+    margin-top: 5px;
+    padding-top: 8px;
+    border-top: 1px dashed #d0e3ff;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scrollbar styling */
+.filter-categories-scroll::-webkit-scrollbar,
+.filter-options-scroll::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+
+.filter-categories-scroll::-webkit-scrollbar-track,
+.filter-options-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.filter-categories-scroll::-webkit-scrollbar-thumb,
+.filter-options-scroll::-webkit-scrollbar-thumb {
+    background: #a4c2f4;
+    border-radius: 3px;
+}
+
+.filter-categories-scroll::-webkit-scrollbar-thumb:hover,
+.filter-options-scroll::-webkit-scrollbar-thumb:hover {
+    background: #4a86e8;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 600px) {
+    .filter-option {
+        padding: 5px 8px;
+        font-size: 0.85rem;
+    }
+    
+    .filter-options-container {
+        padding: 10px;
+    }
 }
