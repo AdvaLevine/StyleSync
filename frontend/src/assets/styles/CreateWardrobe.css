@@ -72,7 +72,7 @@
 .create-wardrobe-container button {
     width: 100%;
     padding: 12px;
-    background: black;
+    background: #0d6efd;
     color: white;
     font-size: 16px;
     font-weight: bold;
@@ -84,7 +84,7 @@
 }
 
 .create-wardrobe-container button:hover {
-    background: #333;
+    background: #93b0e0;
 }
 
 .create-wardrobe-container button:disabled {

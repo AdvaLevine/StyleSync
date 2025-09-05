@@ -88,7 +88,20 @@
 /* Submit Button */
 .add-item-box button {
   padding: 12px;
-  background: black;
+  background: #0d6efd;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.add-item-box .back-btn {
+    padding: 12px;
+  background: #4d5c74;
   color: white;
   font-size: 16px;
   font-weight: bold;
@@ -101,7 +114,7 @@
 }
 
 .add-item-box button:hover {
-  background: #333;
+  background: #93b0e0;
 }
 
 .add-item-box button:disabled {
@@ -114,7 +127,6 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
-  margin-top: 10px;
 }
 
 .back-btn {
@@ -333,7 +345,6 @@
 
 /* Photo upload and camera capture styles */
 .photo-upload-section {
-  margin-bottom: 1.5em;
   width: 100%;
 }
 

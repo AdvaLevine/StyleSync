@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { getCachedWardrobes } from "../services/wardrobeCache";
 import { getCachedTotalItemsCount } from "../services/itemsCache";
-import { ArrowLeft, Sparkles, Loader2, RefreshCw,Eye,Calendar,Tag,FileText } from "lucide-react";
+import { Sparkles, Loader2, RefreshCw,Eye,Calendar,Tag,FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const categoryIcons = {
@@ -161,9 +161,6 @@ const GenerateCustomOutfit = () => {
     {/* Header */}
     <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
       <div className="d-flex align-items-center">
-        <button className="btn btn-link p-0 me-2" onClick={() => navigate("/home")}>
-          <ArrowLeft size={20} />
-        </button>
         <div>
           <h1 className="h4 fw-bold text-dark">Outfit Recommendations</h1>
           <p className="text-muted mb-0">Get AI-powered outfit suggestions</p>
