@@ -1022,7 +1022,8 @@ class ViewWardrobe extends React.Component {
                         <p className="no-items-message">No items found in this wardrobe.</p>
                     )}
                     
-                    {successMessage && <p className="success-message">{successMessage}</p>}
+                    {successMessage && <p className="success-message">{successMessage}</p>
+                    }
                     
                     {!loading && !error && displayItems && items.length > 0 && (
                         <>
@@ -1052,45 +1053,105 @@ class ViewWardrobe extends React.Component {
                             {this.renderScrollableFilters()}
                             
                             <div className={`items-container ${viewMode}`}>
-                                {(this.state.filterActive ? this.state.filteredItems : items).map(item => {
-                                    const isSelected = selectedItems.some(selectedItem => selectedItem.id === item.id);
-                                    
-                                    return (
-                                        <div key={item.id} className={`item-card ${isSelected ? 'selected' : ''}`}>
-                                            {/* Selection checkbox */}
-                                            <div className="item-select">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={isSelected}
-                                                    onChange={() => this.handleItemSelection(item)}
-                                                    className="item-checkbox"
-                                                />
+                                {viewMode === 'list' ? (
+                                    // List view mode
+                                    <table className="items-table">
+                                        <thead>
+                                            <tr>
+                                                <th className="select-column">Select</th>
+                                                <th>Type</th>
+                                                <th>Color</th>
+                                                <th>Weather</th>
+                                                <th>Style</th>
+                                                <th>Description</th>
+                                                <th>Location</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {(this.state.filterActive ? this.state.filteredItems : items).map(item => {
+                                                const isSelected = selectedItems.some(selectedItem => selectedItem.id === item.id);
+                                                
+                                                return (
+                                                    <tr key={item.id} className={isSelected ? 'selected' : ''}>
+                                                        <td className="select-column">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={isSelected}
+                                                                onChange={() => this.handleItemSelection(item)}
+                                                                className="item-checkbox"
+                                                            />
+                                                        </td>
+                                                        <td>{item.itemType}</td>
+                                                        <td>{Array.isArray(item.color) ? item.color.join(', ') : 'N/A'}</td>
+                                                        <td>{Array.isArray(item.weather) ? item.weather.join(', ') : 'N/A'}</td>
+                                                        <td>{Array.isArray(item.style) ? item.style.join(', ') : 'N/A'}</td>
+                                                        <td className="description-column" 
+                                                            data-full-text={item.item_description || ""}
+                                                            title={item.item_description || "No description available"}>
+                                                            {item.item_description ? 
+                                                                (item.item_description.length > 50 ? 
+                                                                    `${item.item_description.substring(0, 50)}...` : 
+                                                                    item.item_description) : 
+                                                                '-'}
+                                                        </td>
+                                                        <td>Door: {item.door}, Shelf: {item.shelf}</td>
+                                                        <td>
+                                                            <button 
+                                                                className="delete-button-list" 
+                                                                onClick={() => this.handleDeleteClick(item)}
+                                                                aria-label="Delete item"
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                ) : (
+                                    // Image view mode
+                                    (this.state.filterActive ? this.state.filteredItems : items).map(item => {
+                                        const isSelected = selectedItems.some(selectedItem => selectedItem.id === item.id);
+                                        
+                                        return (
+                                            <div key={item.id} className={`item-card ${isSelected ? 'selected' : ''}`}>
+                                                {/* Selection checkbox */}
+                                                <div className="item-select">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isSelected}
+                                                        onChange={() => this.handleItemSelection(item)}
+                                                        className="item-checkbox"
+                                                    />
+                                                </div>
+                                                
+                                                {/* Delete button */}
+                                                <button 
+                                                    className="delete-button" 
+                                                    onClick={() => this.handleDeleteClick(item)} 
+                                                    aria-label="Delete item"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                                <div className="item-image">
+                                                    {item.photoUrl ? (
+                                                        <img src={item.photoUrl} alt={item.itemType} />
+                                                    ) : (
+                                                        <div className="placeholder-image">
+                                                            <i className="image-icon">🖼️</i>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="item-details">
+                                                    <p>{item.itemType}</p>
+                                                    <p>Door: {item.door}, Shelf: {item.shelf}</p>
+                                                </div>
                                             </div>
-                                            
-                                            {/* Delete button */}
-                                            <button 
-                                                className="delete-button" 
-                                                onClick={() => this.handleDeleteClick(item)} 
-                                                aria-label="Delete item"
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
-                                            <div className="item-image">
-                                                {item.photoUrl ? (
-                                                    <img src={item.photoUrl} alt={item.itemType} />
-                                                ) : (
-                                                    <div className="placeholder-image">
-                                                        <i className="image-icon">🖼️</i>
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div className="item-details">
-                                                <p>{item.itemType}</p>
-                                                <p>Door: {item.door}, Shelf: {item.shelf}</p>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
+                                        );
+                                    })
+                                )}
                             </div>
                             
                             {/* Delete Wardrobe button in a new section */}
