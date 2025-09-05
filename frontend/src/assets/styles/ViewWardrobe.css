@@ -355,7 +355,7 @@
 .view-wardrobe-box.list-view {
     width: 950px; /* Fix the incorrect 850vw value and make it wide enough for table */
     max-width: 95vw; /* Keep responsive behavior */
-    background: #f5f7fa;
+    background: white;
     border-radius: 12px;
 }
 
