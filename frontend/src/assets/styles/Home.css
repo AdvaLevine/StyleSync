@@ -40,7 +40,7 @@ html, body {
 
 .sidebar-header {
     padding: 20px;
-    border-bottom: 1px solid #eaedf0;
+    border-bottom: 1px solid #e6f0ff;
 }
 
 .app-logo {
@@ -560,7 +560,7 @@ html, body {
     
     .sidebar-header {
         padding: 15px;
-        background-color: #e6f4ea;
+        background-color: #e6f0ff;
     }
     
     /* Rearranged user section for mobile */
@@ -612,7 +612,7 @@ html, body {
     /* Mobile adjustments for user profile section */
     .user-profile {
         padding: 10px 20px;
-        background-color: #e6f4ea;
+        background-color: #e6f0ff;
         margin-left: 0;
         margin-right: 0;
     }
@@ -656,14 +656,14 @@ html, body {
 /* Default sidebar divider style for desktop */
 .sidebar-divider {
     height: 1px;
-    background-color: #e5e7eb;
+    background-color: #ccd9ec;
     margin: 15px 20px;
 }
 
 /* Mobile styles for sidebar divider */
 @media (max-width: 768px) {
     .sidebar-divider {
-        background-color: #a0d9b1; /* Darker shade of green for better visibility */
+        background-color: #ccd9ec; /* Darker shade of green for better visibility */
         margin: 0;
         height: 2px; /* Increased height */
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
