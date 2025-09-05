@@ -614,7 +614,7 @@ html, body {
     .main-content {
         margin-left: 0;
         width: 100%;
-        margin-top: 200px; /* Increased from 170px to 200px for more space */
+        margin-top: 280px; /* Increased from 170px to 200px for more space */
         padding: 20px 15px;
     }
     
@@ -695,7 +695,7 @@ html, body {
     }
     
     .main-content {
-        margin-top: 190px; /* Increased from 160px to 190px for more space */
+        margin-top: 250px; /* Increased from 160px to 190px for more space */
         padding: 15px 12px;
     }
     
@@ -731,7 +731,7 @@ html, body {
     }
     
     .main-content {
-        margin-top: 180px; /* Increased from 150px to 180px for more space */
+        margin-top: 225px; /* Increased from 150px to 180px for more space */
         padding: 12px 10px;
     }
     
