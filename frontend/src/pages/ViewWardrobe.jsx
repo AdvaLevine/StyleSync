@@ -19,6 +19,7 @@ class ViewWardrobe extends React.Component {
             loading: false,
             error: '',
             viewMode: 'images', // 'images' or 'list'
+            appliedViewMode: 'images', // New state to track the actually applied view mode
             displayItems: false, // New state to control when to display items
             hasWardrobes: true, // Track if user has any wardrobes
             showConfirmModal: false, // For delete confirmation
@@ -121,11 +122,11 @@ class ViewWardrobe extends React.Component {
         });
     };
 
-    // Toggle between image and list view
+    // Toggle between image and list view (only changes selection, not actual view)
     toggleViewMode = () => {
         this.setState(prevState => ({
             viewMode: prevState.viewMode === 'images' ? 'list' : 'images',
-            displayItems: false, // Hide items when changing view mode
+            // No longer changing displayItems here
             selectedItems: [] // Reset selection when changing view mode
         }));
     };
@@ -134,8 +135,11 @@ class ViewWardrobe extends React.Component {
     handleViewClick = () => {
         if (this.state.selectedWardrobe) {
             this.fetchWardrobeItems(this.state.selectedWardrobe.name);
-            // Reset selection when viewing new items
-            this.setState({ selectedItems: [] });
+            // Apply the selected view mode when viewing
+            this.setState({ 
+                appliedViewMode: this.state.viewMode,
+                selectedItems: [] 
+            });
         } else {
             this.setState({
                 error: "Please select a wardrobe before viewing items",
@@ -890,7 +894,7 @@ class ViewWardrobe extends React.Component {
             return null;
         }
         
-        const { wardrobes, selectedWardrobe, items, loading, error, viewMode, displayItems, hasWardrobes,
+        const { wardrobes, selectedWardrobe, items, loading, error, viewMode, appliedViewMode, displayItems, hasWardrobes,
                 showConfirmModal, showBulkDeleteConfirm, showDeleteWardrobeConfirm, successMessage, isDeleting, isDeletingWardrobe, selectedItems } = this.state;
         
         // If user has no wardrobes, show the "Create Wardrobe First" screen
@@ -982,7 +986,7 @@ class ViewWardrobe extends React.Component {
                     </div>
                 )}
                 
-                <div className={`view-wardrobe-box ${viewMode === 'list' ? 'list-view' : ''}`}>
+                <div className={`view-wardrobe-box ${appliedViewMode === 'list' ? 'list-view' : ''}`}>
                     <h2>View Wardrobe</h2>
                     
                     <div className="view-options">
@@ -1052,8 +1056,8 @@ class ViewWardrobe extends React.Component {
                             {/* New scrollable filter UI */}
                             {this.renderScrollableFilters()}
                             
-                            <div className={`items-container ${viewMode}`}>
-                                {viewMode === 'list' ? (
+                            <div className={`items-container ${appliedViewMode}`}>
+                                {appliedViewMode === 'list' ? (
                                     // List view mode
                                     <table className="items-table">
                                         <thead>
