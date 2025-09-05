@@ -98,7 +98,6 @@ html, body {
 
 .user-label {
     font-size: 0.75rem;
-    color: #9ca3af;
     margin: 15px 0 10px 0;
     font-weight: 600;
     margin-left: 20px;
@@ -555,6 +554,22 @@ html, body {
         border-right: none;
         border-bottom: 1px solid #eaedf0;
         z-index: 1000;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .sidebar-header {
+        padding: 15px;
+        background-color: #e6f4ea;
+    }
+    
+    /* Rearranged user section for mobile */
+    .sidebar-user {
+        padding: 0;
+        border-top: none;
+        border-bottom: 1px solid #eaedf0;
+        order: 2;
+        background-color: #e6f4ea;
     }
     
     .sidebar-menu {
@@ -562,6 +577,7 @@ html, body {
         overflow-x: auto;
         padding: 10px 0;
         flex-grow: 0;
+        order: 3;
     }
     
     .menu-item {
@@ -579,18 +595,148 @@ html, body {
     .main-content {
         margin-left: 0;
         width: 100%;
-        margin-top: 70px; /* Add top margin to account for fixed navbar */
+        margin-top: 170px; /* Increased top margin to account for rearranged navbar */
+        padding: 20px 15px;
     }
     
     .stats-container {
         grid-template-columns: 1fr;
     }
+    
+    /* Mobile adjustments for user profile section */
+    .user-profile {
+        padding: 10px 20px;
+        background-color: #e6f4ea;
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+    .user-avatar {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .user-name {
+        font-size: 0.8rem;
+    }
+    
+    .logout-button {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+        background: none;
+    }
+    
+    .user-label {
+        margin-left: 20px;
+        padding: 10px 0 0 0;
+    }
 }
 
+/* Default sidebar divider style for desktop */
 .sidebar-divider {
     height: 1px;
     background-color: #e5e7eb;
     margin: 15px 20px;
+}
+
+/* Mobile styles for sidebar divider */
+@media (max-width: 768px) {
+    .sidebar-divider {
+        background-color: #a0d9b1; /* Darker shade of green for better visibility */
+        margin: 0;
+        height: 2px; /* Increased height */
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    }
+}
+
+/* Specific iPhone and mobile resolutions */
+@media (max-width: 430px) {
+    /* iPhone 14 Pro Max specific styles */
+    .sidebar-header {
+        padding: 12px;
+    }
+    
+    .logo-image {
+        height: 80px;
+    }
+    
+    .main-content {
+        margin-top: 160px;
+        padding: 15px 12px;
+    }
+    
+    .stats-container {
+        gap: 15px;
+    }
+    
+    .stat-card {
+        padding: 15px;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+    
+    .wardrobes-scroll-container {
+        padding: 5px 0;
+    }
+    
+    .wardrobe-card {
+        min-width: 260px;
+    }
+}
+
+@media (max-width: 375px) {
+    /* iPhone 7/8 specific styles */
+    .sidebar-header {
+        padding: 10px;
+    }
+    
+    .logo-image {
+        height: 70px;
+    }
+    
+    .main-content {
+        margin-top: 150px;
+        padding: 12px 10px;
+    }
+    
+    .stats-container {
+        gap: 12px;
+    }
+    
+    .stat-card {
+        padding: 12px;
+    }
+    
+    .stat-number {
+        font-size: 1.4rem;
+    }
+    
+    .stat-content h3 {
+        font-size: 0.8rem;
+    }
+    
+    .wardrobe-card {
+        min-width: 240px;
+        padding: 15px;
+    }
+    
+    .wardrobe-card h3 {
+        font-size: 18px;
+    }
+    
+    .user-profile {
+        margin-left: 10px;
+    }
+    
+    .menu-item {
+        padding: 8px;
+    }
+    
+    .sidebar-menu {
+        padding: 8px 0;
+    }
 }
 
 /* Profile Page Styles */
