@@ -585,6 +585,12 @@ html, body {
         padding: 10px;
         text-align: center;
         flex-shrink: 0;
+        margin-left: 5px; /* Add space after the user label */
+    }
+    
+    /* Add padding to the right of Outfit Recommendations menu item */
+    .menu-item[href="/outfit-recommendation"] {
+        margin-right: 15px; /* Add space before the USER label divider */
     }
     
     .menu-item svg {
@@ -629,6 +635,21 @@ html, body {
     .user-label {
         margin-left: 20px;
         padding: 10px 0 0 0;
+        position: relative;
+        margin-right: 30px; /* Add space between label and menu items */
+    }
+    
+    /* Add divider to the left of the user label */
+    .user-label:before {
+        content: '';
+        position: absolute;
+        left: -15px; /* Adjusted position */
+        top: 50%;
+        height: 20px;
+        width: 2px;
+        background-color: #a0d9b1;
+        transform: translateY(-50%);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     }
 }
 
