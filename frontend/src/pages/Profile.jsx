@@ -1,5 +1,5 @@
 import React from "react";
-import { User, Save, ChevronLeft, Clock } from "lucide-react";
+import { User, Save, ChevronLeft} from "lucide-react";
 import "../assets/styles/Profile.css";
 import MoonLoader from "react-spinners/MoonLoader";
 import { Link } from "react-router-dom";
@@ -24,7 +24,7 @@ class Profile extends React.Component {
         favoriteStyle: "",
         phoneNumber: ""
       },
-      lastUpdated: null,
+      //lastUpdated: null,
       apiCallInProgress: false // Add flag to prevent duplicate calls
     };
     
@@ -393,11 +393,11 @@ class Profile extends React.Component {
   };
 
   render() {
-    const { loading, error, success, userData, formData, lastUpdated } = this.state;
+    const { loading, error, success, userData, formData /*lastUpdated*/ } = this.state;
     const { auth } = this.props;
     
     const formattedBirthdate = this.formatDate(userData.birthdate);
-    const formattedLastUpdated = this.formatDateTime(lastUpdated);
+    //const formattedLastUpdated = this.formatDateTime(lastUpdated);
 
     if (!auth.isAuthenticated) {
       return (
@@ -461,12 +461,12 @@ class Profile extends React.Component {
           
           <h2 className="profile-title">Edit Your Information</h2>
           
-          {formattedLastUpdated && (
+          {/* {formattedLastUpdated && (
             <div className="last-updated">
               <Clock size={14} />
               <span>Last updated: {formattedLastUpdated}</span>
             </div>
-          )}
+          )} */}
           
           <form className="profile-form" onSubmit={this.handleSubmit}>
             <div className="form-group">
