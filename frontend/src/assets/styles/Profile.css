@@ -300,3 +300,17 @@ html, body {
   height: auto;
   min-height: 100%;
 } 
+
+.last-updated {
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+  gap: 0.25rem;
+}
+
+.last-updated svg {
+  flex-shrink: 0;
+  color: #9ca3af;
+}
