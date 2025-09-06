@@ -24,44 +24,57 @@ class Profile extends React.Component {
         favoriteStyle: "",
         phoneNumber: ""
       },
-      lastUpdated: null
+      lastUpdated: null,
+      apiCallInProgress: false // Add flag to prevent duplicate calls
     };
+    
+    // Flag to prevent duplicate API calls during mounting
+    this.isDataFetched = false;
   }
 
   componentDidMount() {
-    this.fetchUserData();
+    if (!this.isDataFetched) {
+      this.isDataFetched = true;
+      this.fetchUserData();
+    }
   }
 
   componentDidUpdate(prevProps) {
-    // Refresh user data when authentication state changes
-    if (
-      prevProps.auth.isAuthenticated !== this.props.auth.isAuthenticated ||
-      prevProps.auth.user !== this.props.auth.user
-    ) {
+    // Only refresh user data when authentication state changes from false to true
+    if (!prevProps.auth.isAuthenticated && this.props.auth.isAuthenticated && 
+        !this.state.apiCallInProgress) {
+      this.fetchUserData();
+    }
+    
+    // Or if the user object changes significantly
+    if (prevProps.auth.user?.profile?.sub !== this.props.auth.user?.profile?.sub && 
+        !this.state.apiCallInProgress) {
       this.fetchUserData();
     }
   }
 
   fetchUserData = async () => {
+    // Set flag to prevent duplicate API calls
     this.setState({
       loading: true,
       error: null,
-      success: false
+      success: false,
+      apiCallInProgress: true
     });
       
     try {
       const { auth } = this.props;
       
-      // Check if user is authenticated via react-oidc-context
       if (!auth.isAuthenticated) {
         this.setState({
           error: "User not authenticated. Please log in again.",
-          loading: false
+          loading: false,
+          apiCallInProgress: false
         });
         return;
       }
       
-      // Try to get user info directly from auth.user first
+      // Get user info
       let userId, name, email, birthdate;
       
       if (auth.user && auth.user.profile) {
@@ -71,7 +84,6 @@ class Profile extends React.Component {
         birthdate = auth.user.profile.birthdate;
       }
       
-      // If values are missing from auth.user, try localStorage
       userId = userId || localStorage.getItem("user_id");
       name = name || localStorage.getItem("name");
       email = email || localStorage.getItem("email");
@@ -80,45 +92,10 @@ class Profile extends React.Component {
       if (!userId) {
         this.setState({
           error: "User ID not found. Please log in again.",
-          loading: false
+          loading: false,
+          apiCallInProgress: false
         });
         return;
-      }
-      
-      // Check if profile data exists in localStorage
-      const cachedBio = localStorage.getItem("user_bio");
-      const cachedStyle = localStorage.getItem("user_favorite_style");
-      const cachedPhone = localStorage.getItem("user_phone");
-      const cachedUpdatedAt = localStorage.getItem("user_updated_at");
-      
-      const hasProfileCache = cachedBio !== null || 
-                             cachedStyle !== null || 
-                             cachedPhone !== null;
-      
-      // If we have cached data, use it first
-      if (hasProfileCache) {
-        this.setState({
-          userData: {
-            name: name,
-            email: email,
-            sub: userId,
-            birthdate: birthdate
-          },
-          formData: {
-            fullName: name,
-            bio: cachedBio || "",
-            favoriteStyle: cachedStyle || "",
-            phoneNumber: cachedPhone || ""
-          },
-          lastUpdated: cachedUpdatedAt ? new Date(cachedUpdatedAt) : null,
-          loading: false
-        });
-      }
-      
-      // Even if we have cache, still fetch fresh data from API (in background if cache exists)
-      const loadingState = hasProfileCache ? false : true;
-      if (!hasProfileCache) {
-        this.setState({ loading: loadingState });
       }
       
       // Store basic user identity in localStorage
@@ -127,8 +104,22 @@ class Profile extends React.Component {
       localStorage.setItem("email", email);
       if (birthdate) localStorage.setItem("birthdate", birthdate);
       
-      // Fetch fresh profile data from API
-      const response = await fetch(`https://gotj7x3lhh.execute-api.us-east-1.amazonaws.com/dev/profileInfo?user_id=${userId}&default_full_name=${encodeURIComponent(name)}`, {
+      // Using URLSearchParams to properly build the query string
+      const params = new URLSearchParams();
+      params.append('user_id', userId);
+      params.append('default_full_name', name || "Guest");
+      
+      // Add cache-busting parameter to avoid browser caching
+      params.append('_nocache', Date.now().toString());
+      
+      // Build the complete API URL
+      const baseUrl = 'https://gotj7x3lhh.execute-api.us-east-1.amazonaws.com/dev/profileInfo';
+      const apiUrl = `${baseUrl}?${params.toString()}`;
+      
+      console.log(`Fetching profile for user ID: ${userId}`);
+      console.log("API URL:", apiUrl);
+      
+      const response = await fetch(apiUrl, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -136,10 +127,37 @@ class Profile extends React.Component {
       });
       
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`API error (${response.status}): ${errorText}`);
         throw new Error(`Failed to fetch profile: ${response.statusText}`);
       }
       
-      const profileData = await response.json();
+      // Get the response as JSON
+      const apiResponse = await response.json();
+      console.log("Raw API response:", apiResponse);
+      
+      // IMPORTANT: Extract the profile data from the "body" property if it exists
+      // This is the key fix - the Lambda returns an object with a "body" property
+      // that contains the actual profile data as a string
+      let profileData;
+      if (apiResponse.body && typeof apiResponse.body === 'string') {
+        try {
+          // Parse the nested JSON string in the body property
+          profileData = JSON.parse(apiResponse.body);
+          console.log("Extracted profile data from body:", profileData);
+        } catch (parseError) {
+          console.error("Error parsing profile data from body:", parseError);
+          profileData = {}; // Default if parsing fails
+        }
+      } else {
+        // If response doesn't have body property, use the response directly
+        profileData = apiResponse;
+      }
+      
+      // Check if we have valid profile data
+      if (!profileData || typeof profileData !== 'object') {
+        throw new Error("Invalid profile data format");
+      }
       
       // Store fetched profile data in localStorage
       localStorage.setItem("user_bio", profileData.bio || "");
@@ -162,45 +180,41 @@ class Profile extends React.Component {
           phoneNumber: profileData.phoneNumber || ""
         },
         lastUpdated: profileData.updatedAt ? new Date(profileData.updatedAt) : null,
-        loading: false
+        loading: false,
+        apiCallInProgress: false
       });
       
     } catch (err) {
       console.error("Error fetching user data:", err);
       
-      // Check if we already loaded from cache
-      if (this.state.loading === false) {
-        // We already loaded from cache, just show a background error
-        console.error("Failed to refresh data from API, using cached data");
-      } else {
-        // No cache was loaded, show error and try to use whatever we can from localStorage
-        const name = localStorage.getItem("name");
-        const email = localStorage.getItem("email");
-        const userId = localStorage.getItem("user_id");
-        const birthdate = localStorage.getItem("birthdate");
-        const savedBio = localStorage.getItem("user_bio") || "";
-        const savedStyle = localStorage.getItem("user_favorite_style") || "";
-        const savedPhone = localStorage.getItem("user_phone") || "";
-        const lastUpdated = localStorage.getItem("user_updated_at") || null;
-        
-        this.setState({
-          error: "Failed to load profile data. Using cached data if available.",
-          userData: {
-            name: name || "Guest",
-            email: email || "No email provided",
-            sub: userId || "",
-            birthdate: birthdate || "Not provided"
-          },
-          formData: {
-            fullName: name || "Guest",
-            bio: savedBio,
-            favoriteStyle: savedStyle,
-            phoneNumber: savedPhone
-          },
-          lastUpdated: lastUpdated ? new Date(lastUpdated) : null,
-          loading: false
-        });
-      }
+      // Fall back to cached data
+      const name = localStorage.getItem("name");
+      const email = localStorage.getItem("email");
+      const userId = localStorage.getItem("user_id");
+      const birthdate = localStorage.getItem("birthdate");
+      const savedBio = localStorage.getItem("user_bio") || "";
+      const savedStyle = localStorage.getItem("user_favorite_style") || "";
+      const savedPhone = localStorage.getItem("user_phone") || "";
+      const lastUpdated = localStorage.getItem("user_updated_at") || null;
+      
+      this.setState({
+        error: "Failed to load profile data. Using cached data if available.",
+        userData: {
+          name: name || "Guest",
+          email: email || "No email provided",
+          sub: userId || "",
+          birthdate: birthdate || "Not provided"
+        },
+        formData: {
+          fullName: name || "Guest",
+          bio: savedBio,
+          favoriteStyle: savedStyle,
+          phoneNumber: savedPhone
+        },
+        lastUpdated: lastUpdated ? new Date(lastUpdated) : null,
+        loading: false,
+        apiCallInProgress: false
+      });
     }
   };
     
