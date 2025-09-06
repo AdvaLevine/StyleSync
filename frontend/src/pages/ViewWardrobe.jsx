@@ -19,6 +19,7 @@ class ViewWardrobe extends React.Component {
             loading: false,
             error: '',
             viewMode: 'images', // 'images' or 'list'
+            appliedViewMode: 'images', // New state to track the actually applied view mode
             displayItems: false, // New state to control when to display items
             hasWardrobes: true, // Track if user has any wardrobes
             showConfirmModal: false, // For delete confirmation
@@ -121,11 +122,11 @@ class ViewWardrobe extends React.Component {
         });
     };
 
-    // Toggle between image and list view
+    // Toggle between image and list view (only changes selection, not actual view)
     toggleViewMode = () => {
         this.setState(prevState => ({
             viewMode: prevState.viewMode === 'images' ? 'list' : 'images',
-            displayItems: false, // Hide items when changing view mode
+            // No longer changing displayItems here
             selectedItems: [] // Reset selection when changing view mode
         }));
     };
@@ -134,8 +135,11 @@ class ViewWardrobe extends React.Component {
     handleViewClick = () => {
         if (this.state.selectedWardrobe) {
             this.fetchWardrobeItems(this.state.selectedWardrobe.name);
-            // Reset selection when viewing new items
-            this.setState({ selectedItems: [] });
+            // Apply the selected view mode when viewing
+            this.setState({ 
+                appliedViewMode: this.state.viewMode,
+                selectedItems: [] 
+            });
         } else {
             this.setState({
                 error: "Please select a wardrobe before viewing items",
@@ -890,7 +894,7 @@ class ViewWardrobe extends React.Component {
             return null;
         }
         
-        const { wardrobes, selectedWardrobe, items, loading, error, viewMode, displayItems, hasWardrobes,
+        const { wardrobes, selectedWardrobe, items, loading, error, viewMode, appliedViewMode, displayItems, hasWardrobes,
                 showConfirmModal, showBulkDeleteConfirm, showDeleteWardrobeConfirm, successMessage, isDeleting, isDeletingWardrobe, selectedItems } = this.state;
         
         // If user has no wardrobes, show the "Create Wardrobe First" screen
@@ -982,7 +986,7 @@ class ViewWardrobe extends React.Component {
                     </div>
                 )}
                 
-                <div className={`view-wardrobe-box ${viewMode === 'list' ? 'list-view' : ''}`}>
+                <div className={`view-wardrobe-box ${appliedViewMode === 'list' ? 'list-view' : ''}`}>
                     <h2>View Wardrobe</h2>
                     
                     <div className="view-options">
@@ -1022,7 +1026,8 @@ class ViewWardrobe extends React.Component {
                         <p className="no-items-message">No items found in this wardrobe.</p>
                     )}
                     
-                    {successMessage && <p className="success-message">{successMessage}</p>}
+                    {successMessage && <p className="success-message">{successMessage}</p>
+                    }
                     
                     {!loading && !error && displayItems && items.length > 0 && (
                         <>
@@ -1051,46 +1056,106 @@ class ViewWardrobe extends React.Component {
                             {/* New scrollable filter UI */}
                             {this.renderScrollableFilters()}
                             
-                            <div className={`items-container ${viewMode}`}>
-                                {(this.state.filterActive ? this.state.filteredItems : items).map(item => {
-                                    const isSelected = selectedItems.some(selectedItem => selectedItem.id === item.id);
-                                    
-                                    return (
-                                        <div key={item.id} className={`item-card ${isSelected ? 'selected' : ''}`}>
-                                            {/* Selection checkbox */}
-                                            <div className="item-select">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={isSelected}
-                                                    onChange={() => this.handleItemSelection(item)}
-                                                    className="item-checkbox"
-                                                />
+                            <div className={`items-container ${appliedViewMode}`}>
+                                {appliedViewMode === 'list' ? (
+                                    // List view mode
+                                    <table className="items-table">
+                                        <thead>
+                                            <tr>
+                                                <th className="select-column">Select</th>
+                                                <th>Type</th>
+                                                <th>Color</th>
+                                                <th>Weather</th>
+                                                <th>Style</th>
+                                                <th>Description</th>
+                                                <th>Location</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {(this.state.filterActive ? this.state.filteredItems : items).map(item => {
+                                                const isSelected = selectedItems.some(selectedItem => selectedItem.id === item.id);
+                                                
+                                                return (
+                                                    <tr key={item.id} className={isSelected ? 'selected' : ''}>
+                                                        <td className="select-column">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={isSelected}
+                                                                onChange={() => this.handleItemSelection(item)}
+                                                                className="item-checkbox"
+                                                            />
+                                                        </td>
+                                                        <td>{item.itemType}</td>
+                                                        <td>{Array.isArray(item.color) ? item.color.join(', ') : 'N/A'}</td>
+                                                        <td>{Array.isArray(item.weather) ? item.weather.join(', ') : 'N/A'}</td>
+                                                        <td>{Array.isArray(item.style) ? item.style.join(', ') : 'N/A'}</td>
+                                                        <td className="description-column" 
+                                                            data-full-text={item.item_description || ""}
+                                                            title={item.item_description || "No description available"}>
+                                                            {item.item_description ? 
+                                                                (item.item_description.length > 50 ? 
+                                                                    `${item.item_description.substring(0, 50)}...` : 
+                                                                    item.item_description) : 
+                                                                '-'}
+                                                        </td>
+                                                        <td>Door: {item.door}, Shelf: {item.shelf}</td>
+                                                        <td>
+                                                            <button 
+                                                                className="delete-button-list" 
+                                                                onClick={() => this.handleDeleteClick(item)}
+                                                                aria-label="Delete item"
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                ) : (
+                                    // Image view mode
+                                    (this.state.filterActive ? this.state.filteredItems : items).map(item => {
+                                        const isSelected = selectedItems.some(selectedItem => selectedItem.id === item.id);
+                                        
+                                        return (
+                                            <div key={item.id} className={`item-card ${isSelected ? 'selected' : ''}`}>
+                                                {/* Selection checkbox */}
+                                                <div className="item-select">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isSelected}
+                                                        onChange={() => this.handleItemSelection(item)}
+                                                        className="item-checkbox"
+                                                    />
+                                                </div>
+                                                
+                                                {/* Delete button */}
+                                                <button 
+                                                    className="delete-button" 
+                                                    onClick={() => this.handleDeleteClick(item)} 
+                                                    aria-label="Delete item"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                                <div className="item-image">
+                                                    {item.photoUrl ? (
+                                                        <img src={item.photoUrl} alt={item.itemType} />
+                                                    ) : (
+                                                        <div className="placeholder-image">
+                                                            <i className="image-icon">🖼️</i>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="item-details">
+                                                    <p>{item.itemType}</p>
+                                                    <p>Door: {item.door}, Shelf: {item.shelf}</p>
+                                                </div>
                                             </div>
-                                            
-                                            {/* Delete button */}
-                                            <button 
-                                                className="delete-button" 
-                                                onClick={() => this.handleDeleteClick(item)} 
-                                                aria-label="Delete item"
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
-                                            <div className="item-image">
-                                                {item.photoUrl ? (
-                                                    <img src={item.photoUrl} alt={item.itemType} />
-                                                ) : (
-                                                    <div className="placeholder-image">
-                                                        <i className="image-icon">🖼️</i>
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div className="item-details">
-                                                <p>{item.itemType}</p>
-                                                <p>Door: {item.door}, Shelf: {item.shelf}</p>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
+                                        );
+                                    })
+                                )}
                             </div>
                             
                             {/* Delete Wardrobe button in a new section */}

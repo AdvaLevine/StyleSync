@@ -2,13 +2,16 @@
 /* Styles for view-wardrobe page only */
 .view-wardrobe-container {
     display: flex;
-    flex-direction: column;    justify-content: center;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    height: 100vh;
-    min-height: 500px;
+    min-height: 100vh; /* Full viewport height */
     position: relative;
     background-color: #e6f0ff;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 50px 0; /* Add padding instead of margin */
+    box-sizing: border-box; /* Include padding in height calculation */
+    overflow: hidden; /* Prevent container from scrolling */
 }
 
 /* Back Button */
@@ -45,7 +48,10 @@
 
 /* הגדלת קופסת התצוגה כשיש טבלה */
 .view-wardrobe-box.list-view {
-    width: 700px;
+    width: 950px; /* Fix the incorrect 850vw value and make it wide enough for table */
+    max-width: 95vw; /* Keep responsive behavior */
+    background: #f5f7fa;
+    border-radius: 12px;
 }
 
 /* View Wardrobe Title */
@@ -122,8 +128,22 @@
 /* Items container */
 .items-container {
     margin-top: 20px;
-    max-height: 60vh; /* Limit height to 60% of viewport height */
-    overflow-y: auto; /* Add vertical scrollbar when needed */
+    max-height: 60vh; /* Fixed height to enable scrolling */
+    overflow-y: auto; /* Vertical scrolling only */
+    overflow-x: hidden; /* No horizontal scrolling */
+}
+
+.items-container.list-view {
+    /* List view styles */
+    display: block;
+    width: 100%;
+}
+
+/* Prevent horizontal scrolling in list view */
+.items-container.list {
+    width: 100%;
+    overflow-x: visible; /* Change from auto to visible */
+    padding-right: 0; /* Remove padding for scrollbar */
 }
 
 /* List view mode needs more space */
@@ -133,7 +153,7 @@
     padding-right: 5px; /* Add padding for scrollbar */
 }
 
-/* Image view styles */
+/* Image view styles - restore original */
 .items-container.images {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -160,7 +180,7 @@
 }
 
 .item-image {
-    height: 170px; /* Increase height further (was 150px) */
+    height: 170px; /* Keep original height */
     background-color: #f8fbff;
     display: flex;
     align-items: center;
@@ -222,7 +242,7 @@
 .items-table {
     width: 100%;
     border-collapse: separate;
-    border-spacing: 0 10px;
+    border-spacing: 0 10px; /* Reduce from 10px to 6px for less space between rows */
     margin: 15px 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -235,7 +255,7 @@
 .items-table th {
     color: #4a86e8;
     font-weight: 600;
-    padding: 12px 15px;
+    padding: 8px 15px; /* Reduced from 12px 15px */
     text-align: center;
     font-size: 0.85rem;
     text-transform: uppercase;
@@ -244,10 +264,11 @@
 
 /* Card-style rows with light blue accents */
 .items-table tbody tr {
-    box-shadow: 0 3px 10px rgba(164, 194, 244, 0.2);
+    box-shadow: 0 3px 10px rgba(164, 194, 244, 0.2); /* Reduce shadow */
     border-radius: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 10px; 
     transition: transform 0.2s, box-shadow 0.3s;
+    height: auto;
 }
 
 .items-table tbody tr:hover {
@@ -258,8 +279,9 @@
 
 .items-table td {
     background-color: #f0f8ff;
-    padding: 15px;
+    padding: 15px; 
     border: none;
+    height: auto; /* Allow height to adjust to content */
 }
 
 /* Rounded corners for each card */
@@ -331,9 +353,9 @@
 
 /* Make container match the style */
 .view-wardrobe-box.list-view {
-    width: 850px;
-    max-width: 92vw;
-    background: #f5f7fa;
+    width: 950px; /* Fix the incorrect 850vw value and make it wide enough for table */
+    max-width: 95vw; /* Keep responsive behavior */
+    background: white;
     border-radius: 12px;
 }
 
@@ -504,14 +526,16 @@
 
 /* Wider container for image view */
 .view-wardrobe-box:has(.items-container.images) {
-    width: 850px; /* Much wider for images view */
+    width: 850px; /* Width for exactly 3 columns with margins */
     max-width: 95vw; /* Responsive, but allows expansion */
+    height: auto; /* Allow natural height */
 }
 
 /* Keep list view container width */
 .view-wardrobe-box.list-view {
-    width: 850px;
-    max-width: 95vw;
+    width: 950px; /* Fix the incorrect 850vw value and make it wide enough for table */
+    max-width: 95vw; /* Keep responsive behavior */
+    height: auto;
 }
 
 /* Responsive adjustments */
@@ -1161,5 +1185,298 @@
     
     .filter-options-container {
         padding: 10px;
+    }
+}
+
+/* Adjust these styles as needed */
+
+.items-container {
+    /* Default grid view styles */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.items-container.list-view {
+    /* List view styles */
+    display: block;
+    width: 100%;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Add these media queries after your existing ones */
+
+/* Tablet screens (768px) - Enhance existing styles */
+@media screen and (max-width: 768px) {
+    .view-wardrobe-box {
+        width: min(90%, 400px);
+        padding: 1.5rem;
+    }
+
+    .view-wardrobe-container {
+        padding: 40px 0;
+        margin-top: auto;
+        justify-content: flex-start;
+    }
+    
+    .view-wardrobe-box.list-view,
+    .view-wardrobe-box:has(.items-container.images) {
+        width:  min(90%, 800px);
+        max-width: 700px;
+    }
+    
+    .items-container.images {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 15px;
+    }
+    
+    .view-wardrobe-box h2 {
+        font-size: 22px;
+    }
+    
+    .item-card .item-image {
+        height: 150px;
+    }
+    
+    .filter-section {
+        margin: 0.8rem 0;
+    }
+    
+    .filter-category {
+        padding: 7px 12px;
+    }
+}
+
+/* Mobile screens (480px and below - covers 430px) */
+@media screen and (max-width: 480px) {
+    .view-wardrobe-container {
+        padding: 40px 0;
+    }
+    
+    .view-wardrobe-box {
+        width: 85%;
+        padding: 1rem;
+        margin-top: 15px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    }
+    
+    .view-wardrobe-box.list-view,
+    .view-wardrobe-box:has(.items-container.images) {
+        width: 85%;
+        max-width: 420px;
+    }
+    
+    .view-wardrobe-box h2 {
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+    
+    .items-container {
+        max-height: 55vh;
+    }
+    
+    .items-container.images {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .item-card .item-image {
+        height: 130px;
+    }
+    
+    .item-details {
+        padding: 4px 8px;
+        min-height: 30px;
+    }
+    
+    .item-details p:first-child {
+        font-size: 0.8rem;
+    }
+    
+    .item-details p:last-child {
+        font-size: 0.7rem;
+    }
+    
+    .view-options-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .dropdown-wrapper {
+        margin-right: 0;
+        margin-bottom: 10px;
+        max-width: 100%;
+    }
+    
+    .view-mode-toggle {
+        margin-top: 5px;
+        margin-left: 0;
+    }
+    
+    .filter-header h3 {
+        font-size: 0.95rem;
+    }
+    
+    .clear-filters-btn {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+    }
+    
+    .filter-category {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+    
+    .filter-label {
+        font-size: 0.85rem;
+    }
+    
+    .filter-icon {
+        font-size: 1rem;
+    }
+    
+    .filter-option {
+        padding: 5px 8px;
+        font-size: 0.8rem;
+    }
+    
+    .back-button {
+        top: 12px;
+        left: 12px;
+        font-size: 24px;
+    }
+
+    .delete-wardrobe-btn {
+    font-size: 14px;
+    padding: 4px 10px;
+    align-self: flex-end;
+    }
+
+    .select-all-btn {
+        font-size: 13px;
+        padding: 4px 10px;
+    }
+
+    .selected-count {
+        font-size: 13px;
+    }
+    
+    .bulk-delete-btn {
+        font-size: 13px;
+        padding: 4px 10px;
+    }
+
+    .wardrobe-management-actions {
+    justify-content: flex-end;
+    padding-top: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    }
+}
+
+/* Smallest mobile screens (375px and below) */
+@media screen and (max-width: 375px) {
+    .view-wardrobe-container {
+        padding: 10px 0;
+    }
+    
+    .view-wardrobe-box {
+        width: 90%;
+        padding: 0.8rem;
+        margin-top: 10px;
+    }
+    
+    .view-wardrobe-box h2 {
+        font-size: 16px;
+        margin-bottom: 6px;
+    }
+    
+    .items-container {
+        max-height: 50vh;
+    }
+    
+    .items-container.images {
+        grid-template-columns: repeat(1, 1fr);
+        gap: 10px;
+    }
+    
+    .item-card .item-image {
+        height: 140px; /* Actually a bit taller since we're now single column */
+    }
+    
+    .item-details {
+        padding: 3px 6px;
+        min-height: 28px;
+    }
+    
+    .item-details p:first-child {
+        font-size: 0.75rem;
+    }
+    
+    .item-details p:last-child {
+        font-size: 0.65rem;
+    }
+    
+    .filter-category {
+        padding: 5px 8px;
+        font-size: 0.8rem;
+    }
+    
+    .back-button {
+        top: 10px;
+        left: 10px;
+        font-size: 22px;
+    }
+    
+    .delete-wardrobe-btn {
+        font-size: 11px;
+        padding: 4px 10px;
+        align-self: flex-end;
+    }
+
+    .select-all-btn {
+        font-size: 11px;
+        padding: 4px 10px;
+    }
+
+    .selected-count {
+        font-size: 11px;
+    }
+    
+    .bulk-delete-btn {
+        font-size: 11px;
+        padding: 4px 10px;
+    }
+
+    .wardrobe-management-actions {
+        justify-content: flex-end;
+        padding-top: 10px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .modal-content {
+        padding: 16px;
+        max-width: 280px;
+    }
+    
+    .modal-content h3 {
+        font-size: 16px;
+    }
+    
+    .modal-buttons {
+        gap: 8px;
+        margin-top: 16px;
+    }
+    
+    .cancel-btn, .delete-btn {
+        padding: 6px 12px;
+        font-size: 12px;
     }
 }

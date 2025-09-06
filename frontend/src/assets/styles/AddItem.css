@@ -88,7 +88,20 @@
 /* Submit Button */
 .add-item-box button {
   padding: 12px;
-  background: black;
+  background: #0d6efd;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.add-item-box .back-btn {
+    padding: 12px;
+  background: #4d5c74;
   color: white;
   font-size: 16px;
   font-weight: bold;
@@ -101,7 +114,7 @@
 }
 
 .add-item-box button:hover {
-  background: #333;
+  background: #93b0e0;
 }
 
 .add-item-box button:disabled {
@@ -114,7 +127,6 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
-  margin-top: 10px;
 }
 
 .back-btn {
@@ -191,34 +203,241 @@
   text-align: center;
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 768px) {
+  .add-item-container {
+    padding: 1rem;
+    justify-content: flex-start;
+    height: 100vh;
+    min-height: auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
   .logo-container img {
-    width: 230px;
-    margin-top: 10px;
+    width: 280px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+
+  .add-item-box {
+    width: 380px;
+    padding: 1.5rem;
+    margin-top: 20px;
+    box-shadow: 0 4px 7px rgba(0, 0, 0, 0.15);
+  }
+
+  .add-item-box h2 {
+    font-size: 22px;
     margin-bottom: 10px;
   }
 
   .add-item-subtitle {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .add-item-box label {
+    font-size: 14px;
+    margin-bottom: 4px;
+    margin-top: 6px;
+  }
+
+  /* Add styling for custom file upload */
+  .add-item-box label.custom-file-upload {
+    padding: 11px 14px;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  
+  .add-item-box input {
+    font-size: 14px;
+    padding: 10px;
+    height: 40px;
+  }
+
+  .add-item-box button {
+    font-size: 15px;
+    padding: 0 12px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .add-item-box .back-btn {
+    font-size: 15px;
+    padding: 0 12px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .add-item-box form {
+    gap: 8px;
+    padding-bottom: 20px;
+  }
+
+  /* Optimize photo preview for tablet screens */
+  .photo-preview {
+    margin-top: 15px;
+    max-width: 100%;
+  }
+  
+  .photo-preview img {
+    max-width: 100%;
+    max-height: 250px;
+    object-fit: contain;
+  }
+
+  .links a {
     font-size: 12px;
   }
 
+  .error-message {
+    font-size: 12px;
+    padding: 8px;
+    margin: 0px;
+  }
+  
+  /* Adjust back button position */
+  .back-button {
+    top: 15px;
+    left: 15px;
+    font-size: 26px;
+  }
+
+  /* Photo upload styles */
+  .custom-file-upload {
+    padding: 10px 14px;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+  }
+  
+  .photo-upload-options {
+    gap: 12px;
+  }
+  
+  .remove-photo-btn {
+    margin-top: 12px;
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .no-wardrobe-message {
+    padding: 30px;
+    max-width: 380px;
+  }
+
+  .no-wardrobe-icon {
+    width: 70px;
+    height: 70px;
+  }
+
+  .create-wardrobe-btn {
+    padding: 10px 18px;
+    font-size: 15px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .add-item-container {
+    padding: 1rem;
+    justify-content: flex-start;
+    height: 100vh;
+    min-height: auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .logo-container img {
+    width: 220px; /* Slightly larger than 375px but still compact */
+    margin-top: 12px;
+    margin-bottom: 12px;
+  }
+
   .add-item-box {
-    width: 260px;
-    padding: 1.2rem;
-    margin-bottom: 10px;
+    width: 320px; /* Proportionally wider than 375px version */
+    padding: 1rem; /* Slightly more padding than 375px */
+    margin-top: 15px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
   }
 
   .add-item-box h2 {
     font-size: 18px;
+    margin-bottom: 8px;
   }
 
-  .add-item-box input {
+  .add-item-subtitle {
     font-size: 12px;
-    padding: 10px;
+    margin-bottom: 8px;
+  }
+
+  .add-item-box label {
+    font-size: 13px;
+    margin-bottom: 3px;
+    margin-top: 5px;
+  }
+
+  /* Add styling for custom file upload - make this selector MORE SPECIFIC */
+  .add-item-box label.custom-file-upload {
+    padding: 10px 12px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  
+  .add-item-box input {
+    font-size: 13px;
+    padding: 9px;
+    height: 36px; /* Slightly taller than 375px */
   }
 
   .add-item-box button {
-    font-size: 14px;
+    font-size: 13px;
+    padding: 0 10px;
+    height: 38px; /* Slightly taller than 375px */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .add-item-box .back-btn {
+    font-size: 13px;
+    padding: 0 10px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .add-item-box form {
+    gap: 7px; /* Slightly more than 375px */
+    padding-bottom: 15px;
+  }
+
+  /* Optimize photo preview for small screens */
+  .photo-preview {
+    margin-top: 12px;
+    max-width: 100%;
+  }
+  
+  .photo-preview img {
+    max-width: 100%;
+    max-height: 200px; /* Slightly larger than 375px */
+    object-fit: contain;
   }
 
   .links a {
@@ -226,53 +445,36 @@
   }
 
   .error-message {
-    font-size: 12px;
-    padding: 8px;
-  }
-}
-
-@media screen and (max-width: 375px) {
-  .logo-container img {
-    width: 200px;
-  }
-
-  .add-item-box {
-    width: 240px;
-    padding: 1rem;
-  }
-
-  .add-item-box h2 {
-    font-size: 14px;
-  }
-
-  .add-item-subtitle {
-    font-size: 9px;
-  }
-
-  .add-item-box label {
-    font-size: 10px;
-    margin-bottom: 0;
-  }
-
-  .add-item-box input {
-    font-size: 10px;
-    padding: 8px;
-    margin-top: 0;
-  }
-
-  .add-item-box button {
-    font-size: 12px;
-    padding: 10px;
-  }
-
-  .links a {
-    font-size: 10px;
-  }
-
-  .error-message {
-    font-size: 10px;
-    padding: 8px;
+    font-size: 11px;
+    padding: 7px;
     margin: 0px;
+  }
+  
+  /* Adjust back button position */
+  .back-button {
+    top: 12px;
+    left: 12px;
+    font-size: 24px;
+  }
+
+  /* Add styling for custom file upload */
+  .custom-file-upload {
+    padding: 9px 12px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+  }
+  
+  .photo-upload-options {
+    gap: 10px; /* Slightly more than 375px */
+  }
+  
+  .remove-photo-btn {
+    margin-top: 10px;
+    padding: 5px 10px;
+    font-size: 11px;
   }
 }
 
@@ -333,7 +535,6 @@
 
 /* Photo upload and camera capture styles */
 .photo-upload-section {
-  margin-bottom: 1.5em;
   width: 100%;
 }
 

@@ -12,11 +12,11 @@
 /* Signup Box */
 .create-wardrobe-box {
     background: white;
-    padding: 2rem;
+    padding: 2.5rem;
     border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     text-align: center;
-    width: 400px;
+    width: 450px;
     max-width: 100%;
     display: flex;
     flex-direction: column;
@@ -25,9 +25,9 @@
   
 /* Signup Title */
 .create-wardrobe-box h2 {
-    font-size: 24px;
+    font-size: 26px;
     color: #111;
-    margin-bottom: 15px;
+    margin-bottom: 18px;
     font-weight: bold;
     margin-top: 0;
 }
@@ -72,7 +72,7 @@
 .create-wardrobe-container button {
     width: 100%;
     padding: 12px;
-    background: black;
+    background: #0d6efd;
     color: white;
     font-size: 16px;
     font-weight: bold;
@@ -84,7 +84,7 @@
 }
 
 .create-wardrobe-container button:hover {
-    background: #333;
+    background: #93b0e0;
 }
 
 .create-wardrobe-container button:disabled {
@@ -135,11 +135,65 @@
     appearance: none; /* Standard property */
 }
 
-/* Responsive Styles */
-@media screen and (max-width: 480px) {
+/* New responsive style for tablets and mobile (768px and under) */
+@media screen and (max-width: 768px) {
+    .create-wardrobe-container {
+        height: auto;
+        min-height: 100vh;
+        padding-top: 350px;
+        overflow: hidden; /* Prevents scrolling */
+        position: fixed;
+        width: 100%;
+        top: 0;
+        left: 0;
+    }
+    
     .create-wardrobe-box {
-        width: 260px;
-        padding: 1.2rem;
+        margin-top: 0;
+        margin-bottom: auto;
+    }
+}
+
+/* Medium mobile devices (480px and under) */
+@media screen and (max-width: 480px) {
+    .create-wardrobe-container {
+        padding-top: 150px; /* Adjusted padding for medium mobile */
+    }
+
+    .create-wardrobe-box h2 {
+        font-size: 18px;
+    }
+    
+    .create-wardrobe-container input {
+        font-size: 12px;
+        padding: 10px;
+    }
+
+    .create-wardrobe-container button {
+        font-size: 14px;
+    }
+
+    .create-wardrobe-box {
+        width: 350px;
+        padding: 1.5rem;
+        margin-bottom: 10px;
+    }
+    .error-message,
+    .success-message {
+        font-size: 12px;
+        padding: 8px;
+    }
+}
+
+/* Responsive Styles for small mobile devices */
+@media screen and (max-width: 375px) {
+    .create-wardrobe-container {
+        padding-top: 190px; /* Smaller padding for small mobile */
+    }
+    
+    .create-wardrobe-box {
+        width: 300px;
+        padding: 1.5rem;
         margin-bottom: 10px;
     }
 
