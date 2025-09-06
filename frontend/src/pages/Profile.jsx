@@ -1,5 +1,5 @@
 import React from "react";
-import { User, Save, ChevronLeft } from "lucide-react";
+import { User, Save, ChevronLeft} from "lucide-react";
 import "../assets/styles/Profile.css";
 import MoonLoader from "react-spinners/MoonLoader";
 import { Link } from "react-router-dom";
@@ -23,44 +23,58 @@ class Profile extends React.Component {
         bio: "",
         favoriteStyle: "",
         phoneNumber: ""
-      }
+      },
+      //lastUpdated: null,
+      apiCallInProgress: false // Add flag to prevent duplicate calls
     };
+    
+    // Flag to prevent duplicate API calls during mounting
+    this.isDataFetched = false;
   }
 
   componentDidMount() {
-    this.fetchUserData();
+    if (!this.isDataFetched) {
+      this.isDataFetched = true;
+      this.fetchUserData();
+    }
   }
 
   componentDidUpdate(prevProps) {
-    // Refresh user data when authentication state changes
-    if (
-      prevProps.auth.isAuthenticated !== this.props.auth.isAuthenticated ||
-      prevProps.auth.user !== this.props.auth.user
-    ) {
+    // Only refresh user data when authentication state changes from false to true
+    if (!prevProps.auth.isAuthenticated && this.props.auth.isAuthenticated && 
+        !this.state.apiCallInProgress) {
+      this.fetchUserData();
+    }
+    
+    // Or if the user object changes significantly
+    if (prevProps.auth.user?.profile?.sub !== this.props.auth.user?.profile?.sub && 
+        !this.state.apiCallInProgress) {
       this.fetchUserData();
     }
   }
 
   fetchUserData = async () => {
+    // Set flag to prevent duplicate API calls
     this.setState({
       loading: true,
       error: null,
-      success: false
+      success: false,
+      apiCallInProgress: true
     });
       
     try {
       const { auth } = this.props;
       
-      // Check if user is authenticated via react-oidc-context
       if (!auth.isAuthenticated) {
         this.setState({
           error: "User not authenticated. Please log in again.",
-          loading: false
+          loading: false,
+          apiCallInProgress: false
         });
         return;
       }
       
-      // Try to get user info directly from auth.user first
+      // Get user info
       let userId, name, email, birthdate;
       
       if (auth.user && auth.user.profile) {
@@ -68,29 +82,90 @@ class Profile extends React.Component {
         name = auth.user.profile.name;
         email = auth.user.profile.email;
         birthdate = auth.user.profile.birthdate;
-
       }
       
-      // If values are missing from auth.user, try localStorage
       userId = userId || localStorage.getItem("user_id");
       name = name || localStorage.getItem("name");
       email = email || localStorage.getItem("email");
       birthdate = birthdate || localStorage.getItem("birthdate");
       
-      // Check for saved profile data in localStorage
-      const savedBio = localStorage.getItem("user_bio") || "";
-      const savedStyle = localStorage.getItem("user_favorite_style") || "";
-      const savedPhone = localStorage.getItem("user_phone") || "";
-      
-      if (!userId || !name) {
+      if (!userId) {
         this.setState({
-          error: "User information not found. Please log in again.",
-          loading: false
+          error: "User ID not found. Please log in again.",
+          loading: false,
+          apiCallInProgress: false
         });
         return;
       }
       
-      // Update user data and form data
+      // Store basic user identity in localStorage
+      localStorage.setItem("user_id", userId);
+      localStorage.setItem("name", name);
+      localStorage.setItem("email", email);
+      if (birthdate) localStorage.setItem("birthdate", birthdate);
+      
+      // Using URLSearchParams to properly build the query string
+      const params = new URLSearchParams();
+      params.append('user_id', userId);
+      params.append('default_full_name', name || "Guest");
+      
+      // Add cache-busting parameter to avoid browser caching
+      params.append('_nocache', Date.now().toString());
+      
+      // Build the complete API URL
+      const baseUrl = 'https://gotj7x3lhh.execute-api.us-east-1.amazonaws.com/dev/profileInfo';
+      const apiUrl = `${baseUrl}?${params.toString()}`;
+      
+      console.log(`Fetching profile for user ID: ${userId}`);
+      console.log("API URL:", apiUrl);
+      
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`API error (${response.status}): ${errorText}`);
+        throw new Error(`Failed to fetch profile: ${response.statusText}`);
+      }
+      
+      // Get the response as JSON
+      const apiResponse = await response.json();
+      console.log("Raw API response:", apiResponse);
+      
+      // IMPORTANT: Extract the profile data from the "body" property if it exists
+      // This is the key fix - the Lambda returns an object with a "body" property
+      // that contains the actual profile data as a string
+      let profileData;
+      if (apiResponse.body && typeof apiResponse.body === 'string') {
+        try {
+          // Parse the nested JSON string in the body property
+          profileData = JSON.parse(apiResponse.body);
+          console.log("Extracted profile data from body:", profileData);
+        } catch (parseError) {
+          console.error("Error parsing profile data from body:", parseError);
+          profileData = {}; // Default if parsing fails
+        }
+      } else {
+        // If response doesn't have body property, use the response directly
+        profileData = apiResponse;
+      }
+      
+      // Check if we have valid profile data
+      if (!profileData || typeof profileData !== 'object') {
+        throw new Error("Invalid profile data format");
+      }
+      
+      // Store fetched profile data in localStorage
+      localStorage.setItem("user_bio", profileData.bio || "");
+      localStorage.setItem("user_favorite_style", profileData.favoriteStyle || "");
+      localStorage.setItem("user_phone", profileData.phoneNumber || "");
+      localStorage.setItem("user_updated_at", profileData.updatedAt || "");
+      
+      // Update state with fresh profile data
       this.setState({
         userData: {
           name: name,
@@ -99,18 +174,20 @@ class Profile extends React.Component {
           birthdate: birthdate
         },
         formData: {
-          fullName: name,
-          bio: savedBio,
-          favoriteStyle: savedStyle,
-          phoneNumber: savedPhone
+          fullName: profileData.fullName || name,
+          bio: profileData.bio || "",
+          favoriteStyle: profileData.favoriteStyle || "",
+          phoneNumber: profileData.phoneNumber || ""
         },
-        loading: false
+        lastUpdated: profileData.updatedAt ? new Date(profileData.updatedAt) : null,
+        loading: false,
+        apiCallInProgress: false
       });
       
     } catch (err) {
       console.error("Error fetching user data:", err);
       
-      // Fallback to localStorage if fetch fails
+      // Fall back to cached data
       const name = localStorage.getItem("name");
       const email = localStorage.getItem("email");
       const userId = localStorage.getItem("user_id");
@@ -118,9 +195,10 @@ class Profile extends React.Component {
       const savedBio = localStorage.getItem("user_bio") || "";
       const savedStyle = localStorage.getItem("user_favorite_style") || "";
       const savedPhone = localStorage.getItem("user_phone") || "";
+      const lastUpdated = localStorage.getItem("user_updated_at") || null;
       
       this.setState({
-        error: "Failed to load profile data. Using cached data.",
+        error: "Failed to load profile data. Using cached data if available.",
         userData: {
           name: name || "Guest",
           email: email || "No email provided",
@@ -133,7 +211,9 @@ class Profile extends React.Component {
           favoriteStyle: savedStyle,
           phoneNumber: savedPhone
         },
-        loading: false
+        lastUpdated: lastUpdated ? new Date(lastUpdated) : null,
+        loading: false,
+        apiCallInProgress: false
       });
     }
   };
@@ -189,11 +269,51 @@ class Profile extends React.Component {
         return;
       }
       
-      // Save all profile data to localStorage
+      const userId = auth.user?.profile?.sub || localStorage.getItem("user_id");
+      const accessToken = auth.user?.access_token; // Get the access token
+
+      if (!userId || !accessToken) {
+        this.setState({
+          error: "User ID or token not found. Please log in again.",
+          loading: false
+        });
+        return;
+      }
+      
+      // Debug what we're sending
+      console.log("Sending profile update with user ID:", userId);
+      
+      // Send profile update to backend API with authorization header
+      const response = await fetch('https://rhkrhlq101.execute-api.us-east-1.amazonaws.com/dev/updateProfileInfo', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem("idToken")
+        },
+        body: JSON.stringify({
+          userId: userId,
+          fullName: this.state.formData.fullName,
+          bio: this.state.formData.bio,
+          favoriteStyle: this.state.formData.favoriteStyle,
+          phoneNumber: this.state.formData.phoneNumber
+        })
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Profile update API error:", errorText);
+        throw new Error(`Failed to update profile: ${response.statusText}`);
+      }
+      
+      // Get current time for local update
+      const now = new Date();
+      
+      // Update localStorage with new profile data
       localStorage.setItem("name", this.state.formData.fullName);
-      localStorage.setItem("user_bio", this.state.formData.bio);
-      localStorage.setItem("user_favorite_style", this.state.formData.favoriteStyle);
-      localStorage.setItem("user_phone", this.state.formData.phoneNumber);
+      localStorage.setItem("user_bio", this.state.formData.bio || "");
+      localStorage.setItem("user_favorite_style", this.state.formData.favoriteStyle || "");
+      localStorage.setItem("user_phone", this.state.formData.phoneNumber || "");
+      localStorage.setItem("user_updated_at", now.toISOString());
       
       // Update local userData state
       this.setState(prevState => ({
@@ -201,19 +321,20 @@ class Profile extends React.Component {
           ...prevState.userData,
           name: this.state.formData.fullName
         },
+        lastUpdated: now,
         loading: false,
         success: true
       }));
       
-      // Auto-hide success message after 5 seconds
+      // Auto-hide success message after 3 seconds
       setTimeout(() => {
         this.setState({ success: false });
-      }, 5000);
+      }, 3000);
         
     } catch (error) {
       console.error("Profile update error:", error);
       this.setState({
-        error: "An unexpected error occurred. Please try again later.",
+        error: "Failed to update profile. Please try again later.",
         loading: false
       });
     }
@@ -250,11 +371,33 @@ class Profile extends React.Component {
     }
   };
 
+  formatDateTime = (dateTimeString) => {
+    if (!dateTimeString) return null;
+    
+    try {
+      const date = new Date(dateTimeString);
+      if (isNaN(date.getTime())) return null;
+      
+      // Format as DD/MM/YYYY HH:MM
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear();
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      
+      return `${day}/${month}/${year} ${hours}:${minutes}`;
+    } catch (e) {
+      console.error("Error formatting datetime:", e);
+      return null;
+    }
+  };
+
   render() {
-    const { loading, error, success, userData, formData } = this.state;
+    const { loading, error, success, userData, formData /*lastUpdated*/ } = this.state;
     const { auth } = this.props;
     
     const formattedBirthdate = this.formatDate(userData.birthdate);
+    //const formattedLastUpdated = this.formatDateTime(lastUpdated);
 
     if (!auth.isAuthenticated) {
       return (
@@ -317,6 +460,14 @@ class Profile extends React.Component {
           </div>
           
           <h2 className="profile-title">Edit Your Information</h2>
+          
+          {/* {formattedLastUpdated && (
+            <div className="last-updated">
+              <Clock size={14} />
+              <span>Last updated: {formattedLastUpdated}</span>
+            </div>
+          )} */}
+          
           <form className="profile-form" onSubmit={this.handleSubmit}>
             <div className="form-group">
               <label className="form-label" htmlFor="fullName">Full Name</label>
