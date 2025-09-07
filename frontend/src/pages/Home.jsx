@@ -243,7 +243,7 @@ class Home extends React.Component {
 
     this.setState({ calendarLoading: true });
 
-    const lambdaEndpont = 'https://YOUR_API_GATEWAY_URL/calendar';
+    const lambdaEndpont = 'https://zfuw4e41c4.execute-api.us-east-1.amazonaws.com/default/googleCalendarHandler';
 
     try {
       const response = await fetch(lambdaEndpont);
@@ -251,7 +251,6 @@ class Home extends React.Component {
         throw new Error('Failed to fetch calendar events');
       }
       const data = await response.json();
-
       // Cache the new data
       const newCache = {
         date: today,
@@ -650,7 +649,11 @@ class Home extends React.Component {
                 ) : this.state.calendarEvents.length > 0 ? ( 
                   this.state.calendarEvents.map((event, index) => (
                     <div className="mini-event" key={index}>
-                      {event.start.dateTime} - {event.summary}
+                      {new Date(event.start).toLocaleTimeString("en-GB", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false
+                      })} - {event.summary}
                     </div>
                   ))
                 ) : (

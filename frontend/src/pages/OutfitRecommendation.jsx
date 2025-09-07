@@ -26,10 +26,17 @@ const GenerateCustomOutfit = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [styleDescription, setStyleDescription] = useState("");
   const [recommendation, setRecommendation] = useState([]);
+  const [calendarEvents, setCalendarEvents] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Fetch user's todays events
+        const cachedEvents = JSON.parse(localStorage.getItem('calendar_cache'));
+        if (cachedEvents && cachedEvents.date === new Date().toDateString()) {
+            setCalendarEvents(cachedEvents.events);
+        }
+
         // Fetch all wardrobes and items from cache
         const wardrobeData = await getCachedWardrobes();
         setWardrobes(wardrobeData);
@@ -48,7 +55,7 @@ const GenerateCustomOutfit = () => {
     setError(null);
     setIsGenerating(true);
     const userId = localStorage.getItem("user_id");
-
+    
     try {
       // --------------------------------------Get All Items--------------------------------------
       const getResponse = await fetch(`https://ejvfo74uj1.execute-api.us-east-1.amazonaws.com/deploy/get-all-items`, {
@@ -73,7 +80,8 @@ const GenerateCustomOutfit = () => {
         color: item.color,
         weather: item.weather,
         style: item.style,
-        url: item.photo_url
+        url: item.photo_url,
+        item_description: item.item_description
       }));
       // -------------------------------------------------------------------------------------------------------------
       // --------------------------------------Outfit Recommendation Request------------------------------------------
@@ -89,10 +97,12 @@ const GenerateCustomOutfit = () => {
           color_palette: colorPalette,
           style_description: styleDescription,
           wardrobe_items: wardrobeItems,
+          calendar_events: calendarEvents,
         }),
       });
   
       const returnedData = await response.json();
+      console.log(returnedData);
       if (returnedData.statusCode === 200) {
         const parsedBody = JSON.parse(returnedData.body);
 
@@ -109,7 +119,7 @@ const GenerateCustomOutfit = () => {
         };
         setRecommendation(recommendation);
       } else {
-        setError("Failed to generate outfit recommendation. Please try again.");
+        console.error("Failed to generate outfit recommendation:", returnedData.body);
       }
       } catch (err) {
         setError(err.message);
