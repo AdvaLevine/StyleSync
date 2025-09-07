@@ -1,8 +1,7 @@
 import React from "react";
-import { Settings as SettingsIcon, Sun, Moon, Save, Bell } from "lucide-react";
+import { Settings as SettingsIcon, Sun, Moon, Save } from "lucide-react";
 import userPool from "../aws/UserPool";
 import "../assets/styles/Settings.css";
-import notificationService from "../services/notificationService";
 
 class Settings extends React.Component {
     constructor(props) {
@@ -15,8 +14,7 @@ class Settings extends React.Component {
             },
             loading: false,
             success: false,
-            error: null,
-            testingNotification: false
+            error: null
         };
     }
 
@@ -109,40 +107,6 @@ componentDidMount() {
         }
     };
 
-    // Test notification function
-    testNotification = async () => {
-        this.setState({ testingNotification: true, error: null });
-        
-        try {
-            const phoneNumber = localStorage.getItem("user_phone");
-            if (!phoneNumber) {
-                this.setState({ 
-                    error: "Please add your phone number in your profile to receive notifications"
-                });
-                return;
-            }
-
-            if (!this.state.preferences.notifications) {
-                this.setState({ 
-                    error: "Please enable notifications first, then save your preferences"
-                });
-                return;
-            }
-
-            await notificationService.forceSendNotification();
-            this.setState({ success: true });
-            setTimeout(() => this.setState({ success: false }), 3000);
-            
-        } catch (error) {
-            console.error("Error testing notification:", error);
-            this.setState({ 
-                error: "Failed to send test notification. Please try again later."
-            });
-        } finally {
-            this.setState({ testingNotification: false });
-        }
-    };
-
     handleDeleteAccount = () => {
         // Show confirmation dialog
         if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
@@ -219,7 +183,7 @@ componentDidMount() {
     };
 
     render() {
-        const { preferences, loading, success, error, testingNotification } = this.state;
+        const { preferences, loading, success, error } = this.state;
         const userPhone = localStorage.getItem("user_phone");
         
         return ( 
@@ -274,22 +238,6 @@ componentDidMount() {
                                 />
                                 <span className="slider round"></span>
                             </label>
-                            {preferences.notifications && userPhone && (
-                                <button 
-                                    className="test-notification-btn"
-                                    onClick={this.testNotification}
-                                    disabled={testingNotification}
-                                >
-                                    {testingNotification ? (
-                                        "Sending..."
-                                    ) : (
-                                        <>
-                                            <Bell size={14} />
-                                            Test Now
-                                        </>
-                                    )}
-                                </button>
-                            )}
                         </div>
                     </div>
                     

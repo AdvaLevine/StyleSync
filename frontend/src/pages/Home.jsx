@@ -248,10 +248,11 @@ class Home extends React.Component {
     try {
       const response = await fetch(lambdaEndpont);
       if (!response.ok) {
-        throw new Error('Failed to fetch calendar events');
+        console.log("Calendar API returned non-OK. Please check if your API Key is dated");
+        this.setState({ calendarEvents: [], calendarLoading: false });
+        return; // gracefully stop
       }
       const data = await response.json();
-
       // Cache the new data
       const newCache = {
         date: today,
@@ -650,7 +651,11 @@ class Home extends React.Component {
                 ) : this.state.calendarEvents.length > 0 ? ( 
                   this.state.calendarEvents.map((event, index) => (
                     <div className="mini-event" key={index}>
-                      {event.start.dateTime} - {event.summary}
+                      {new Date(event.start).toLocaleTimeString("en-GB", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false
+                      })} - {event.summary}
                     </div>
                   ))
                 ) : (
