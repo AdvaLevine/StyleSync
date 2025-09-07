@@ -77,15 +77,18 @@ class Profile extends React.Component {
       // Get user info
       let userId, name, email, birthdate;
       
+      // MODIFIED: Prioritize using localStorage for name to maintain consistency
+      name = localStorage.getItem("name");
+      
       if (auth.user && auth.user.profile) {
         userId = auth.user.profile.sub;
-        name = auth.user.profile.name;
+        // Only use auth name if localStorage name is not available
+        if (!name) name = auth.user.profile.name;
         email = auth.user.profile.email;
         birthdate = auth.user.profile.birthdate;
       }
       
       userId = userId || localStorage.getItem("user_id");
-      name = name || localStorage.getItem("name");
       email = email || localStorage.getItem("email");
       birthdate = birthdate || localStorage.getItem("birthdate");
       
@@ -315,16 +318,23 @@ class Profile extends React.Component {
       localStorage.setItem("user_phone", this.state.formData.phoneNumber || "");
       localStorage.setItem("user_updated_at", now.toISOString());
       
-      // Update local userData state
+      // Update local userData state - make sure we're updating the name in userData too
       this.setState(prevState => ({
         userData: {
           ...prevState.userData,
-          name: this.state.formData.fullName
+          name: this.state.formData.fullName  // This ensures userData.name matches formData.fullName
         },
         lastUpdated: now,
         loading: false,
         success: true
       }));
+      
+      // ADDITION: Update auth user profile name if possible
+      if (auth.user && auth.user.profile) {
+        // This is just a local update and won't persist in the actual auth system
+        // but helps with consistency during the current session
+        auth.user.profile.name = this.state.formData.fullName;
+      }
       
       // Auto-hide success message after 3 seconds
       setTimeout(() => {
@@ -403,9 +413,6 @@ class Profile extends React.Component {
       return (
         <div className="profile-page">
           <div className="profile-header">
-            <Link to="/" className="back-button">
-              <ChevronLeft size={20} />
-            </Link>
             <h1 className="profile-main-title">Your Profile</h1>
           </div>
           <div className="profile-container">
@@ -442,9 +449,6 @@ class Profile extends React.Component {
     return (
       <div className="profile-page">
         <div className="profile-header">
-          <Link to="/" className="back-button">
-            <ChevronLeft size={20} />
-          </Link>
           <h1 className="profile-main-title">Your Profile</h1>
         </div>
         <div className="profile-container">
