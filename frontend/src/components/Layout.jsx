@@ -25,11 +25,15 @@ const Layout = () => {
   }
 
   const handleLogout = () => {
+    const darkModeFlag = localStorage.getItem("darkMode");
     // Clear all cached data for this user
     clearUserCache();
     clearWardrobeCache();
     localStorage.clear();
 
+    if (darkModeFlag) {
+      localStorage.setItem("darkMode", "true");
+    }
     auth.signoutRedirect({
         extraQueryParams: {
           client_id: "6jt8p3s82dcj78eomqpra1qo0i",

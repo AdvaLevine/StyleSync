@@ -10,7 +10,6 @@ class Settings extends React.Component {
             preferences: {
                 darkMode: false,
                 notifications: true,
-                privateWardrobe: false,
                 language: "English"
             },
             loading: false,
@@ -19,12 +18,36 @@ class Settings extends React.Component {
         };
     }
 
-    componentDidMount() {
+componentDidMount() {
         // Load saved preferences from localStorage on initial render
         try {
             const savedPrefs = localStorage.getItem("user_preferences");
             if (savedPrefs) {
-                this.setState({ preferences: JSON.parse(savedPrefs) });
+                const preferences = JSON.parse(savedPrefs);
+                this.setState({ preferences });
+                
+                // Apply dark mode immediately if it was previously enabled
+                if (preferences.darkMode) {
+                    document.body.classList.add("dark-theme");
+                }
+            } else {
+                // Check if there's a standalone dark mode flag for backward compatibility
+                const darkModeFlag = localStorage.getItem("darkMode");
+                if (darkModeFlag === "true") {
+                    const newPreferences = {
+                        darkMode: true,
+                        notifications: true,
+                        privateWardrobe: false,
+                        language: "English"
+                    };
+                    
+                    this.setState({ preferences: newPreferences });
+                    
+                    // Save the complete preferences object
+                    localStorage.setItem("user_preferences", JSON.stringify(newPreferences));
+                    
+                    document.body.classList.add("dark-theme");
+                }
             }
         } catch (err) {
             console.error("Error loading preferences:", err);
@@ -32,12 +55,21 @@ class Settings extends React.Component {
     }
 
     handleToggle = (setting) => {
-        this.setState(prevState => ({
-            preferences: {
+        this.setState(prevState => {
+            const newPreferences = {
                 ...prevState.preferences,
                 [setting]: !prevState.preferences[setting]
+            };
+            
+            // If toggling dark mode, apply/remove the class immediately for instant feedback
+            if (setting === 'darkMode') {
+                document.body.classList.toggle("dark-theme", newPreferences.darkMode);
+                // Also set the standalone flag for quick access
+                localStorage.setItem("darkMode", newPreferences.darkMode.toString());
             }
-        }));
+            
+            return { preferences: newPreferences };
+        });
     };
 
     handleLanguageChange = (e) => {
@@ -59,7 +91,10 @@ class Settings extends React.Component {
             // Save to localStorage
             localStorage.setItem("user_preferences", JSON.stringify(this.state.preferences));
             
-            // Apply dark mode if selected
+            // Set standalone dark mode flag for quick access across the app
+            localStorage.setItem("darkMode", this.state.preferences.darkMode.toString());
+            
+            // Apply dark mode if selected (redundant but ensures consistency)
             document.body.classList.toggle("dark-theme", this.state.preferences.darkMode);
             
             this.setState({ success: true });
@@ -103,8 +138,36 @@ class Settings extends React.Component {
                                 loading: false
                             });
                         } else {
+                            // Preserve dark mode before clearing
+                            const darkModeFlag = localStorage.getItem("darkMode");
+                            const userPreferences = localStorage.getItem("user_preferences");
+                            let darkModePreference = false;
+                            
+                            if (userPreferences) {
+                                try {
+                                    const prefs = JSON.parse(userPreferences);
+                                    darkModePreference = prefs.darkMode;
+                                } catch (err) {
+                                    console.error("Error parsing preferences:", err);
+                                }
+                            } else if (darkModeFlag === "true") {
+                                darkModePreference = true;
+                            }
+
                             // Clear local storage
                             localStorage.clear();
+
+                            // Restore dark mode preference
+                            if (darkModePreference) {
+                                localStorage.setItem("darkMode", "true");
+                                localStorage.setItem("user_preferences", JSON.stringify({
+                                    darkMode: true,
+                                    notifications: true,
+                                    privateWardrobe: false,
+                                    language: "English"
+                                }));
+                            }
+
                             // Redirect to login page
                             window.location.href = "/login";
                         }
@@ -121,6 +184,7 @@ class Settings extends React.Component {
 
     render() {
         const { preferences, loading, success, error } = this.state;
+        const userPhone = localStorage.getItem("user_phone");
         
         return ( 
             <div className="settings-page">
@@ -158,32 +222,23 @@ class Settings extends React.Component {
                     
                     <div className="settings-option">
                         <div className="settings-option-text">
-                            <h3>Notifications</h3>
-                            <p>Receive outfit suggestions and tips</p>
+                            <h3>Daily Style Notifications</h3>
+                            <p>Receive daily outfit tips and style suggestions via SMS</p>
+                            {!userPhone && (
+                                <p className="phone-warning">⚠️ Add your phone number in your profile to enable notifications</p>
+                            )}
                         </div>
-                        <label className="toggle">
-                            <input
-                                type="checkbox"
-                                checked={preferences.notifications}
-                                onChange={() => this.handleToggle("notifications")}
-                            />
-                            <span className="slider round"></span>
-                        </label>
-                    </div>
-                    
-                    <div className="settings-option">
-                        <div className="settings-option-text">
-                            <h3>Private Wardrobe</h3>
-                            <p>Keep your wardrobe private from other users</p>
+                        <div className="notification-controls">
+                            <label className="toggle">
+                                <input
+                                    type="checkbox"
+                                    checked={preferences.notifications}
+                                    onChange={() => this.handleToggle("notifications")}
+                                    disabled={!userPhone}
+                                />
+                                <span className="slider round"></span>
+                            </label>
                         </div>
-                        <label className="toggle">
-                            <input
-                                type="checkbox"
-                                checked={preferences.privateWardrobe}
-                                onChange={() => this.handleToggle("privateWardrobe")}
-                            />
-                            <span className="slider round"></span>
-                        </label>
                     </div>
                     
                     <div className="settings-option">
@@ -196,9 +251,6 @@ class Settings extends React.Component {
                             onChange={this.handleLanguageChange}
                         >
                             <option value="English">English</option>
-                            <option value="Spanish">Spanish</option>
-                            <option value="French">French</option>
-                            <option value="German">German</option>
                         </select>
                     </div>
                     

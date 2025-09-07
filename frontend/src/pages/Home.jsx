@@ -248,7 +248,9 @@ class Home extends React.Component {
     try {
       const response = await fetch(lambdaEndpont);
       if (!response.ok) {
-        throw new Error('Failed to fetch calendar events');
+        console.log("Calendar API returned non-OK. Please check if your API Key is dated");
+        this.setState({ calendarEvents: [], calendarLoading: false });
+        return; // gracefully stop
       }
       const data = await response.json();
       // Cache the new data

@@ -1,0 +1,389 @@
+/* Dark Theme Variables */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-card: #ffffff;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --border-color: #e5e7eb;
+  --accent-color: #4285f4;
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Theme Overrides */
+body.dark-theme {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-card: #262626;
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --text-muted: #999999;
+  --border-color: #404040;
+  --accent-color: #5b9bd5;
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Apply variables to elements */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Main content areas */
+body.dark-theme .main-content,
+body.dark-theme .app-container {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* All page containers */
+body.dark-theme .add-item-container,
+body.dark-theme .create-wardrobe-container,
+body.dark-theme .view-wardrobe-container,
+body.dark-theme .outfit-recommendation-container,
+body.dark-theme .profile-page {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary);
+}
+
+/* All box/card components */
+body.dark-theme .add-item-box,
+body.dark-theme .create-wardrobe-box,
+body.dark-theme .view-wardrobe-box,
+body.dark-theme .outfit-recommendation-box,
+body.dark-theme .profile-container,
+body.dark-theme .settings-card,
+body.dark-theme .stat-card {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+  color: var(--text-primary);
+}
+
+/* All headings and text */
+body.dark-theme h1,
+body.dark-theme h2,
+body.dark-theme h3,
+body.dark-theme h4,
+body.dark-theme h5,
+body.dark-theme h6 {
+  color: var(--text-primary) !important;
+}
+
+body.dark-theme p,
+body.dark-theme span,
+body.dark-theme label,
+body.dark-theme .add-item-subtitle {
+  color: var(--text-secondary);
+}
+
+/* Form elements */
+body.dark-theme input,
+body.dark-theme select,
+body.dark-theme textarea {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+body.dark-theme input:focus,
+body.dark-theme select:focus,
+body.dark-theme textarea:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(91, 155, 213, 0.2);
+}
+
+/* All buttons */
+body.dark-theme button,
+body.dark-theme .new-wardrobe-btn,
+body.dark-theme .create-wardrobe-btn,
+body.dark-theme .save-preferences-button,
+body.dark-theme .add-btn,
+body.dark-theme .save-button {
+  background-color: var(--accent-color) !important;
+  border: 1px solid var(--accent-color) !important;
+  color: white !important;
+}
+
+/* Back buttons and links */
+body.dark-theme .back-button,
+body.dark-theme .back-btn,
+body.dark-theme a {
+  color: var(--accent-color) !important;
+}
+
+/* Item cards and containers */
+body.dark-theme .item-card,
+body.dark-theme .items-container {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+/* Empty states */
+body.dark-theme .empty-wardrobe,
+body.dark-theme .no-wardrobe-message {
+  border-color: var(--border-color) !important;
+  background-color: var(--bg-card) !important;
+}
+
+/* Messages */
+body.dark-theme .success-message {
+  background-color: #064e3b;
+  border-color: #059669;
+  color: #10b981;
+}
+
+body.dark-theme .error-message {
+  background-color: #7f1d1d;
+  border-color: #dc2626;
+  color: #f87171;
+}
+
+/* Navigation/Layout */
+body.dark-theme .layout-container {
+  background-color: var(--bg-primary);
+}
+
+body.dark-theme .sidebar {
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+}
+
+body.dark-theme .nav-link {
+  color: var(--text-secondary);
+}
+
+body.dark-theme .nav-link:hover,
+body.dark-theme .nav-link.active {
+  color: var(--text-primary);
+  background-color: var(--bg-card);
+}
+
+/* Layout navigation menu items */
+body.dark-theme .menu-item {
+  color: var(--text-secondary) !important;
+}
+
+body.dark-theme .menu-item:hover {
+  color: var(--text-primary) !important;
+  background-color: var(--bg-card) !important;
+}
+
+body.dark-theme .menu-item.active {
+  color: var(--accent-color) !important;
+  background-color: var(--bg-card) !important;
+}
+
+/* Profile specific */
+body.dark-theme .profile-avatar,
+body.dark-theme .form-group {
+  background-color: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+/* View options and dropdowns */
+body.dark-theme .view-options,
+body.dark-theme .dropdown-wrapper {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+/* Toggle switches */
+body.dark-theme .toggle input:checked + .slider {
+  background-color: var(--accent-color);
+}
+
+body.dark-theme .slider {
+  background-color: var(--border-color);
+}
+
+/* Photo upload sections */
+body.dark-theme .photo-upload-section,
+body.dark-theme .upload-option {
+  background-color: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+/* Progress bars */
+body.dark-theme .progress-bar {
+  background-color: var(--border-color);
+}
+
+body.dark-theme .progress-fill {
+  background-color: var(--accent-color);
+}
+
+/* Home page specific cards */
+body.dark-theme .wardrobes-section,
+body.dark-theme .recent-items-section,
+body.dark-theme .suggestions-section {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+}
+
+body.dark-theme .wardrobe-card {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+}
+
+body.dark-theme .recent-item-card {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+}
+
+body.dark-theme .recent-items-grid-container {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+}
+
+/* Outfit recommendation cards */
+body.dark-theme .card {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary);
+}
+
+body.dark-theme .bg-light {
+  background-color: var(--bg-secondary) !important;
+}
+
+body.dark-theme .bg-white {
+  background-color: var(--bg-card) !important;
+}
+
+body.dark-theme .text-dark {
+  color: var(--text-primary) !important;
+}
+
+body.dark-theme .text-muted {
+  color: var(--text-secondary) !important;
+}
+
+/* ViewWardrobe specific */
+body.dark-theme .items-table {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+}
+
+body.dark-theme .items-table thead tr {
+  background-color: var(--bg-secondary);
+}
+
+body.dark-theme .items-table th {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border-bottom: 3px solid var(--border-color);
+}
+
+body.dark-theme .items-table tbody tr {
+  background-color: var(--bg-card);
+  box-shadow: 0 3px 10px rgba(255, 255, 255, 0.1);
+}
+
+body.dark-theme .items-table tbody tr:hover {
+  background-color: var(--bg-secondary);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+}
+
+body.dark-theme .items-table td {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+body.dark-theme .items-table td:first-child {
+  border-left: 4px solid var(--accent-color);
+}
+
+/* Dropdown Component Specific Styles */
+body.dark-theme .dropdown {
+  background-color: var(--bg-card);
+}
+
+body.dark-theme .dropdown label {
+  color: var(--text-primary) !important;
+}
+
+body.dark-theme .dropdown input {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+body.dark-theme .dropdown input::placeholder {
+  color: var(--text-secondary) !important;
+}
+
+body.dark-theme .dropdown-list {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow);
+}
+
+body.dark-theme .dropdown-list li {
+  color: var(--text-primary) !important;
+  background-color: var(--bg-card);
+}
+
+body.dark-theme .dropdown-list li:hover {
+  background-color: var(--bg-secondary) !important;
+}
+
+body.dark-theme .dropdown-list .no-match {
+  color: var(--text-secondary) !important;
+  background-color: var(--bg-card);
+}
+
+/* Filter sections */
+body.dark-theme .filter-section {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color);
+}
+
+body.dark-theme .filter-header {
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+}
+
+body.dark-theme .filter-category {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+body.dark-theme .filter-category:hover {
+  background-color: var(--bg-card);
+}
+
+body.dark-theme .filter-category.expanded {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+body.dark-theme .filter-options-container {
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+}
+
+body.dark-theme .filter-option {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+body.dark-theme .active-filters-summary {
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+}
+
+body.dark-theme .filter-summary-item {
+  background-color: var(--bg-card);
+  border: 1px solid var(--accent-color);
+  color: var(--accent-color);
+}
