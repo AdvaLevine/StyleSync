@@ -1231,9 +1231,13 @@
     }
     
     .items-container.images {
-        grid-template-columns: 1fr; /* Force single column on small screens */
-        gap: 12px;
-        padding: 0; /* Remove padding to maximize space for cards */
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        padding-right: 5px; /* Space for scrollbar */
+        max-height: 60vh;
+        overflow-y: auto;
+        align-items: center; /* Center items in container */
     }
     
     .view-button {
@@ -1271,21 +1275,27 @@
         max-height: 55vh;
     }
     
-    .items-container.images {
-        grid-template-columns: repeat(1, 1fr);
-        gap: 12px;
+    /* Make each card a consistent, appropriate width */
+    .item-card {
+        width: 90%;
+        margin: 0 auto;
+        max-width: 380px;
     }
     
-    .item-card {
-    width: 100%; /* Make each card take up the full available width */
-    max-width: 380px; /* Optional: A maximum width to prevent it from looking too stretched on wider phones */
-    margin: 0 auto; /* Center the card if max-width is applied */
-   }
-
-    .item-card .item-image {
-    height: 250px; /* A fixed height is fine, but it should be a bit more flexible to avoid distortion */
-    /* Let's adjust it to maintain aspect ratio using object-fit */
-   }
+    /* Fix image display within cards */
+    .item-image {
+        height: auto; /* Remove fixed height */
+        min-height: 200px; /* Set minimum height */
+        max-height: 250px; /* Set maximum height */
+    }
+    
+    .item-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain; /* Maintain aspect ratio */
+        object-position: center;
+    }
+    
     .item-details {
         padding: 4px 8px;
         min-height: 30px;
@@ -1374,111 +1384,19 @@
         margin-top: 10px;
         margin-bottom: 10px;
     }
-
-    .item-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain; /* This is the key: it prevents the image from being squished */
-    object-position: center;
-  }
 }
 
+/* Further refinements for smaller phones */
 @media screen and (max-width: 375px) {
-    .view-wardrobe-container {
-        padding: 10px 0;
-    }
-    
-    .view-wardrobe-box {
-        width: 90%;
-        padding: 0.8rem;
-        margin-top: 10px;
-    }
-    
-    .view-wardrobe-box h2 {
-        font-size: 16px;
-        margin-bottom: 6px;
-    }
-    
-    .items-container {
-        max-height: 50vh;
-    }
-    
     .items-container.images {
-        grid-template-columns: repeat(1, 1fr);
-        gap: 10px;
+        max-height: 55vh;
     }
     
-    .item-card .item-image {
-        height: 250px; 
+    .item-card {
+        width: 95%;
     }
     
-    .item-details {
-        padding: 3px 6px;
-        min-height: 28px;
-    }
-    
-    .item-details p:first-child {
-        font-size: 0.75rem;
-    }
-    
-    .item-details p:last-child {
-        font-size: 0.65rem;
-    }
-    
-    .filter-category {
-        padding: 5px 8px;
-        font-size: 0.8rem;
-    }
-    
-    .back-button {
-        top: 10px;
-        left: 10px;
-        font-size: 22px;
-    }
-    
-    .delete-wardrobe-btn {
-        font-size: 11px;
-        padding: 4px 10px;
-        align-self: flex-end;
-    }
-
-    .select-all-btn {
-        font-size: 11px;
-        padding: 4px 10px;
-    }
-
-    .selected-count {
-        font-size: 11px;
-    }
-    
-    .bulk-delete-btn {
-        font-size: 11px;
-        padding: 4px 10px;
-    }
-
-    .wardrobe-management-actions {
-        justify-content: flex-end;
-        padding-top: 10px;
-        margin-top: 10px;
-        margin-bottom: 10px;
-    }
-    
-    .modal-content {
-        padding: 16px;
-        max-width: 280px;
-    }
-    
-    .modal-content h3 {
-        font-size: 16px;
-    }
-    
-    .modal-buttons {
-        gap: 8px;
-        margin-top: 16px;
-    }
-    
-    .cancel-btn, .delete-btn {
-        padding: 6px 12px;
-        font-size: 12px;
+    .item-image {
+        min-height: 180px;
     }
 }
