@@ -359,6 +359,23 @@
     border-radius: 12px;
 }
 
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .items-container.list {
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+    
+    .items-table {
+        min-width: 650px;
+    }
+
+    /* Make description column narrower on small screens */
+    .items-table td:nth-child(5) {
+        max-width: 150px;
+    }
+}
+
 .loading {
     text-align: center;
     margin: 20px 0;
@@ -436,6 +453,28 @@
   font-size: 20px;
 }
 
+/* Responsive design for action buttons */
+@media screen and (max-width: 480px) {
+  .wardrobe-management-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .delete-wardrobe-btn {
+    margin-top: 10px;
+  }
+  .view-actions {
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+  .delete-wardrobe-btn {
+    margin-bottom: 8px;
+    font-size: 13px;
+    padding: 5px 12px;
+  }
+}
+
 /* Blue View Button */
 .view-button {
     background-color: #4a86e8;
@@ -463,6 +502,28 @@
     align-self: flex-end;
 }
 
+/* Responsive styles */
+@media screen and (max-width: 480px) {
+    .view-wardrobe-box {
+        width: 260px;
+        padding: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    .view-wardrobe-box h2 {
+        font-size: 18px;
+    }
+
+    .view-button {
+        font-size: 14px;
+    }
+
+    .error-message {
+        font-size: 12px;
+        padding: 8px;
+    }
+}
+
 /* Wider container for image view */
 .view-wardrobe-box:has(.items-container.images) {
     width: 850px; /* Width for exactly 3 columns with margins */
@@ -475,6 +536,20 @@
     width: 950px; /* Fix the incorrect 850vw value and make it wide enough for table */
     max-width: 95vw; /* Keep responsive behavior */
     height: auto;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 900px) {
+    .items-container.images {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}
+
+/* For very small screens, ensure at least 2 columns */
+@media screen and (max-width: 600px) {
+    .items-container.images {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 /* Style the scrollbar for better appearance */
@@ -1102,6 +1177,40 @@
 }
 
 /* Responsive adjustments */
+@media screen and (max-width: 600px) {
+    .filter-option {
+        padding: 5px 8px;
+        font-size: 0.85rem;
+    }
+    
+    .filter-options-container {
+        padding: 10px;
+    }
+}
+
+/* Adjust these styles as needed */
+
+.items-container {
+    /* Default grid view styles */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.items-container.list-view {
+    /* List view styles */
+    display: block;
+    width: 100%;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Add these media queries after your existing ones */
 @media screen and (max-width: 1176px) {
     .view-wardrobe-box.list-view,
     .view-wardrobe-box:has(.items-container.images) {
@@ -1110,33 +1219,8 @@
     }
 }
 
-@media screen and (max-width: 900px) {
-    .items-container.images {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    }
-}
-
+/* Tablet screens (768px) - Enhance existing styles */
 @media screen and (max-width: 768px) {
-    .items-container.list {
-        overflow-x: auto;
-        padding-bottom: 10px;
-    }
-    
-    .items-table {
-        min-width: 650px;
-    }
-
-    /* Make description column narrower on small screens */
-    .items-table td:nth-child(5) {
-        max-width: 150px;
-    }
-
-    .items-container.images {
-        /* Use a fluid value for 2 columns on tablets */
-        grid-template-columns: repeat(2, minmax(150px, 1fr));
-        gap: 15px;
-    }
-    
     .view-wardrobe-box {
         width: min(90%, 400px);
         padding: 1.5rem;
@@ -1150,7 +1234,7 @@
     
     .view-wardrobe-box.list-view,
     .view-wardrobe-box:has(.items-container.images) {
-        width: min(90%, 800px);
+        width:  min(90%, 800px);
         max-width: 700px;
     }
     
@@ -1176,79 +1260,8 @@
     }
 }
 
-@media screen and (max-width: 600px) {
-    .items-container.images {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .filter-option {
-        padding: 5px 8px;
-        font-size: 0.85rem;
-    }
-    
-    .filter-options-container {
-        padding: 10px;
-    }
-}
-
+/* Mobile screens (480px and below - covers 430px) */
 @media screen and (max-width: 480px) {
-    .wardrobe-management-actions {
-        flex-direction: column;
-        align-items: stretch;
-    }
-  
-    .delete-wardrobe-btn {
-        margin-top: 10px;
-    }
-    
-    .view-actions {
-        flex-direction: column;
-        align-items: flex-end;
-    }
-  
-    .delete-wardrobe-btn {
-        margin-bottom: 8px;
-        font-size: 13px;
-        padding: 5px 12px;
-    }
-    
-    .view-wardrobe-box {
-        width: 95%; /* Make the main box take up most of the screen */
-        max-width: 400px; /* A bit more flexible max-width */
-        padding: 1rem;
-        margin-top: 15px;
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-    }
-    
-    .view-wardrobe-box.list-view,
-    .view-wardrobe-box:has(.items-container.images) {
-        width: 95%; 
-        max-width: 420px;
-    }
-    
-    .view-wardrobe-box h2 {
-        font-size: 18px;
-    }
-    
-    .items-container.images {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        padding-right: 5px; /* Space for scrollbar */
-        max-height: 60vh;
-        overflow-y: auto;
-        align-items: center; /* Center items in container */
-    }
-    
-    .view-button {
-        font-size: 14px;
-    }
-
-    .error-message {
-        font-size: 12px;
-        padding: 8px;
-    }
-    
     .view-wardrobe-container {
         padding: 40px 0;
     }
@@ -1275,25 +1288,13 @@
         max-height: 55vh;
     }
     
-    /* Make each card a consistent, appropriate width */
-    .item-card {
-        width: 90%;
-        margin: 0 auto;
-        max-width: 380px;
+    .items-container.images {
+        grid-template-columns: repeat(1, 1fr);
+        gap: 12px;
     }
     
-    /* Fix image display within cards */
-    .item-image {
-        height: auto; /* Remove fixed height */
-        min-height: 200px; /* Set minimum height */
-        max-height: 250px; /* Set maximum height */
-    }
-    
-    .item-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain; /* Maintain aspect ratio */
-        object-position: center;
+    .item-card .item-image {
+        height: 280px;
     }
     
     .item-details {
@@ -1359,9 +1360,9 @@
     }
 
     .delete-wardrobe-btn {
-        font-size: 14px;
-        padding: 4px 10px;
-        align-self: flex-end;
+    font-size: 14px;
+    padding: 4px 10px;
+    align-self: flex-end;
     }
 
     .select-all-btn {
@@ -1379,74 +1380,110 @@
     }
 
     .wardrobe-management-actions {
+    justify-content: flex-end;
+    padding-top: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    }
+}
+
+/* Smallest mobile screens (375px and below) */
+@media screen and (max-width: 375px) {
+    .view-wardrobe-container {
+        padding: 10px 0;
+    }
+    
+    .view-wardrobe-box {
+        width: 90%;
+        padding: 0.8rem;
+        margin-top: 10px;
+    }
+    
+    .view-wardrobe-box h2 {
+        font-size: 16px;
+        margin-bottom: 6px;
+    }
+    
+    .items-container {
+        max-height: 50vh;
+    }
+    
+    .items-container.images {
+        grid-template-columns: repeat(1, 1fr);
+        gap: 10px;
+    }
+    
+    .item-card .item-image {
+        height: 250px; 
+    }
+    
+    .item-details {
+        padding: 3px 6px;
+        min-height: 28px;
+    }
+    
+    .item-details p:first-child {
+        font-size: 0.75rem;
+    }
+    
+    .item-details p:last-child {
+        font-size: 0.65rem;
+    }
+    
+    .filter-category {
+        padding: 5px 8px;
+        font-size: 0.8rem;
+    }
+    
+    .back-button {
+        top: 10px;
+        left: 10px;
+        font-size: 22px;
+    }
+    
+    .delete-wardrobe-btn {
+        font-size: 11px;
+        padding: 4px 10px;
+        align-self: flex-end;
+    }
+
+    .select-all-btn {
+        font-size: 11px;
+        padding: 4px 10px;
+    }
+
+    .selected-count {
+        font-size: 11px;
+    }
+    
+    .bulk-delete-btn {
+        font-size: 11px;
+        padding: 4px 10px;
+    }
+
+    .wardrobe-management-actions {
         justify-content: flex-end;
         padding-top: 10px;
         margin-top: 10px;
         margin-bottom: 10px;
     }
-}
-
-/* Further refinements for smaller phones */
-@media screen and (max-width: 375px) {
-    .items-container.images {
-        max-height: 55vh;
+    
+    .modal-content {
+        padding: 16px;
+        max-width: 280px;
     }
     
-    .item-card {
-        width: 95% !important;
-        max-width: 280px !important;
+    .modal-content h3 {
+        font-size: 16px;
     }
     
-    .item-image {
-        min-height: 160px !important;
-        max-height: 200px !important;
-    }
-}
-
-/* FIXED MOBILE IMAGE DISPLAY */
-@media screen and (max-width: 480px) {
-    .items-container.images {
-        display: flex !important; /* Force flex layout */
-        flex-direction: column !important; /* Stack items vertically */
-        flex-wrap: nowrap !important; /* Prevent wrapping */
-        grid-template-columns: unset !important; /* Remove grid layout completely */
-        gap: 15px;
-        align-items: center;
-        overflow-y: auto;
-        max-height: 60vh;
-        width: 100%;
-        padding-right: 5px;
+    .modal-buttons {
+        gap: 8px;
+        margin-top: 16px;
     }
     
-    /* Ensure consistent item width */
-    .item-card {
-        width: 85% !important; /* Force width */
-        margin: 8px auto !important;
-        max-width: 300px !important;
-        flex-shrink: 0 !important; /* Prevent shrinking */
-    }
-    
-    /* Fix image dimensions */
-    .item-image {
-        height: auto !important; /* Override any fixed height */
-        min-height: 180px !important;
-        max-height: 220px !important;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .item-image img {
-        max-width: 100% !important;
-        max-height: 200px !important;
-        width: auto !important; /* Allow natural width */
-        height: auto !important; /* Allow natural height */
-        object-fit: contain !important;
-    }
-    
-    /* Force width on the container when in images mode */
-    .view-wardrobe-box:has(.items-container.images) {
-        width: 95% !important;
-        max-width: 95% !important;
+    .cancel-btn, .delete-btn {
+        padding: 6px 12px;
+        font-size: 12px;
     }
 }
