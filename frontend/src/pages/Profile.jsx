@@ -25,7 +25,8 @@ class Profile extends React.Component {
         phoneNumber: ""
       },
       //lastUpdated: null,
-      apiCallInProgress: false // Add flag to prevent duplicate calls
+      apiCallInProgress: false, // Add flag to prevent duplicate calls
+      maxNameLength: 50
     };
     
     // Flag to prevent duplicate API calls during mounting
@@ -223,6 +224,12 @@ class Profile extends React.Component {
     
   handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // For fullName field, enforce max length
+    if (name === 'fullName' && value.length > this.state.maxNameLength) {
+      return; // Don't update state if over max length
+    }
+    
     this.setState(prevState => ({
       formData: {
         ...prevState.formData,
@@ -236,6 +243,12 @@ class Profile extends React.Component {
   validateForm = () => {
     if (!this.state.formData.fullName || this.state.formData.fullName.trim() === "") {
       this.setState({ error: "Full name is required" });
+      return false;
+    }
+    
+    // Check name length
+    if (this.state.formData.fullName.length > 50) {
+      this.setState({ error: "Full name cannot exceed 50 characters" });
       return false;
     }
     
@@ -403,7 +416,7 @@ class Profile extends React.Component {
   };
 
   render() {
-    const { loading, error, success, userData, formData /*lastUpdated*/ } = this.state;
+    const { loading, error, success, userData, formData, maxNameLength /*lastUpdated*/ } = this.state;
     const { auth } = this.props;
     
     const formattedBirthdate = this.formatDate(userData.birthdate);
@@ -482,8 +495,12 @@ class Profile extends React.Component {
                 name="fullName"
                 value={formData.fullName}
                 onChange={this.handleChange}
+                maxLength={maxNameLength}
                 required
               />
+              <div className="char-counter">
+                {formData.fullName ? formData.fullName.length : 0}/{maxNameLength} characters
+              </div>
             </div>
             
             <div className="form-group full-width">
