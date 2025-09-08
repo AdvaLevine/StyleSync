@@ -109,7 +109,6 @@ body.dark-theme .save-button {
 
 /* Back buttons and links */
 body.dark-theme .back-button,
-body.dark-theme .back-btn,
 body.dark-theme a {
   color: var(--accent-color) !important;
 }
