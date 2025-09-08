@@ -13,12 +13,12 @@ import {
 import "../assets/styles/Home.css";
 import { clearUserCache } from "../services/itemsCache";
 import { clearWardrobeCache } from "../services/wardrobeCache";
-import { useAuth } from "react-oidc-context"; // הוספת ייבוא לאותנטיקציה
+import { useAuth } from "react-oidc-context"; 
 
 const Layout = () => {
   const location = useLocation();
   const name = localStorage.getItem("name") || "Guest";
-  const auth = useAuth(); // הוספת שימוש ב-auth
+  const auth = useAuth();
 
   if (!auth.isAuthenticated) {
     return null;
