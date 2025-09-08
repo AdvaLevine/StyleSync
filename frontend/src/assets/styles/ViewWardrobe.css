@@ -1487,3 +1487,63 @@
         font-size: 12px;
     }
 }
+
+/* iOS Safari specific fixes for grid layout */
+@supports (-webkit-touch-callout: none) {
+    /* iOS-only CSS */
+    .items-container.images {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: space-between;
+    }
+
+    .items-container.images .item-card {
+        width: calc(100% - 15px);
+        margin-bottom: 15px;
+    }
+
+    /* Apply different widths based on screen size for iOS */
+    @media screen and (min-width: 481px) {
+        .items-container.images .item-card {
+            width: calc(50% - 15px);
+        }
+    }
+    
+    @media screen and (min-width: 768px) {
+        .items-container.images .item-card {
+            width: calc(33.33% - 15px);
+        }
+    }
+
+    /* Make sure item card takes proper space */
+    .item-card {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        margin-bottom: 15px;
+        position: relative;
+        flex-shrink: 0; /* Prevent items from shrinking */
+    }
+
+    /* Ensure proper height behavior */
+    .item-image {
+        height: 170px;
+        width: 100%;
+        flex: 0 0 auto;
+    }
+
+    .item-details {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+}
+
+/* Fix for iOS Safari list view */
+@supports (-webkit-touch-callout: none) {
+    .items-container.list-view {
+        width: 100%;
+        display: block;
+    }
+}
