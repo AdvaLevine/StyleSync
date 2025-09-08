@@ -1393,10 +1393,60 @@
     }
     
     .item-card {
-        width: 95%;
+        width: 95% !important;
+        max-width: 280px !important;
     }
     
     .item-image {
-        min-height: 180px;
+        min-height: 160px !important;
+        max-height: 200px !important;
+    }
+}
+
+/* FIXED MOBILE IMAGE DISPLAY */
+@media screen and (max-width: 480px) {
+    .items-container.images {
+        display: flex !important; /* Force flex layout */
+        flex-direction: column !important; /* Stack items vertically */
+        flex-wrap: nowrap !important; /* Prevent wrapping */
+        grid-template-columns: unset !important; /* Remove grid layout completely */
+        gap: 15px;
+        align-items: center;
+        overflow-y: auto;
+        max-height: 60vh;
+        width: 100%;
+        padding-right: 5px;
+    }
+    
+    /* Ensure consistent item width */
+    .item-card {
+        width: 85% !important; /* Force width */
+        margin: 8px auto !important;
+        max-width: 300px !important;
+        flex-shrink: 0 !important; /* Prevent shrinking */
+    }
+    
+    /* Fix image dimensions */
+    .item-image {
+        height: auto !important; /* Override any fixed height */
+        min-height: 180px !important;
+        max-height: 220px !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .item-image img {
+        max-width: 100% !important;
+        max-height: 200px !important;
+        width: auto !important; /* Allow natural width */
+        height: auto !important; /* Allow natural height */
+        object-fit: contain !important;
+    }
+    
+    /* Force width on the container when in images mode */
+    .view-wardrobe-box:has(.items-container.images) {
+        width: 95% !important;
+        max-width: 95% !important;
     }
 }
