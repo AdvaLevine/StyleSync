@@ -155,12 +155,11 @@
 
 /* Image view styles - restore original */
 .items-container.images {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: flex-start;
-    overflow-y: auto;
-    max-height: 60vh; /* Ensure vertical scrolling */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    padding-right: 5px; /* Add padding for scrollbar */
 }
 
 /* More elegant item card styling with visible border */
@@ -1290,27 +1289,25 @@
     }
     
     .items-container.images {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: flex-start;
-        overflow-y: auto;
-        max-height: 60vh; /* Ensure vertical scrolling */
+        grid-template-columns: repeat(1, 1fr);
+        gap: 12px;
     }
     
-    .item-card {
-        width: calc(50% - 10px); /* Make cards take half width minus gap */
-        min-width: auto; /* Remove any minimum width restriction */
-        max-width: 150px; /* Maximum width to prevent oversizing */
-        margin: 0; /* Remove any margin that might be causing issues */
-    }
-    
-    .item-image {
-        height: 120px; /* Fixed height for consistency */
+    .item-card .item-image {
+        height: 280px;
     }
     
     .item-details {
-        padding: 5px; /* Reduce padding to save space */
+        padding: 4px 8px;
+        min-height: 30px;
+    }
+    
+    .item-details p:first-child {
+        font-size: 0.8rem;
+    }
+    
+    .item-details p:last-child {
+        font-size: 0.7rem;
     }
     
     .view-options-row {
@@ -1412,20 +1409,11 @@
     }
     
     .items-container.images {
-        display: flex;
-        flex-wrap: wrap;
+        grid-template-columns: repeat(1, 1fr);
         gap: 10px;
-        justify-content: flex-start;
-        overflow-y: auto;
-        max-height: 60vh; /* Ensure vertical scrolling */
     }
     
-    .item-card {
-        width: calc(100% - 10px); /* Full width on very small screens */
-        max-width: 200px;
-    }
-    
-    .item-image {
+    .item-card .item-image {
         height: 250px; 
     }
     
