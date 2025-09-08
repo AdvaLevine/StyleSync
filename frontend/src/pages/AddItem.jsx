@@ -503,7 +503,7 @@ class AddItem extends React.Component {
             return (
                 <div className="add-item-container">
                     <div className="add-item-box">
-                        <h2>Add Item</h2>
+                        <h2 style={{ fontWeight: 'bold' }}>Add Item</h2>
                         {this.state.step === 1 && (
                             <form>
                                 <Dropdown

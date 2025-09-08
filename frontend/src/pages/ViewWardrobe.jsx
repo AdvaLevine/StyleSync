@@ -987,7 +987,7 @@ class ViewWardrobe extends React.Component {
                 )}
                 
                 <div className={`view-wardrobe-box ${appliedViewMode === 'list' ? 'list-view' : ''}`}>
-                    <h2>View Wardrobe</h2>
+                    <h2 style={{ fontWeight: 'bold' }}>View Wardrobe</h2>
                     
                     <div className="view-options">
                         <div className="view-options-row">
