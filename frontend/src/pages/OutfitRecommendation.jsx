@@ -192,13 +192,12 @@ const GenerateCustomOutfit = () => {
               <label className="form-label">Weather</label>
               <select className="form-select" value={weather} onChange={(e) => setWeather(e.target.value)}>
                 <option value="Any Weather">Any Weather</option>
-                <option value="Sunny">Sunny</option>
-                <option value="Cloudy">Cloudy</option>
+                <option value="Hot">Hot</option>
+                <option value="Warm">Warm</option>
+                <option value="Cool">Cool</option>
+                <option value="Cold">Cold</option>
                 <option value="Rainy">Rainy</option>
                 <option value="Snowy">Snowy</option>
-                <option value="Windy">Windy</option>
-                <option value="Hot">Hot</option>
-                <option value="Cold">Cold</option>
               </select>
             </div>
 
@@ -212,6 +211,7 @@ const GenerateCustomOutfit = () => {
                 <option value="Business">Business</option>
                 <option value="Sport">Sport</option>
                 <option value="Party">Party</option>
+                <option value="Beach">Beach</option>
               </select>
             </div>
 
@@ -220,12 +220,14 @@ const GenerateCustomOutfit = () => {
               <label className="form-label">Color</label>
               <select className="form-select" value={colorPalette} onChange={(e) => setColorPalette(e.target.value)}>
                 <option value="Any">Any</option>
-                <option value="Neutral">Neutral</option>
-                <option value="Bright">Bright</option>
-                <option value="Pastel">Pastel</option>
-                <option value="Earth Tones">Earth Tones</option>
-                <option value="Monochrome">Monochrome</option>
+                <option value="Black">Black</option>
+                <option value="White">White</option>
+                <option value="Neutrals">Neutrals</option>
                 <option value="Dark">Dark</option>
+                <option value="Light">Light</option>
+                <option value="Warm">Warm</option>
+                <option value="Cool">Cool</option>
+                <option value="High Contrast">High Contrast</option>
               </select>
             </div>
 
