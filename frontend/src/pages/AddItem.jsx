@@ -442,10 +442,10 @@ class AddItem extends React.Component {
         }
     };
 
-    commonOptions = ["Shirt", "Pants", "Dress", "Jacket", "Shoes", "Hat", "Scarf", "Belt", "Socks", "Gloves"];
-    colorOptions = ["Black", "White", "Red", "Blue", "Green", "Yellow", "Purple", "Pink", "Orange", "Brown"];
+    commonOptions = ["Shirt", "Pants", "Dress", "Jacket", "Shoes", "Hat", "Scarf", "Belt", "Socks", "Gloves", "onesie", "Skirt", "Shorts", "Blouse", "Coat", "Boots", "Sandals", "Sneakers", "Swimsuit", "Tie", "Vest"];
+    colorOptions = ["Black", "White", "Red", "Blue", "Green", "Yellow", "Purple", "Pink", "Orange", "Brown", "Gray", "Violet", "Indigo", "Turquoise", "Beige", "Maroon", "Navy", "Teal", "Lime", "Olive", "Colorful"];
     weatherOptions = ["Hot", "Cold", "Rainy", "Snow", "Windy", "Sunny", "Cloudy", "Stormy", "Foggy", "Humid"];
-    styleOptions = ["Casual", "Formal", "Fancy", "Business", "Sports", "Party", "Beach", "Outdoor", "Elegant", "Vintage"];
+    styleOptions = ["Casual", "Formal", "Fancy", "Business", "Sports", "Party", "Beach", "Outdoor", "Elegant", "Vintage", "Bohemian", "Chic", "Preppy", "Goth", "Hipster", "Punk", "Athleisure" ];
 
     validateStep1 = () => {
         if (!this.state.fromDate.wardrobe) {
