@@ -53,7 +53,6 @@ class AddItem extends React.Component {
     }
 
     componentDidMount() {
-        window.scrollTo(0, 0);
         // Load wardrobes from cache with better error handling
         const cached = getCachedWardrobes();
         if (cached && cached.length > 0) {

@@ -13,6 +13,17 @@ import Profile from "./pages/Profile";
 import "./assets/styles/dark-theme.css";
 import notificationService from "./services/notificationService";
 
+// Scroll restoration wrapper
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  
+  return null;
+}
+
 class App extends React.Component {
   componentDidMount() {
     // Initialize dark mode on app startup
@@ -63,6 +74,7 @@ class App extends React.Component {
   render() {
     return (
       <Router>
+        <ScrollToTop />
         <Routes>        
           <Route path="/login" element={<LoginPage />} />
           {/* Protected routes with Layout */}
