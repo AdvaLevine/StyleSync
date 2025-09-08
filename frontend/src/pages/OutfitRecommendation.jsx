@@ -370,7 +370,6 @@ const GenerateCustomOutfit = () => {
 
                   {/* Footer */}
                   <div className="text-center mt-4">
-                    <p className="small text-muted mb-2">This outfit has been automatically saved to your outfits collection.</p>
 
                   </div>
                 </div>
