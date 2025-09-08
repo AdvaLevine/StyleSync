@@ -22,6 +22,14 @@
   margin: 0;
 }
 
+/* Character counter */
+.char-counter {
+  font-size: 12px;
+  color: #666;
+  text-align: right;
+  margin-top: 4px;
+}
+
 /* Error message styles */
 .profile-error {
   background-color: #fee2e2;

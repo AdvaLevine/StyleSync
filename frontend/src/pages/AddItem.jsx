@@ -21,6 +21,7 @@ class AddItem extends React.Component {
             wardrobes: [],
             selectedWardrobe: null, 
             errorMessage: "",
+            shelfErrorMessage: "",
             formError: "",
             formErrorStep2: "",
             uploadProgress: 0,
@@ -39,12 +40,16 @@ class AddItem extends React.Component {
                 item_description: "", // Optional description for the item
             },
             step: 1,
+            // Add this to track character count
+            descriptionCharCount: 0,
         };
     
         // S3 bucket name - should match the one in your Lambda
         this.BUCKET_NAME = 'wardrobe-item-images';
         this.navigate = props.navigate;
         this.auth = props.auth;
+        // Add a character limit constant
+        this.DESCRIPTION_CHAR_LIMIT = 200;
     }
 
     componentDidMount() {
@@ -64,6 +69,26 @@ class AddItem extends React.Component {
     handleInputChange = (e) => {
         const { name, value, files } = e.target;
 
+        if (name === "photo" && files && files[0]) {
+            // Validate that the file is an image
+            const file = files[0];
+            const fileType = file.type;
+            
+            // Check if file type starts with "image/"
+            if (!fileType.startsWith("image/")) {
+                alert("Please select an image file (JPEG, PNG, etc.). PDF and other document formats are not supported.");
+                
+                // Reset the file input values
+                if (this.fileInputRef.current) {
+                    this.fileInputRef.current.value = '';
+                }
+                if (this.cameraInputRef.current) {
+                    this.cameraInputRef.current.value = '';
+                }
+                return;
+            }
+        }
+
         if (name === "door" && this.state.selectedWardrobe) {
             const maxDoors = this.state.selectedWardrobe.num_of_doors;
             if (value < 1 || value > maxDoors) {
@@ -80,12 +105,37 @@ class AddItem extends React.Component {
             }
         }
 
+        if (name === "shelf" && value < 1) {
+            this.setState({
+                shelfErrorMessage: "Please enter a shelf number greater than or equal to 1.",
+                fromDate: {
+                    ...this.state.fromDate,
+                    shelf: ""
+                }
+            });
+            return;
+        } else if (name === "shelf") {
+            this.setState({ shelfErrorMessage: "" });
+        }
+
+        // Add character limit check for item_description
+        if (name === "item_description" && value.length > this.DESCRIPTION_CHAR_LIMIT) {
+            return; // Don't update state if character limit is exceeded
+        }
+
         this.setState({
             fromDate: {
                 ...this.state.fromDate,
                 [name]: files ? files[0] : value
             }
         });
+
+        // Update character count for description field
+        if (name === "item_description") {
+            this.setState({
+                descriptionCharCount: value.length
+            });
+        }
     };
 
     handleWardrobeSelect = (wardrobeName) => {
@@ -104,7 +154,8 @@ class AddItem extends React.Component {
                     photo: null,
                     photoUrl: ""
                 },
-                errorMessage: ""
+                errorMessage: "",
+                shelfErrorMessage: ""
             });
             return;
         }
@@ -156,7 +207,7 @@ class AddItem extends React.Component {
             }
         }
 
-        this.setState({ errorMessage: "" }); 
+        this.setState({ errorMessage: "", shelfErrorMessage: "" }); 
     };
 
     // Get a presigned URL from Lambda
@@ -488,6 +539,7 @@ class AddItem extends React.Component {
                                     disabled={!this.state.fromDate.door} 
                                     required
                                 />
+                                {this.state.shelfErrorMessage && <p className="error-message">{this.state.shelfErrorMessage}</p>}
 
                                 <Dropdown
                                     options={this.commonOptions}
@@ -608,15 +660,21 @@ class AddItem extends React.Component {
                                         </div>
                                         
                                         <label>Description (optional)</label>
-                                        <textarea
-                                            name="item_description"
-                                            placeholder="Enter a description for this item (optional)"
-                                            value={this.state.fromDate.item_description || ""}
-                                            onChange={this.handleInputChange}
-                                            className="description-textarea"
-                                            rows={3}
-                                            style={{ resize: "vertical", width: "100%", marginBottom: "1em" }}
-                                        />
+                                        <div className="textarea-container">
+                                            <textarea
+                                                name="item_description"
+                                                placeholder={`Enter a description for this item (optional, ${this.DESCRIPTION_CHAR_LIMIT} characters max)`}
+                                                value={this.state.fromDate.item_description || ""}
+                                                onChange={this.handleInputChange}
+                                                className="description-textarea"
+                                                rows={3}
+                                                maxLength={this.DESCRIPTION_CHAR_LIMIT}
+                                                style={{ resize: "vertical", width: "100%", marginBottom: "0.5em" }}
+                                            />
+                                            <div className={`char-counter ${this.state.descriptionCharCount === this.DESCRIPTION_CHAR_LIMIT ? 'limit-reached' : ''}`}>
+                                                {this.state.descriptionCharCount} / {this.DESCRIPTION_CHAR_LIMIT} characters
+                                            </div>
+                                        </div>
                                         
                                         {this.state.isUploading && (
                                             <div className="upload-progress">

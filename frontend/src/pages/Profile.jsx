@@ -25,7 +25,9 @@ class Profile extends React.Component {
         phoneNumber: ""
       },
       //lastUpdated: null,
-      apiCallInProgress: false // Add flag to prevent duplicate calls
+      apiCallInProgress: false, // Add flag to prevent duplicate calls
+      maxNameLength: 50,
+      maxBioLength: 500 // Add bio character limit
     };
     
     // Flag to prevent duplicate API calls during mounting
@@ -223,6 +225,17 @@ class Profile extends React.Component {
     
   handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // For fullName field, enforce max length
+    if (name === 'fullName' && value.length > this.state.maxNameLength) {
+      return; // Don't update state if over max length
+    }
+    
+    // For bio field, enforce max length
+    if (name === 'bio' && value.length > this.state.maxBioLength) {
+      return; // Don't update state if over max length
+    }
+    
     this.setState(prevState => ({
       formData: {
         ...prevState.formData,
@@ -236,6 +249,18 @@ class Profile extends React.Component {
   validateForm = () => {
     if (!this.state.formData.fullName || this.state.formData.fullName.trim() === "") {
       this.setState({ error: "Full name is required" });
+      return false;
+    }
+    
+    // Check name length
+    if (this.state.formData.fullName.length > this.state.maxNameLength) {
+      this.setState({ error: `Full name cannot exceed ${this.state.maxNameLength} characters` });
+      return false;
+    }
+    
+    // Check bio length
+    if (this.state.formData.bio && this.state.formData.bio.length > this.state.maxBioLength) {
+      this.setState({ error: `Bio cannot exceed ${this.state.maxBioLength} characters` });
       return false;
     }
     
@@ -403,7 +428,7 @@ class Profile extends React.Component {
   };
 
   render() {
-    const { loading, error, success, userData, formData /*lastUpdated*/ } = this.state;
+    const { loading, error, success, userData, formData, maxNameLength, maxBioLength /*lastUpdated*/ } = this.state;
     const { auth } = this.props;
     
     const formattedBirthdate = this.formatDate(userData.birthdate);
@@ -482,8 +507,12 @@ class Profile extends React.Component {
                 name="fullName"
                 value={formData.fullName}
                 onChange={this.handleChange}
+                maxLength={maxNameLength}
                 required
               />
+              <div className="char-counter">
+                {formData.fullName ? formData.fullName.length : 0}/{maxNameLength} characters
+              </div>
             </div>
             
             <div className="form-group full-width">
@@ -496,7 +525,11 @@ class Profile extends React.Component {
                 onChange={this.handleChange}
                 placeholder="Tell us about yourself..."
                 rows={3}
+                maxLength={maxBioLength}
               />
+              <div className="char-counter">
+                {formData.bio ? formData.bio.length : 0}/{maxBioLength} characters
+              </div>
             </div>
             
             <div className="form-group">
