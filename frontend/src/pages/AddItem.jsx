@@ -40,12 +40,16 @@ class AddItem extends React.Component {
                 item_description: "", // Optional description for the item
             },
             step: 1,
+            // Add this to track character count
+            descriptionCharCount: 0,
         };
     
         // S3 bucket name - should match the one in your Lambda
         this.BUCKET_NAME = 'wardrobe-item-images';
         this.navigate = props.navigate;
         this.auth = props.auth;
+        // Add a character limit constant
+        this.DESCRIPTION_CHAR_LIMIT = 200;
     }
 
     componentDidMount() {
@@ -94,12 +98,24 @@ class AddItem extends React.Component {
             this.setState({ shelfErrorMessage: "" });
         }
 
+        // Add character limit check for item_description
+        if (name === "item_description" && value.length > this.DESCRIPTION_CHAR_LIMIT) {
+            return; // Don't update state if character limit is exceeded
+        }
+
         this.setState({
             fromDate: {
                 ...this.state.fromDate,
                 [name]: files ? files[0] : value
             }
         });
+
+        // Update character count for description field
+        if (name === "item_description") {
+            this.setState({
+                descriptionCharCount: value.length
+            });
+        }
     };
 
     handleWardrobeSelect = (wardrobeName) => {
@@ -624,15 +640,21 @@ class AddItem extends React.Component {
                                         </div>
                                         
                                         <label>Description (optional)</label>
-                                        <textarea
-                                            name="item_description"
-                                            placeholder="Enter a description for this item (optional)"
-                                            value={this.state.fromDate.item_description || ""}
-                                            onChange={this.handleInputChange}
-                                            className="description-textarea"
-                                            rows={3}
-                                            style={{ resize: "vertical", width: "100%", marginBottom: "1em" }}
-                                        />
+                                        <div className="textarea-container">
+                                            <textarea
+                                                name="item_description"
+                                                placeholder={`Enter a description for this item (optional, ${this.DESCRIPTION_CHAR_LIMIT} characters max)`}
+                                                value={this.state.fromDate.item_description || ""}
+                                                onChange={this.handleInputChange}
+                                                className="description-textarea"
+                                                rows={3}
+                                                maxLength={this.DESCRIPTION_CHAR_LIMIT}
+                                                style={{ resize: "vertical", width: "100%", marginBottom: "0.5em" }}
+                                            />
+                                            <div className={`char-counter ${this.state.descriptionCharCount === this.DESCRIPTION_CHAR_LIMIT ? 'limit-reached' : ''}`}>
+                                                {this.state.descriptionCharCount} / {this.DESCRIPTION_CHAR_LIMIT} characters
+                                            </div>
+                                        </div>
                                         
                                         {this.state.isUploading && (
                                             <div className="upload-progress">
