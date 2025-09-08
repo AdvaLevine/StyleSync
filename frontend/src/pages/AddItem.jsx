@@ -21,6 +21,7 @@ class AddItem extends React.Component {
             wardrobes: [],
             selectedWardrobe: null, 
             errorMessage: "",
+            shelfErrorMessage: "",
             formError: "",
             formErrorStep2: "",
             uploadProgress: 0,
@@ -80,6 +81,19 @@ class AddItem extends React.Component {
             }
         }
 
+        if (name === "shelf" && value < 1) {
+            this.setState({
+                shelfErrorMessage: "Please enter a shelf number greater than or equal to 1.",
+                fromDate: {
+                    ...this.state.fromDate,
+                    shelf: ""
+                }
+            });
+            return;
+        } else if (name === "shelf") {
+            this.setState({ shelfErrorMessage: "" });
+        }
+
         this.setState({
             fromDate: {
                 ...this.state.fromDate,
@@ -104,7 +118,8 @@ class AddItem extends React.Component {
                     photo: null,
                     photoUrl: ""
                 },
-                errorMessage: ""
+                errorMessage: "",
+                shelfErrorMessage: ""
             });
             return;
         }
@@ -156,7 +171,7 @@ class AddItem extends React.Component {
             }
         }
 
-        this.setState({ errorMessage: "" }); 
+        this.setState({ errorMessage: "", shelfErrorMessage: "" }); 
     };
 
     // Get a presigned URL from Lambda
@@ -488,6 +503,7 @@ class AddItem extends React.Component {
                                     disabled={!this.state.fromDate.door} 
                                     required
                                 />
+                                {this.state.shelfErrorMessage && <p className="error-message">{this.state.shelfErrorMessage}</p>}
 
                                 <Dropdown
                                     options={this.commonOptions}
