@@ -977,7 +977,1553 @@
 
 /* Ensure scrollbars look good */
 .items-container::-webkit-scrollbar {
+    width: 4px;/* ViewWardrobe.css */
+/* Styles for view-wardrobe page only */
+.view-wardrobe-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Full viewport height */
+    position: relative;
+    background-color: #e6f0ff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 50px 0; /* Add padding instead of margin */
+    box-sizing: border-box; /* Include padding in height calculation */
+    overflow: hidden; /* Prevent container from scrolling */
+}
+
+/* Back Button */
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 28px;
+    text-decoration: none;
+    color: black;
+    border-radius: 5px;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.back-button:hover {
+    color: #007bff; /* Change color on hover */
+    transform: scale(1.1); /* Slightly enlarge on hover */
+}
+
+/* View Wardrobe Box */
+.view-wardrobe-box {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 400px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    transition: width 0.3s ease;
+}
+
+/* הגדלת קופסת התצוגה כשיש טבלה */
+.view-wardrobe-box.list-view {
+    width: 950px; /* Fix the incorrect 850vw value and make it wide enough for table */
+    max-width: 95vw; /* Keep responsive behavior */
+    background: #f5f7fa;
+    border-radius: 12px;
+}
+
+/* View Wardrobe Title */
+.view-wardrobe-box h2 {
+    font-size: 24px;
+    color: #111;
+    margin-bottom: 15px;
+    text-align: center;
+    margin-top: 0px;
+}
+
+/* Put view options row items side by side */
+.view-options {
+    margin-bottom: 20px;
+}
+
+.view-options-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Prevent dropdown input from stretching too wide */
+.dropdown-wrapper {
+    flex: 1;
+    margin-right: 15px;
+    text-align: left;
+    max-width: 300px; /* Limit maximum width */
+}
+
+.dropdown-wrapper input {
+    width: 100%;
+    max-width: 300px; /* Ensure input doesn't stretch beyond this */
+    box-sizing: border-box;
+}
+
+/* When in image view mode with wider container */
+.view-wardrobe-box:has(.items-container.images) .dropdown-wrapper,
+.view-wardrobe-box.list-view .dropdown-wrapper {
+    max-width: 300px; /* Keep consistent even in wider containers */
+}
+
+.dropdown-wrapper .dropdown label {
+    text-align: left;
+    margin-bottom: 5px;
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    color: #444;
+}
+
+.view-mode-toggle {
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+    margin-bottom: 0;
+    margin-top: 25px;
+}
+
+.view-mode-toggle label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    color: #444;
+}
+
+.view-mode-toggle input {
+    margin-right: 5px;
+}
+
+/* Items container */
+.items-container {
+    margin-top: 20px;
+    max-height: 70vh; /* Limit height to prevent excessive scroll area */
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding-right: 5px; /* Add padding for scrollbar */
+}
+
+.items-container.list-view {
+    /* List view styles */
+    display: block;
+    width: 100%;
+}
+
+/* Prevent horizontal scrolling in list view */
+.items-container.list {
+    width: 100%;
+    overflow-x: visible; /* Change from auto to visible */
+    padding-right: 0; /* Remove padding for scrollbar */
+}
+
+/* List view mode needs more space */
+.items-container.list {
+    width: 100%;
+    overflow-x: auto;
+    padding-right: 5px; /* Add padding for scrollbar */
+}
+
+/* Image view styles - restore original */
+.items-container.images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    justify-content: center;
+    width: 100%;
+    padding: 10px 0;
+}
+
+/* More elegant item card styling with visible border */
+.item-card {
+    border: 1px solid #e0ebff; /* Add subtle border */
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(74, 134, 232, 0.08);
+    background: white;
+    position: relative;
+}
+
+.item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(74, 134, 232, 0.15);
+    border-color: #c0d6ff; /* Darker border on hover */
+}
+
+.item-image {
+    height: 170px; /* Keep original height */
+    background-color: #f8fbff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid #edf4ff;
+    overflow: hidden;
+}
+
+.item-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.item-card:hover .item-image img {
+    transform: scale(1.05);
+}
+
+.placeholder-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    color: #a4c2f4;
+    background-image: linear-gradient(45deg, #f5f9ff 25%, #edf4ff 25%, #edf4ff 50%, #f5f9ff 50%, #f5f9ff 75%, #edf4ff 75%, #edf4ff 100%);
+    background-size: 20px 20px;
+}
+
+.item-details {
+    padding: 5px 10px; /* Further reduce padding (was 8px 12px) */
+    font-size: 0.9rem;
+    background-color: white;
+    border-top: 1px solid rgba(164, 194, 244, 0.1);
+    min-height: 35px; /* Reduce minimum height (was 50px) */
+}
+
+.item-details p {
+    margin: 2px 0; /* Tighter margin for all paragraphs */
+}
+
+.item-details p:first-child {
+    font-weight: 600;
+    color: #4a86e8;
+    font-size: 0.9rem; /* Slightly smaller font */
+}
+
+.item-details p:last-child {
+    color: #5b9bd5;
+    font-size: 0.75rem; /* Even smaller font */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Light Blue Table Theme */
+.items-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px; /* Reduce from 10px to 6px for less space between rows */
+    margin: 15px 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Light blue header */
+.items-table thead tr {
+    background: none;
+}
+
+.items-table th {
+    color: #4a86e8;
+    font-weight: 600;
+    padding: 8px 15px; /* Reduced from 12px 15px */
+    text-align: center;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    border-bottom: 3px solid #a4c2f4;
+}
+
+/* Card-style rows with light blue accents */
+.items-table tbody tr {
+    box-shadow: 0 3px 10px rgba(164, 194, 244, 0.2); /* Reduce shadow */
+    border-radius: 8px;
+    margin-bottom: 10px; 
+    transition: transform 0.2s, box-shadow 0.3s;
+    height: auto;
+}
+
+.items-table tbody tr:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(164, 194, 244, 0.4);
+    background: #ebf3ff;
+}
+
+.items-table td {
+    background-color: #f0f8ff;
+    padding: 15px; 
+    border: none;
+    height: auto; /* Allow height to adjust to content */
+}
+
+/* Rounded corners for each card */
+.items-table td:first-child {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.items-table td:last-child {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+/* Column styles with light blue tones */
+.items-table td:first-child { /* Type */
+    font-weight: 600;
+    color: #4a86e8;
+    border-left: 4px solid #a4c2f4;
+}
+
+.items-table td:nth-child(2) { /* Color */
+    color: #5b9bd5;
+}
+
+.items-table td:nth-child(3) { /* Weather */
+    color: #6fa8dc;
+}
+
+.items-table td:nth-child(4) { /* Style */
+    color: #5b9bd5;
+    font-style: italic;
+}
+
+.items-table td:nth-child(5) { /* Description */
+    color: #5b9bd5;
+    font-style: italic;
+    position: relative;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Add tooltip-like hover effect for description */
+.items-table td:nth-child(5)[data-full-text]:not([data-full-text=""]):hover::after {
+    content: attr(data-full-text);
+    position: absolute;
+    left: 0;
+    top: 100%;
+    z-index: 10;
+    background-color: white;
+    padding: 10px 15px;
+    border-radius: 6px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    width: 250px;
+    white-space: normal;
+    font-size: 0.9rem;
+    color: #333;
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.items-table td:nth-child(6) { /* Location */
+    font-weight: 500;
+    color: #4a86e8;
+}
+
+/* Make container match the style */
+.view-wardrobe-box.list-view {
+    width: 950px; /* Fix the incorrect 850vw value and make it wide enough for table */
+    max-width: 95vw; /* Keep responsive behavior */
+    background: white;
+    border-radius: 12px;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .items-container.list {
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+    
+    .items-table {
+        min-width: 650px;
+    }
+
+    /* Make description column narrower on small screens */
+    .items-table td:nth-child(5) {
+        max-width: 150px;
+    }
+}
+
+.loading {
+    text-align: center;
+    margin: 20px 0;
+    color: #666;
+}
+
+.error-message {
+    color: #8b0000;
+    background-color: #f8d7da;
+    border-left: 4px solid #f44336;
+}
+
+.success-message {
+    color: #1e8e3e;
+    background-color: #e6f4ea;
+    border-left: 4px solid #4caf50;
+    padding: 10px 15px;
+    margin: 10px 0;
+    border-radius: 4px;
+    text-align: center;
+    animation: fadeIn 0.3s ease;
+    padding: 10px 12px;
+    font-size: 13px;
+    border-radius: 4px;
+    margin: 0px;
+    text-align: left;
+}
+
+.no-items-message {
+    text-align: center;
+    color: #666;
+    margin: 20px 0;
+}
+
+.view-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/* Wardrobe Management Actions */
+.wardrobe-management-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 15px;
+}
+
+/* Delete Wardrobe Button */
+.delete-wardrobe-btn {
+  background-color: #f8d7da;
+  color: #8b0000;
+  border: 1px solid #f5c6cb;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 8px 16px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-wardrobe-btn:hover {
+  background-color: #f5c6cb;
+  color: #721c24;
+}
+
+/* Modal adjustments for wardrobe deletion */
+.modal-content h3.delete-wardrobe-header {
+  color: #ff4d4f;
+  font-size: 20px;
+}
+
+/* Responsive design for action buttons */
+@media screen and (max-width: 480px) {
+  .wardrobe-management-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .delete-wardrobe-btn {
+    margin-top: 10px;
+  }
+  .view-actions {
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+  .delete-wardrobe-btn {
+    margin-bottom: 8px;
+    font-size: 13px;
+    padding: 5px 12px;
+  }
+}
+
+/* Blue View Button */
+.view-button {
+    background-color: #4a86e8;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 12px 30px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: background-color 0.2s ease;
+}
+
+.view-button:hover {
+    background: #3b78de;
+}
+
+.view-button.small-right {
+    font-size: 14px;
+    padding: 6px 20px;
+    width: auto;
+    align-self: flex-end;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 480px) {
+    .view-wardrobe-box {
+        width: 260px;
+        padding: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    .view-wardrobe-box h2 {
+        font-size: 18px;
+    }
+
+    .view-button {
+        font-size: 14px;
+    }
+
+    .error-message {
+        font-size: 12px;
+        padding: 8px;
+    }
+}
+
+/* Wider container for image view */
+.view-wardrobe-box:has(.items-container.images) {
+    width: 850px; /* Width for exactly 3 columns with margins */
+    max-width: 95vw; /* Responsive, but allows expansion */
+    height: auto; /* Allow natural height */
+}
+
+/* Keep list view container width */
+.view-wardrobe-box.list-view {
+    width: 950px; /* Fix the incorrect 850vw value and make it wide enough for table */
+    max-width: 95vw; /* Keep responsive behavior */
+    height: auto;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 900px) {
+    .items-container.images {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}
+
+/* For very small screens, ensure at least 2 columns */
+@media screen and (max-width: 600px) {
+    .items-container.images {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Style the scrollbar for better appearance */
+.items-container::-webkit-scrollbar {
     width: 4px;
+}
+
+.items-container::-webkit-scrollbar-track {
+    background: #f1f5ff;
+    border-radius: 10px;
+}
+
+.items-container::-webkit-scrollbar-thumb {
+    background: #c0d1ff;
+    border-radius: 10px;
+}
+
+/* Add styles for the "Create Wardrobe First" screen */
+.no-wardrobe-message {
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.no-wardrobe-icon {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    color: #a0cdff;
+}
+
+.no-wardrobe-message h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.no-wardrobe-message p {
+    color: #666;
+    margin-bottom: 25px;
+    font-size: 16px;
+}
+
+.create-wardrobe-btn {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.create-wardrobe-btn:hover {
+    background-color: #2563eb;
+}
+
+/* Delete button on items */
+.delete-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  opacity: 0.8;
+  transition: all 0.2s;
+}
+
+.delete-button:hover {
+  background-color: #ff4d4f;
+  color: white;
+  opacity: 1;
+}
+
+.delete-button-list {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.delete-button-list:hover {
+  background-color: #ff4d4f;
+  color: white;
+}
+
+/* Confirmation Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 8px;
+  padding: 24px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  color: #ff4d4f;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.cancel-btn {
+  background-color: transparent;
+  border: 1px solid #d9d9d9;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.delete-btn {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.item-card {
+  position: relative;
+}
+
+/* Multi-select styles */
+.item-select {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+}
+
+.item-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.bulk-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.selection-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.select-all-btn {
+  background-color: #4a86e8;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.select-all-btn:hover {
+  background-color: #40a9ff;
+}
+
+.selected-count {
+  font-weight: bold;
+  color: #4a86e8;
+}
+
+.bulk-delete-btn {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.bulk-delete-btn:hover {
+  background-color: #ff7875;
+}
+
+.bulk-delete-btn.disabled {
+  background-color: #d9d9d9;
+  cursor: not-allowed;
+}
+
+/* Selected item highlight */
+.item-card.selected {
+  outline: 2px solid #1890ff;
+  box-shadow: 0 0 8px rgba(24, 144, 255, 0.5);
+}
+
+.items-table tr.selected {
+  background-color: rgba(24, 144, 255, 0.1);
+}
+
+.select-column {
+  width: 50px;
+  text-align: center;
+}
+
+/* Filter controls - updated to match color scheme */
+.filter-controls {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 12px;
+    background-color: #f0f8ff; /* Light blue background to match other elements */
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(74, 134, 232, 0.15);
+    border: 1px solid #e0ebff;
+}
+
+.filter-selector {
+    display: flex;
+    gap: 10px;
+    flex-grow: 1;
+}
+
+.filter-selector select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #a4c2f4; /* Match blue border color */
+    background-color: white;
+    font-size: 14px;
+    min-width: 150px;
+    color: #4a86e8; /* Match blue text color */
+    transition: border-color 0.2s;
+}
+
+.filter-selector select:focus {
+    border-color: #4a86e8;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(74, 134, 232, 0.2);
+}
+
+.dismiss-filter-btn {
+    background-color: #fff1f0; /* Much lighter red background */
+    color: #cf1322; /* Less intense red text */
+    border: 1px solid #ffccc7; /* Lighter border */
+    border-radius: 5px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dismiss-filter-btn:hover {
+    background-color: #ffa39e; /* Light red on hover */
+    color: #a8071a; /* Slightly darker red on hover */
+}
+
+.apply-filter-btn {
+    background-color: #4a86e8; /* Primary blue */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.apply-filter-btn:hover {
+    background-color: #3b78de;
+}
+
+.active-filter-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    background-color: #ebf3ff; /* Lighter blue background */
+    border-radius: 6px;
+    border-left: 4px solid #4a86e8; /* Primary blue accent */
+    font-size: 14px;
+    box-shadow: 0 1px 3px rgba(74, 134, 232, 0.1);
+}
+
+.active-filter-info strong {
+    color: #4a86e8; /* Blue text for emphasis */
+}
+
+.filter-count {
+    font-weight: 500;
+    color: #5b9bd5;
+}
+
+/* Add these styles for the horizontal filter scroller */
+
+/* Filter section container */
+.filter-section {
+    margin: 1rem 0;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Filter header with title and clear button */
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.filter-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #4a86e8;
+}
+
+.clear-filters-btn {
+    background-color: #ffebeb;
+    color: #e64545;
+    border: 1px solid #ffc1c1;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.clear-filters-btn:hover {
+    background-color: #ffe0e0;
+    border-color: #ffaaaa;
+}
+
+.clear-filters-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Horizontal scrollable filter categories */
+.filter-categories-scroll {
+    overflow-x: auto;
+    padding: 10px 0;
+    scrollbar-width: thin;
+    scrollbar-color: #a4c2f4 #f0f8ff;
+}
+
+.filter-categories {
+    display: flex;
+    gap: 10px;
+    padding: 0 15px;
+    min-width: max-content;
+}
+
+.filter-category {
+    padding: 8px 15px;
+    background-color: #f5f9ff;
+    border: 1px solid #e0ebff;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+}
+
+.filter-category:hover {
+    background-color: #e0f0ff;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(74, 134, 232, 0.2);
+}
+
+.filter-category.expanded {
+    background-color: #4a86e8;
+    color: white;
+    border-color: #4a86e8;
+}
+
+.filter-category.active {
+    background-color: #ebf3ff;
+    border-color: #a4c2f4;
+}
+
+.filter-category.expanded.active {
+    background-color: #4a86e8;
+    border-color: #4a86e8;
+}
+
+.filter-category-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-icon {
+    font-size: 1.1rem;
+}
+
+.filter-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.filter-badge {
+    background-color: #4a86e8;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    margin-left: 5px;
+}
+
+.filter-category.expanded .filter-badge {
+    background-color: white;
+    color: #4a86e8;
+}
+
+/* Expanded filter options panel */
+.filter-options-container {
+    padding: 15px;
+    background-color: #f9fbff;
+    border-top: 1px solid #e0ebff;
+    animation: slideDown 0.3s ease;
+}
+
+.filter-options-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.filter-options-header h4 {
+    margin: 0;
+    color: #4a86e8;
+    font-size: 1rem;
+}
+
+.close-filter-btn {
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0 5px;
+    line-height: 1;
+}
+
+.close-filter-btn:hover {
+    color: #4a86e8;
+}
+
+.filter-options-scroll {
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.filter-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 5px 0;
+}
+
+.filter-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background-color: white;
+    border: 1px solid #e0ebff;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.filter-option:hover {
+    background-color: #f0f8ff;
+}
+
+.description-filter-option {
+    padding: 5px 0;
+}
+
+/* Active filters summary */
+.active-filters-summary {
+    padding: 12px 15px;
+    background-color: #ebf3ff;
+    border-top: 1px solid #d0e3ff;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.active-filters-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    color: #4a86e8;
+    font-size: 0.95rem;
+}
+
+.active-filters-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.filter-summary-item {
+    background-color: white;
+    border: 1px solid #a4c2f4;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 0.85rem;
+    color: #4a86e8;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(74, 134, 232, 0.1);
+}
+
+.filter-results-count {
+    font-weight: 500;
+    color: #4a86e8;
+    text-align: right;
+    font-size: 0.9rem;
+    margin-top: 5px;
+    padding-top: 8px;
+    border-top: 1px dashed #d0e3ff;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scrollbar styling */
+.filter-categories-scroll::-webkit-scrollbar,
+.filter-options-scroll::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+
+.filter-categories-scroll::-webkit-scrollbar-track,
+.filter-options-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.filter-categories-scroll::-webkit-scrollbar-thumb,
+.filter-options-scroll::-webkit-scrollbar-thumb {
+    background: #a4c2f4;
+    border-radius: 3px;
+}
+
+.filter-categories-scroll::-webkit-scrollbar-thumb:hover,
+.filter-options-scroll::-webkit-scrollbar-thumb:hover {
+    background: #4a86e8;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 600px) {
+    .filter-option {
+        padding: 5px 8px;
+        font-size: 0.85rem;
+    }
+    
+    .filter-options-container {
+        padding: 10px;
+    }
+}
+
+/* Adjust these styles as needed */
+
+.items-container {
+    /* Default grid view styles */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.items-container.list-view {
+    /* List view styles */
+    display: block;
+    width: 100%;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Add these media queries after your existing ones */
+@media screen and (max-width: 1176px) {
+    .view-wardrobe-box.list-view,
+    .view-wardrobe-box:has(.items-container.images) {
+        width: 90%; /* Ensure it takes most of the screen width but not all */
+        max-width: 850px;
+    }
+}
+
+/* Tablet screens (768px) - Enhance existing styles */
+@media screen and (max-width: 768px) {
+    .view-wardrobe-box {
+        width: min(90%, 400px);
+        padding: 1.5rem;
+    }
+
+    .view-wardrobe-container {
+        padding: 40px 0;
+        margin-top: auto;
+        justify-content: flex-start;
+    }
+    
+    .view-wardrobe-box.list-view,
+    .view-wardrobe-box:has(.items-container.images) {
+        width:  min(90%, 800px);
+        max-width: 700px;
+    }
+    
+    .items-container.images {
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
+        gap: 15px;
+    }
+    
+    .view-wardrobe-box h2 {
+        font-size: 22px;
+    }
+    
+    .item-card .item-image {
+        height: 150px;
+    }
+    
+    .filter-section {
+        margin: 0.8rem 0;
+    }
+    
+    .filter-category {
+        padding: 7px 12px;
+    }
+}
+
+/* Mobile screens (480px and below - covers 430px) */
+@media screen and (max-width: 480px) {
+    .view-wardrobe-container {
+        padding: 40px 0;
+    }
+    
+    .view-wardrobe-box {
+        width: 85%;
+        padding: 1rem;
+        margin-top: 15px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    }
+    
+    .view-wardrobe-box.list-view,
+    .view-wardrobe-box:has(.items-container.images) {
+        width: 85%;
+        max-width: 420px;
+    }
+    
+    .view-wardrobe-box h2 {
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+    
+    .items-container {
+        max-height: 55vh;
+    }
+    
+    .items-container.images {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .item-card .item-image {
+        height: 280px;
+    }
+    
+    .item-details {
+        padding: 4px 8px;
+        min-height: 30px;
+    }
+    
+    .item-details p:first-child {
+        font-size: 0.8rem;
+    }
+    
+    .item-details p:last-child {
+        font-size: 0.7rem;
+    }
+    
+    .view-options-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .dropdown-wrapper {
+        margin-right: 0;
+        margin-bottom: 10px;
+        max-width: 100%;
+    }
+    
+    .view-mode-toggle {
+        margin-top: 5px;
+        margin-left: 0;
+    }
+    
+    .filter-header h3 {
+        font-size: 0.95rem;
+    }
+    
+    .clear-filters-btn {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+    }
+    
+    .filter-category {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+    
+    .filter-label {
+        font-size: 0.85rem;
+    }
+    
+    .filter-icon {
+        font-size: 1rem;
+    }
+    
+    .filter-option {
+        padding: 5px 8px;
+        font-size: 0.8rem;
+    }
+    
+    .back-button {
+        top: 12px;
+        left: 12px;
+        font-size: 24px;
+    }
+
+    .delete-wardrobe-btn {
+    font-size: 14px;
+    padding: 4px 10px;
+    align-self: flex-end;
+    }
+
+    .select-all-btn {
+        font-size: 13px;
+        padding: 4px 10px;
+    }
+
+    .selected-count {
+        font-size: 13px;
+    }
+    
+    .bulk-delete-btn {
+        font-size: 13px;
+        padding: 4px 10px;
+    }
+
+    .wardrobe-management-actions {
+    justify-content: flex-end;
+    padding-top: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    }
+}
+
+/* Smallest mobile screens (375px and below) */
+@media screen and (max-width: 375px) {
+    .view-wardrobe-box {
+        width: 95%;
+        padding: 10px;
+    }
+    
+    .items-container.images {
+        min-height: 250px;
+    }
+    
+    .item-card .item-image {
+        height: 200px;
+    }
+    
+    /* Optimize vertical spacing */
+    .view-options {
+        margin-bottom: 10px;
+    }
+    
+    .bulk-actions {
+        margin: 8px 0;
+    }
+    
+    .filter-section {
+        margin: 8px 0;
+    }
+}
+
+/* Extra small screens */
+@media screen and (max-width: 320px) {
+    .view-wardrobe-box {
+        padding: 8px;
+        width: 98%;
+    }
+    
+    /* Ensure items can be viewed without overflow issues */
+    .items-container {
+        max-height: 50vh;
+    }
+    
+    .item-card .item-image {
+        height: 180px;
+    }
+}
+
+/* Ensure scrollbars look good */
+.items-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.items-container::-webkit-scrollbar-track {
+    background: #f1f5ff;
+    border-radius: 10px;
+}
+
+.items-container::-webkit-scrollbar-thumb {
+    background: #c0d1ff;
+    border-radius: 10px;
+}
+
+/* Improve scrolling for items container - especially for single items */
+.items-container {
+    max-height: 70vh; /* Limit height to prevent excessive scroll area */
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding-right: 5px; /* Add padding for scrollbar */
+}
+
+.items-container.images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    justify-content: center;
+    width: 100%;
+    padding: 10px 0;
+}
+
+/* Fix single item display in mobile views */
+@media screen and (max-width: 480px) {
+    .items-container.images {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 5px 0;
+        /* These properties ensure single items display correctly */
+        align-items: start;
+        min-height: 300px;
+    }
+    
+    /* Better single item card styling */
+    .item-card {
+        max-width: 100%;
+        margin: 0 auto;
+        height: auto;
+    }
+    
+    .item-card .item-image {
+        height: 240px; /* Taller image area for better visibility */
+    }
+    
+    /* Ensure scrollable area has visible boundaries */
+    .items-container {
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 8px;
+        padding: 10px 5px;
+        max-height: 60vh;
+    }
+    
+    /* Ensure view-wardrobe-box has proper dimensions */
+    .view-wardrobe-box {
+        width: 92%;
+        padding: 12px;
+        margin: 10px auto;
+        max-height: 90vh; /* Prevent box from growing too tall */
+    }
+}
+
+/* iPhone SE and other small devices (375px) */
+@media screen and (max-width: 375px) {
+    .view-wardrobe-box {
+        width: 95%;
+        padding: 10px;
+    }
+    
+    .items-container.images {
+        min-height: 250px;
+    }
+    
+    .item-card .item-image {
+        height: 200px;
+    }
+    
+    /* Optimize vertical spacing */
+    .view-options {
+        margin-bottom: 10px;
+    }
+    
+    .bulk-actions {
+        margin: 8px 0;
+    }
+    
+    .filter-section {
+        margin: 8px 0;
+    }
+}
+
+/* Extra small screens */
+@media screen and (max-width: 320px) {
+    .view-wardrobe-box {
+        padding: 8px;
+        width: 98%;
+    }
+    
+    /* Ensure items can be viewed without overflow issues */
+    .items-container {
+        max-height: 50vh;
+    }
+    
+    .item-card .item-image {
+        height: 180px;
+    }
+}
 }
 
 .items-container::-webkit-scrollbar-track {
