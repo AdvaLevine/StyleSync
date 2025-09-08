@@ -472,6 +472,7 @@ class AddItem extends React.Component {
     handleNextStep = () => {
         if (this.validateStep1()) {
             this.setState({ step: 2 });
+            window.scrollTo(0, 0);
         }
     };
 
@@ -702,6 +703,7 @@ class AddItem extends React.Component {
                                         className="back-btn" 
                                         onClick={() => {
                                             this.setState({ step: 1 });
+                                            window.scrollTo(0, 0);
                                         }}
                                     >
                                         Back
