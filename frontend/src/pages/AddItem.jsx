@@ -69,6 +69,26 @@ class AddItem extends React.Component {
     handleInputChange = (e) => {
         const { name, value, files } = e.target;
 
+        if (name === "photo" && files && files[0]) {
+            // Validate that the file is an image
+            const file = files[0];
+            const fileType = file.type;
+            
+            // Check if file type starts with "image/"
+            if (!fileType.startsWith("image/")) {
+                alert("Please select an image file (JPEG, PNG, etc.). PDF and other document formats are not supported.");
+                
+                // Reset the file input values
+                if (this.fileInputRef.current) {
+                    this.fileInputRef.current.value = '';
+                }
+                if (this.cameraInputRef.current) {
+                    this.cameraInputRef.current.value = '';
+                }
+                return;
+            }
+        }
+
         if (name === "door" && this.state.selectedWardrobe) {
             const maxDoors = this.state.selectedWardrobe.num_of_doors;
             if (value < 1 || value > maxDoors) {
