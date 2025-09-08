@@ -1211,6 +1211,13 @@
 }
 
 /* Add these media queries after your existing ones */
+@media screen and (max-width: 1176px) {
+    .view-wardrobe-box.list-view,
+    .view-wardrobe-box:has(.items-container.images) {
+        width: 90%; /* Ensure it takes most of the screen width but not all */
+        max-width: 850px;
+    }
+}
 
 /* Tablet screens (768px) - Enhance existing styles */
 @media screen and (max-width: 768px) {
@@ -1232,7 +1239,7 @@
     }
     
     .items-container.images {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
         gap: 15px;
     }
     
@@ -1282,12 +1289,12 @@
     }
     
     .items-container.images {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(1, 1fr);
         gap: 12px;
     }
     
     .item-card .item-image {
-        height: 130px;
+        height: 180px;
     }
     
     .item-details {
@@ -1407,7 +1414,7 @@
     }
     
     .item-card .item-image {
-        height: 140px; /* Actually a bit taller since we're now single column */
+        height: 200px; 
     }
     
     .item-details {
