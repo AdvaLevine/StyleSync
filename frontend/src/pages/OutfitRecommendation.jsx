@@ -16,7 +16,8 @@ const categoryIcons = {
 
 const GenerateCustomOutfit = () => {
   const navigate = useNavigate();
-  const [weather, setWeather] = useState("Any Weather");
+  const [weather, setWeather] = useState("Local Weather");
+  const [cachedWeather, setCachedWeather] = useState("");
   const [formality, setFormality] = useState("Any Formality");
   const [colorPalette, setColorPalette] = useState("Any Colors");
   const [error, setError] = useState();
@@ -35,6 +36,14 @@ const GenerateCustomOutfit = () => {
         const cachedEvents = JSON.parse(localStorage.getItem('calendar_cache'));
         if (cachedEvents && cachedEvents.date === new Date().toDateString()) {
             setCalendarEvents(cachedEvents.events);
+        }
+        
+        // Fetch cached weather
+        const cachedWeather = localStorage.getItem("weather_cache");
+        if (cachedWeather) {
+          setCachedWeather(cachedWeather);
+        } else {
+          setCachedWeather(""); 
         }
 
         // Fetch all wardrobes and items from cache
@@ -85,6 +94,15 @@ const GenerateCustomOutfit = () => {
       }));
       // -------------------------------------------------------------------------------------------------------------
       // --------------------------------------Outfit Recommendation Request------------------------------------------
+      console.log(JSON.stringify({
+          user_id: userId,
+          weather: weather === "Local Weather" ? cachedWeather : weather,
+          formality,
+          color_palette: colorPalette,
+          style_description: styleDescription,
+          wardrobe_items: wardrobeItems,
+          calendar_events: calendarEvents,
+        }))
       const response = await fetch("https://qma6omedi4.execute-api.us-east-1.amazonaws.com/dev", {
         method: "POST",
         headers: {
@@ -92,7 +110,7 @@ const GenerateCustomOutfit = () => {
         },
         body: JSON.stringify({
           user_id: userId,
-          weather,
+          weather: weather === "Local Weather" ? cachedWeather : weather,
           formality,
           color_palette: colorPalette,
           style_description: styleDescription,
@@ -155,10 +173,10 @@ const GenerateCustomOutfit = () => {
         <h1 className="h4 fw-bold text-dark mb-2">Add More Items</h1>
         <p className="text-muted mb-4">You need atleast 5 items in your wardrobes to generate outfits</p>
         <button 
-          onClick={() => navigate("/create-wardrobe")}
+          onClick={() => navigate("/add-item")}
           className="btn btn-primary px-4 py-2 fw-semibold"
         >
-          Create Your First Wardrobe!
+          Add Items!
         </button>
       </div>
     </div>
@@ -191,6 +209,7 @@ const GenerateCustomOutfit = () => {
             <div className="mb-3">
               <label className="form-label">Weather</label>
               <select className="form-select" value={weather} onChange={(e) => setWeather(e.target.value)}>
+                <option value="Local Weather">Local Weather</option>
                 <option value="Any Weather">Any Weather</option>
                 <option value="Hot">Hot</option>
                 <option value="Warm">Warm</option>
