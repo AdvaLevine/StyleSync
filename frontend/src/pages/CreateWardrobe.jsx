@@ -87,7 +87,16 @@ const CreateWardrobe = () => {
                         min="1" 
                         max="9" 
                         value={numOfDoors}
-                        onChange={(e) => setNumOfDoors(Math.min(9, Math.max(1, Number(e.target.value))))} 
+                        onChange={(e) => {
+                          // Just parse the number but don't apply min/max constraints on every keystroke
+                          const inputValue = e.target.value === '' ? '' : Number(e.target.value);
+                          setNumOfDoors(inputValue);
+                        }}
+                        // Apply validation on blur instead
+                        onBlur={(e) => {
+                          const validatedValue = Math.min(9, Math.max(1, Number(e.target.value) || 1));
+                          setNumOfDoors(validatedValue);
+                        }}
                       />
                       
                       <button type="submit" disabled={isPending}>
