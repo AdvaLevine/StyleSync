@@ -472,7 +472,7 @@ class Home extends React.Component {
         
         for (const item of itemsToDelete) {
           try {
-            const response = await fetch(" https://mw2ssed9x9.execute-api.us-east-1.amazonaws.com/dev/removeItemFromWardrobe", {
+            const response = await fetch("https://mw2ssed9x9.execute-api.us-east-1.amazonaws.com/dev/removeItem", {
               method: "DELETE",
               headers: {
                 "Content-Type": "application/json",
