@@ -118,7 +118,7 @@ class Profile extends React.Component {
       params.append('_nocache', Date.now().toString());
       
       // Build the complete API URL
-      const baseUrl = 'https://8pwd53kimh.execute-api.us-east-1.amazonaws.com/dev/getProfileInfo';
+      const baseUrl = 'https://8pwd53kimh.execute-api.us-east-1.amazonaws.com/dev/profileInfo';
       const apiUrl = `${baseUrl}?${params.toString()}`;
       
       console.log(`Fetching profile for user ID: ${userId}`);

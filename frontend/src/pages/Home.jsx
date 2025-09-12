@@ -366,7 +366,7 @@ class Home extends React.Component {
       try {
         const userId = localStorage.getItem("user_id");
       
-        const response = await fetch(`https://vq3ajfwjmh.execute-api.us-east-1.amazonaws.com/dev/GetAllWardrobes?userId=${userId}`);
+        const response = await fetch(`https://vq3ajfwjmh.execute-api.us-east-1.amazonaws.com/dev/wardrobes?userId=${userId}`);
         
         if (!response.ok) {
           throw new Error("Failed to fetch wardrobes");
