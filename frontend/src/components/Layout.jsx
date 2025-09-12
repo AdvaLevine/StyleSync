@@ -36,7 +36,7 @@ const Layout = () => {
     }
     auth.signoutRedirect({
         extraQueryParams: {
-          client_id: "6jt8p3s82dcj78eomqpra1qo0i",
+          client_id: "2k4ish6qqks2nq1ghk48nc81td",
           logout_uri: "https://main.d42bas3xeg2w1.amplifyapp.com/login"
           //logout_uri: "https://us-east-1lvylnwjnh.auth.us-east-1.amazoncognito.com/login?client_id=6jt8p3s82dcj78eomqpra1qo0i&response_type=code&scope=email+openid&redirect_uri=http://localhost:3000/login"
         }
