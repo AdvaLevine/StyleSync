@@ -175,7 +175,7 @@ class ViewWardrobe extends React.Component {
                 throw new Error("User ID not found. Please log in again.");
             }
             
-            const response = await fetch("https://4awnw7asd9.execute-api.us-east-1.amazonaws.com/dev/removeItem", {
+            const response = await fetch(" https://mw2ssed9x9.execute-api.us-east-1.amazonaws.com/dev/removeItemFromWardrobe", {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -291,7 +291,7 @@ class ViewWardrobe extends React.Component {
                 try {
                     console.log(`Attempting to delete item ${item.id}...`);
                     
-                    const response = await fetch("https://4awnw7asd9.execute-api.us-east-1.amazonaws.com/dev/removeItem", {
+                    const response = await fetch("https://mw2ssed9x9.execute-api.us-east-1.amazonaws.com/dev/removeItemFromWardrobe", {
                         method: "DELETE",
                         headers: {
                             "Content-Type": "application/json",
@@ -447,7 +447,7 @@ class ViewWardrobe extends React.Component {
                 
                 for (const item of itemsToDelete) {
                     try {
-                        const response = await fetch("https://4awnw7asd9.execute-api.us-east-1.amazonaws.com/dev/removeItem", {
+                        const response = await fetch("https://mw2ssed9x9.execute-api.us-east-1.amazonaws.com/dev/removeItemFromWardrobe", {
                             method: "DELETE",
                             headers: {
                                 "Content-Type": "application/json",
@@ -481,7 +481,7 @@ class ViewWardrobe extends React.Component {
             }
             
             // Now delete the wardrobe itself
-            const response = await fetch("https://h16jlm6x32.execute-api.us-east-1.amazonaws.com/dev/removeWardrobe", {
+            const response = await fetch("https://ffckrk8ze6.execute-api.us-east-1.amazonaws.com/dev/removeWardrobe", {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",

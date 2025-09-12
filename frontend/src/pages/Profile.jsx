@@ -118,7 +118,7 @@ class Profile extends React.Component {
       params.append('_nocache', Date.now().toString());
       
       // Build the complete API URL
-      const baseUrl = 'https://gotj7x3lhh.execute-api.us-east-1.amazonaws.com/dev/profileInfo';
+      const baseUrl = 'https://8pwd53kimh.execute-api.us-east-1.amazonaws.com/dev/getProfileInfo';
       const apiUrl = `${baseUrl}?${params.toString()}`;
       
       console.log(`Fetching profile for user ID: ${userId}`);
@@ -312,7 +312,7 @@ class Profile extends React.Component {
       console.log("Sending profile update with user ID:", userId);
       
       // Send profile update to backend API with authorization header
-      const response = await fetch('https://rhkrhlq101.execute-api.us-east-1.amazonaws.com/dev/updateProfileInfo', {
+      const response = await fetch('https://bn1x3csvri.execute-api.us-east-1.amazonaws.com/dev/updateProfileInfo', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,6 +1,6 @@
 const NOTIFICATION_STORAGE_KEY = 'last_notification_sent';
-const TIPS_API_ENDPOINT = 'https://0zpomzbxod.execute-api.us-east-1.amazonaws.com/default/getAITipsForItems';
-const SMS_API_ENDPOINT = 'https://0284n604ba.execute-api.us-east-1.amazonaws.com/default/smsHandler';
+const TIPS_API_ENDPOINT = 'https://wq0b4viqpb.execute-api.us-east-1.amazonaws.com/dev/getAITipsForItems';
+const SMS_API_ENDPOINT = 'https://5fe2df9eif.execute-api.us-east-1.amazonaws.com/dev/smsHandler';
 
 class NotificationService {
   constructor() {
@@ -42,7 +42,7 @@ class NotificationService {
     }
 
     try {
-      const response = await fetch(`https://ejvfo74uj1.execute-api.us-east-1.amazonaws.com/deploy/get-all-items`, {
+      const response = await fetch(`https://n44pfzmdl8.execute-api.us-east-1.amazonaws.com/dev/get-all-items`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

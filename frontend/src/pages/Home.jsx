@@ -243,7 +243,7 @@ class Home extends React.Component {
 
     this.setState({ calendarLoading: true });
 
-    const lambdaEndpont = 'https://zfuw4e41c4.execute-api.us-east-1.amazonaws.com/default/googleCalendarHandler';
+    const lambdaEndpont = 'https://pn469t7cj5.execute-api.us-east-1.amazonaws.com/dev/googleCalendarHandler';
 
     try {
       const response = await fetch(lambdaEndpont);
@@ -366,7 +366,7 @@ class Home extends React.Component {
       try {
         const userId = localStorage.getItem("user_id");
       
-        const response = await fetch(`https://o5199uwx89.execute-api.us-east-1.amazonaws.com/dev/wardrobes?userId=${userId}`);
+        const response = await fetch(`https://vq3ajfwjmh.execute-api.us-east-1.amazonaws.com/dev/GetAllWardrobes?userId=${userId}`);
         
         if (!response.ok) {
           throw new Error("Failed to fetch wardrobes");
@@ -472,7 +472,7 @@ class Home extends React.Component {
         
         for (const item of itemsToDelete) {
           try {
-            const response = await fetch("https://4awnw7asd9.execute-api.us-east-1.amazonaws.com/dev/removeItem", {
+            const response = await fetch(" https://mw2ssed9x9.execute-api.us-east-1.amazonaws.com/dev/removeItemFromWardrobe", {
               method: "DELETE",
               headers: {
                 "Content-Type": "application/json",
@@ -506,7 +506,7 @@ class Home extends React.Component {
       }
       
       // Now delete the wardrobe itself
-      const response = await fetch("https://h16jlm6x32.execute-api.us-east-1.amazonaws.com/dev/removeWardrobe", {
+      const response = await fetch("https://ffckrk8ze6.execute-api.us-east-1.amazonaws.com/dev/removeWardrobe", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
