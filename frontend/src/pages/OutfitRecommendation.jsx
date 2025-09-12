@@ -67,7 +67,7 @@ const GenerateCustomOutfit = () => {
     
     try {
       // --------------------------------------Get All Items--------------------------------------
-      const getResponse = await fetch(`https://ejvfo74uj1.execute-api.us-east-1.amazonaws.com/deploy/get-all-items`, {
+      const getResponse = await fetch(`https://n44pfzmdl8.execute-api.us-east-1.amazonaws.com/dev/get-all-items`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -103,7 +103,7 @@ const GenerateCustomOutfit = () => {
           wardrobe_items: wardrobeItems,
           calendar_events: calendarEvents,
         }))
-      const response = await fetch("https://qma6omedi4.execute-api.us-east-1.amazonaws.com/dev", {
+      const response = await fetch("https://ailfiw08sa.execute-api.us-east-1.amazonaws.com/dev/getOutfitRecommendationFromOpenAI", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -369,7 +369,7 @@ export const fetchAndCacheItems = async (wardrobeName, viewMode = 'images') => {
   try {
     const userId = localStorage.getItem("user_id");
     const response = await fetch(
-      `https://fml6ajrze5.execute-api.us-east-1.amazonaws.com/dev/items?userId=${userId}&wardrobe=${wardrobeName}&viewMode=${viewMode}`
+      `https://rghqqtp0g5.execute-api.us-east-1.amazonaws.com/dev/getItemsFromWardrobe?userId=${userId}&wardrobe=${wardrobeName}&viewMode=${viewMode}`
     );
     
     if (!response.ok) {
@@ -455,7 +455,7 @@ export const fetchTotalItemsCount = async (forceRefresh = false) => {
     
     // Try with URL encoded parameter
     const encodedUserId = encodeURIComponent(userId);
-    const apiUrl = `https://ejvfo74uj1.execute-api.us-east-1.amazonaws.com/deploy/items-count?userId=${encodedUserId}`;
+    const apiUrl = ` https://n44pfzmdl8.execute-api.us-east-1.amazonaws.com/dev/items-count?userId=${encodedUserId}`;
     
     const response = await fetch(apiUrl);
     const data = await response.json();

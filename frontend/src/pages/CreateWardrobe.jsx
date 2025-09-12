@@ -28,7 +28,7 @@ const CreateWardrobe = () => {
 
       // Post Request
       try {
-        const response = await fetch("https://dja34wd6j7.execute-api.us-east-1.amazonaws.com/dev/", {
+        const response = await fetch("https://tj2ssyv083.execute-api.us-east-1.amazonaws.com/dev/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

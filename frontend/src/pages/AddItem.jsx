@@ -216,7 +216,7 @@ class AddItem extends React.Component {
             const timestamp = new Date().getTime();
             const fileName = `${timestamp}-${file.name}`;
             
-            const url = `https://j9z90t8zqh.execute-api.us-east-1.amazonaws.com/dev/presigned-url?fileName=${encodeURIComponent(fileName)}&fileType=${encodeURIComponent(file.type)}`;
+            const url = `https://lbfhxpv0w1.execute-api.us-east-1.amazonaws.com/dev/presigned-url?fileName=${encodeURIComponent(fileName)}&fileType=${encodeURIComponent(file.type)}`;
             
             const response = await fetch(url, {
                 method: "GET",
@@ -395,7 +395,7 @@ class AddItem extends React.Component {
                 payload.item_description = this.state.fromDate.item_description.trim();
             }
 
-            const res = await fetch("https://ul2bdgg3g9.execute-api.us-east-1.amazonaws.com/dev/item", {
+            const res = await fetch(" https://6fvcdar4ul.execute-api.us-east-1.amazonaws.com/dev/item", {
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",
